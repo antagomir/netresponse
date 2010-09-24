@@ -1,0 +1,13 @@
+CHANGES IN VERSION 0.99.0 (2010-09-23)
+
+o Improved man pages and examples
+
+o Removed greedy and find.best.splitting from user-visible function
+  space
+
+o Added pre-calculated NetResponseModel object to toydata
+
+CHANGES IN VERSION 0.4.4 (2010-09-17)
+
+o Initial release.
+
