@@ -1,0 +1,78 @@
+\name{detect.responses}
+\alias{detect.responses}
+\title{detect.responses}
+\description{ Main function of the NetResponse algorithm. Detecting network responses across the conditions. }
+\usage{detect.responses(datamatrix, network, initial.responses = 1,
+        max.responses = 10, max.subnet.size = 20, rseed = 123, verbose =
+        TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
+        0.01, update.hyperparams = 0, implicit.noise = 0, threshold =
+        1.0e-5, ite = Inf)}
+
+\value{NetResponseModel object.}
+
+\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+
+\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
+        Maintainer: Leo Lahti <leo.lahti@iki.fi>}
+
+\arguments{
+
+  \item{datamatrix}{ Matrix of samples x features. For example, gene
+    expression matrix with conditions on the rows, and genes on the
+    columns. The matrix contains same features than the 'network'
+    object, characterizing the network states across the different
+    samples.
+
+  }
+
+  \item{network}{Binary matrix that describes pairwise interactions
+    between the features of 'datamatrix'. This defines a network.}
+
+  \item{initial.responses}{Initial number of components for each
+  subnetwork model. Used to initialize calculations.}
+
+  \item{max.responses }{Maximum number of responses for each
+  subnetwork. Can be used to limit the potential number of network
+  states.}
+
+  \item{max.subnet.size}{Numeric. Maximum allowed subnetwork size.}
+
+  \item{rseed}{Numeric. Random seed. }
+
+  \item{verbose}{Logical. Verbose parameter.}
+
+  \item{implicit.noise}{Implicit noise parameter. Add implicit noise
+  to vdp mixture model. Can help to avoid overfitting to local optima,
+  if this appears to be a problem.}
+
+  \item{update.hyperparams}{ Logical. Indicate whether to update
+  hyperparameters during modeling.}
+
+  \item{prior.alpha, prior.alphaKsi, prior.betaKsi}{Prior parameters
+      for Gaussian mixture model that is calculated for each
+      subnetwork (normal-inverse-Gamma prior). alpha tunes the mean;
+      alphaKsi and betaKsi are the shape and scale parameters of the
+      inverse Gamma function, respectively.}
+
+  \item{threshold}{Minimal free energy improvement after which the
+  algorithm is deemed converged. Used to define convergence limit.}
+
+  \item{ite}{Defines maximum number of iterations on posterior
+    update (updatePosterior). Increasing this can potentially lead to
+    more accurate results, but computation may take longer.}
+
+}
+
+\examples{
+
+library(netresponse)
+data( toydata )        # Load toy data set
+D    <- toydata$emat   # Response matrix (for example, gene expression)
+netw <- toydata$netw   # Network
+
+# Run NetReponse algorithm
+model <- detect.responses(D, netw, verbose = FALSE)
+
+}
+\keyword{ methods }
+\keyword{ iteration }

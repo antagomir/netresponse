@@ -1,0 +1,44 @@
+#exportPattern("^[^0]*$")
+import(methods) 
+
+useDynLib("netresponse")
+
+export(detect.responses,
+       vdp.mixt,
+       get.subnets,
+       get.model.parameters,
+       response2sample,
+       sample2response,
+       result.stats
+       #set.breaks,
+       #plot.subnet,
+       #plot.scale,
+       #plot.responses,
+       #plot.response,
+       #plot.pca
+       )
+
+exportClasses("NetResponseModel")
+
+exportMethods(
+#"[",
+"[[",
+show
+)
+
+#importFrom(graphics, plot)
+
+#exportMethods(                                         
+#        "[","[<-","$","$<-", 
+#        "plot","print" 
+#)
+
+#response.given.sample
+#exportMethods(get.subnets, get.model.parameters)
+#exportMethods(get.model.parameters)
+
+#S4method(plot, rpa.list)
+#S4method(get.subnets, NetResponseModel)
+
+#importFrom(graphics, plot)
+

@@ -1,0 +1,183 @@
+%\VignetteIndexEntry{netresponse}
+%The above line is needed to remove a warning in R CMD check
+\documentclass[a4paper]{article}
+
+\title{netresponse}
+\author{Leo Lahti, Olli-Pekka Huovilainen and Ant{\'o}nio Gusm{\~a}o}
+
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage[authoryear,round]{natbib}
+\usepackage[numbers]{natbib}
+
+\usepackage{hyperref}
+\usepackage{Sweave}
+\usepackage{float}
+
+%\textwidth=6.2in
+%\textheight=8.5in
+%\oddsidemargin=.1in
+%\evensidemargin=.1in
+%\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\begin{document}
+
+\maketitle
+
+%\VignetteIndexEntry{netresponse: Global modeling of transcriptional responses in interaction networks}
+
+\section{Introduction}
+
+
+Condition-specific network activation is characteristic for cellular
+systems and other real-world interaction networks. If measurements of
+network states are available across a versatile set of conditions or
+time points, it becomes possible to construct a global view of network
+activation patterns. Different parts of the network respond to
+different conditions, and in different ways. Systematic, data-driven
+identification of these responses will help to obtain a holistic view
+of network activity. The NetResponse algorithm, implemented in this R
+package, provides efficient probabilistic tools for such analysis
+\cite{Lahti10bioinf}. 
+
+In summary, the algorithm detects local subnetworks that show
+particular activation patterns in a subset of conditions. The
+algorithm characterizes these responses, and identifies their
+activating conditions. The algorithm can be viewed as a type of
+subspace clustering where the feature space is constrained by the
+network. The method is based on nonparametric probabilistic modeling
+and variational learning, and it provides general exploratory tools
+for functional network analysis.
+
+The current version provides the algorithmic implementation. The
+implementations are partially based on the agglomerative independent
+variable group analysis \citep{Honkela08} and variational Dirichlet
+Process mixture model algorithms \cite{Kurihara07nips}. Further tools
+for visualization and analysis will be provided in the later
+versions. Your feedback and contributions are
+welcome\footnote{leo.lahti@iki.fi}.
+
+%The R package depends on \Rpackage{igraph} and \Rpackage{Rgraphviz}
+%packages. 
+
+%The package provides also implementations for aivga and vdp.
+
+\section{Loading the package and example data}
+
+Load the package and toy data set. The {\it toydata} object contains
+the variables {\it D} (gene expression matrix) and {\it netw} (network
+matrix). The data matrix {\it D} describes measurements of the network
+activation over multiple conditions.  This simple toy data will be
+analyzed in the subsequent examples. Note that the method is
+potentially applicable to networks with thousands of nodes and
+conditions; the scalability depends on network connectivity.
+
+<<initial, results = hide>>=
+require(netresponse)
+data(toydata)
+D <- toydata$emat
+netw <- toydata$netw
+@
+
+\section{Detecting network responses}
+
+Detect network responses across the conditions:
+
+<<detect>>=
+model <- detect.responses(D, netw, verbose = FALSE)
+@
+
+\section{Analyzing the results}
+
+Subnetwork statistics: size and number of distinct responses for each subnet
+
+<<stat>>=
+stat <- result.stats(model, D) 
+stat
+@
+
+List the detected subnetworks (each is a list of nodes)
+<<getsubnets>>=
+get.subnets(model)
+@ 
+
+Subnetworks can be filtered by size and number of
+responses. Subnetworks that have only one response are not informative
+of the differences between conditions, and typically ignored in
+subsequent analysis.
+
+<<getsubnets2>>=
+get.subnets(model, stat = stat, min.size = 2, min.responses = 2)
+@ 
+
+%Pick one of the subnets (define by identifier)
+%<<>>=
+%inds <- which(sapply(model@last.grouping, length) > 2)
+%subnet.id <- names(which.min(model@costs[inds]))
+%@
+
+%Check nodes of a particular subnetwork
+%<<getsubnsets3>>=
+%subnet.id <- 'Subnet-2'
+%get.subnets(model)[[subnet.id]]
+%@
+
+Each subnetwork response has a probabilistic association to each
+condition. Get the list of samples corresponding to each response
+(each sample is assigned to the response of the highest probability)
+
+<<resp, results = hide>>=
+subnet.id <- 'Subnet-2'
+response2sample(model, subnet.id, D)
+@
+
+Retrieve model parameters of a given subnetwork (Gaussian mixture
+means, covariance diagonal, and component weights):
+<<pars>>=
+pars <- get.model.parameters(model, subnet.id, D) # model parameters
+pars
+@ 
+
+
+Probabilistic sample-response assignments for a given subnet is retrieved with:
+<<probs>>=
+response.probabilities <- sample2response(model, subnet.id, D)
+@ 
+
+
+
+%\bibliographystyle[numbers]{natbib}
+\begin{thebibliography}{1}
+
+\bibitem{Lahti10bioinf}
+Leo Lahti {\em et~al.} (2010).
+\newblock Global modeling of transcriptional responses in interaction networks.
+\newblock {\em Bioinformatics}. In press.
+\newblock Preprint: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
+
+\bibitem[Honkela {\em et~al.}(2008)Honkela, Sepp{\"a}, and
+  Alhoniemi]{Honkela08}
+Antti Honkela {\em et~al.} (2008).
+\newblock Agglomerative independent variable group analysis.
+\newblock {\em Neurocomputing\/}, {\bf 71}, 1311--1320.
+
+\bibitem[Kurihara {\em et~al.}(2007)Kurihara, Welling, and
+  Vlassis]{Kurihara07nips}
+Kenichi Kurihara {\em et~al.} (2007).
+\newblock Accelerated variational Dirichlet process mixtures.
+\newblock In B.~Sch\"olkopf, J.~Platt, and T.~Hoffman, eds., {\em Advances
+  in Neural Information Processing Systems 19\/}, 761--768. MIT Press,
+  Cambridge, MA.
+
+
+\end{thebibliography}
+
+%\bibliographystyle{abbrv}
+%\bibliography{my.bib}
+
+
+
+\end{document}
