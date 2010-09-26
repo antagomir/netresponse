@@ -155,7 +155,7 @@ response.probabilities <- sample2response(model, subnet.id, D)
 \bibitem{Lahti10bioinf}
 Leo Lahti {\em et~al.} (2010).
 \newblock Global modeling of transcriptional responses in interaction networks.
-\newblock {\em Bioinformatics}. In press.
+\newblock {\em Bioinformatics}.
 \newblock Preprint: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
 
 \bibitem[Honkela {\em et~al.}(2008)Honkela, Sepp{\"a}, and
