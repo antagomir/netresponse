@@ -4,16 +4,13 @@
 \description{Retrieve the mixture model parameters of the NetResponse
   algorithm for a given subnetwork.}
 \usage{
-get.model.parameters(model, subnet.id, datamatrix, level = NULL)
+get.model.parameters(model, subnet.id, level = NULL)
 }
 \arguments{
   \item{model}{Result from NetResponse (detect.responses function).}
 
  \item{ subnet.id }{Subnet identifier. A natural number which
   specifies one of the subnetworks within the 'model' object.}
-
-  \item{datamatrix}{Original data matrix used in the modelling (to
-  obtain the 'model' object)}
 
  \item{level}{ Agglomeration level to investigate. The agglomerative
     algorithm grows the subnetworks step-by-step. This option can be
@@ -40,12 +37,12 @@ get.model.parameters(model, subnet.id, datamatrix, level = NULL)
 \examples{
 # Load toy data
 data( toydata )          # Load toy data set
-D    <- toydata$emat     # Response matrix (for example, gene expression)
+D     <- toydata$emat    # Response matrix (for example, gene expression)
 model <- toydata$model   # Pre-calculated model
 
 # Get model parameters for a given subnet
 # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
-get.model.parameters(model, subnet.id = 1, D)
+get.model.parameters(model, subnet.id = 1)
 
 }
 

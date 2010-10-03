@@ -1,13 +1,14 @@
-get.model.parameters <- function (model, subnet.id, datamatrix, level = NULL) {
+get.model.parameters <- function (model, subnet.id, level = NULL) {
             
   # model: output from run.netresponse function
-  # subnet.idx: index of the subnet to check
+  # subnet.id: index of the subnet to check
   # level: which agglomeration step
   
   #  Copyright (C) 2008-2010 Leo Lahti
   #  Licence: GPL >=2
  
   nodes <- get.subnets(model, level)[[subnet.id]]
+  datamatrix <- model@datamatrix  
 
   # Compute the model
   m <- vdp.mixt(matrix(datamatrix[, nodes], nrow = length(model@samples) ))

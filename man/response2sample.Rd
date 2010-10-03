@@ -3,7 +3,7 @@
 \title{response2sample}
 \description{List the most strongly associated response of a given
   subnetwork for each sample.}
-\usage{response2sample(model, subnet.id, datamatrix, component.list = TRUE)}
+\usage{response2sample(model, subnet.id, component.list = TRUE)}
 \arguments{
 
   \item{model}{A NetResponseModel object. Result from NetResponse
@@ -11,9 +11,6 @@
 
   \item{subnet.id}{Subnet id. A natural number which specifies one of
   		   the subnetworks within the 'model' object.}
-
-  \item{datamatrix}{Original data matrix used to obtain the 'model'
-  		    object.}
 
   \item{component.list}{List samples separately for each mixture
                         component (TRUE). Else list the most strongly
@@ -40,7 +37,7 @@ D    <- toydata$emat    # Response matrix (for example, gene expression)
 model <- toydata$model  # Pre-calculated model
 
 # Find the samples for each response (for a given subnetwork)
-response2sample(model, subnet.id = 1, D)
+response2sample(model, subnet.id = 1)
 
 }
 \keyword{utilities}

@@ -88,6 +88,7 @@ Detect network responses across the conditions:
 
 <<detect>>=
 model <- detect.responses(D, netw, verbose = FALSE)
+model@datamatrix <- D # FIXME
 @
 
 \section{Analyzing the results}
@@ -95,7 +96,7 @@ model <- detect.responses(D, netw, verbose = FALSE)
 Subnetwork statistics: size and number of distinct responses for each subnet
 
 <<stat>>=
-stat <- result.stats(model, D) 
+stat <- result.stats(model) 
 stat
 @
 
@@ -131,21 +132,21 @@ condition. Get the list of samples corresponding to each response
 
 <<resp, results = hide>>=
 subnet.id <- 'Subnet-2'
-response2sample(model, subnet.id, D)
+response2sample(model, subnet.id)
 @
 
 Retrieve model parameters of a given subnetwork (Gaussian mixture
 means, covariance diagonal, and component weights):
 <<pars>>=
-pars <- get.model.parameters(model, subnet.id, D) # model parameters
+pars <- get.model.parameters(model, subnet.id) # model parameters
 pars
 @ 
 
 
 Probabilistic sample-response assignments for a given subnet is retrieved with:
 <<probs>>=
-response.probabilities <- sample2response(model, subnet.id, D)
-@ 
+response.probabilities <- sample2response(model, subnet.id)
+@
 
 
 

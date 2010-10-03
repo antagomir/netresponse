@@ -6,14 +6,13 @@
 
 \description{ Probabilistic sample-response assignments for given
   subnet. }
-\usage{sample2response(model, subnet.id, datamatrix)}
+\usage{sample2response(model, subnet.id)}
 \arguments{
   \item{ model }{Result from NetResponse (detect.responses function).}
 
   \item{ subnet.id }{Subnet identifier. A natural number which
   specifies one of the subnetworks within the 'model' object.}
 
-  \item{ datamatrix }{Original data matrix used in the modelling.}
 }
 
 \value{A matrix of probabilities. Sample-response assignments for given
@@ -32,7 +31,9 @@ netw <- toydata$netw   # Network
 
 # Detect network responses
 model <- detect.responses(D, netw, verbose = FALSE)
+
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
-response.probabilities <- sample2response(model, subnet.id = 1, D)
+response.probabilities <- sample2response(model, subnet.id = 1)
+
 }
 \keyword{utilities}

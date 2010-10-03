@@ -1,12 +1,13 @@
 Package: netresponse
 Type: Package
-Title: NetResponse: global modeling of condition-specific network responses
-Version: 0.99.2
-Date: 2010-09-28
+Title: NetResponse: functional network analysis
+Version: 0.99.3
+Date: 2010-10-03
 Author: Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis.
-License: GPL>=2
+License: GPL (>=2)
 Depends: methods
+URL: http://netpro.r-forge.r-project.org/
 LazyLoad: yes
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, DifferentialExpression, Microarray, Transcription

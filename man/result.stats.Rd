@@ -4,11 +4,10 @@
 \description{ Subnetwork statistics: size and number of distinct
   responses for each subnet. }
 \usage{
-result.stats( model, datamatrix, level )
+result.stats( model, level )
 }
 \arguments{
   \item{model}{ Result from NetResponse (detect.responses function). }
-  \item{datamatrix}{ Original data matrix for which the model was computed. }
 
   \item{level}{ Agglomeration level to investigate. The agglomerative
     algorithm grows the subnetworks step-by-step. This option can be
@@ -42,7 +41,7 @@ model <- toydata$model # netresponse model
 D <- toydata$emat         # data matrix
 
 # Calculate summary statistics for the model
-stat <- result.stats(model, D) 
+stat <- result.stats(model) 
 
 }
 

@@ -66,7 +66,6 @@
 #
 # The loop is implemented in the function greedy(...)
 
-
 #   prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01;
 #    do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf;
 #    implicit.noise = 0; c.max = 10
@@ -83,41 +82,29 @@ function(dat,
                ite = Inf,    # used on updatePosterior: maximum number of iterations
          implicit.noise = 0, # Adds implicit noise in 
 	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
-             c.max = 10      # max. candidates to consider in find.best.splitting. 
-	     	             # i.e. truncation parameter
+             c.max = 10,     # max. candidates to consider in find.best.splitting. 
+	                     # i.e. truncation parameter
                              # Candidates are chosen based on their Nc value 
                              # (larger = better). Nc = colSums(qOFz)
-
-                     )
-{
-
-
-    # Max_PCA_on_Split: when a candidate cluster, C, is split to generate two 
-    # new clusters, it is split by mapping the data onto the first principal 
-    # component of the data in C and then splitting that in half. To speed up, 
-    # one can compute an approximate first principal component by considering
-    # a randomly selected subset of the data belonging to C, and computing its
-    # first principal component.
-    # No Speedup: Max_PCA_on_Split = Inf;
-    Max_PCA_on_Split = Inf # default = Inf;
-
-#system("/home/tuli/bin/R-alpha/bin/R CMD SHLIB /home/tuli/Rpackages/netresponse/netresponse/src/netresponse.c")
-#dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
-
-	##dyn.load("vdp_mk_log_lambda.so");
-	##dyn.load("vdp_mk_hp_posterior.so")
-	##dyn.load("vdp_softmax.so");
-	##dyn.load("vdp_sumlogsumexp.so");
-	##dyn.load("netresponse.so");
+           speedup = TRUE        
+	   	             # speedup: during DP, components are splitted
+			     # based on their first PCA component.
+                             # To speed up, approximate by using only subset 
+			     # data to calculate PCA.
+) {
 
 
-  
+
+
+  #system("/home/tuli/bin/R-alpha/bin/R CMD SHLIB /path/netresponse.c")
+  #dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
+
   # Prior parameters
   opts <- list(
     prior.alpha    = prior.alpha,    # Remark: result is quite insensitive to this variable
     prior.alphaKsi = prior.alphaKsi, # smaller -> less clusters (and big!) -> quite sensitive
     prior.betaKsi  = prior.betaKsi,  # larger -> less clusters (and big!)
-  Max_PCA_on_Split = Inf,
+           speedup = speedup,        # speed up calculations
            do.sort = do.sort,
          threshold = threshold,
          initial.K = initial.K,      
