@@ -1,20 +1,18 @@
 detect.responses <-
 function(datamatrix,
          network,
-         initial.responses = 1, # initial number of components. FIXME: is this used?
-         max.responses = 10,    # max. responses # FIXME: check if really used
-         max.subnet.size = 20,    # max. subnetwork size
-         rseed = 123,           # random seed
-         verbose = TRUE,        # print proc. information
-         prior.alpha    = 1,    # Prior parameters
-         prior.alphaKsi = 0.01, # for VDP mixture
-         prior.betaKsi  = 0.01, # scale parameter for inverse Gamma
+         initial.responses = 1,  # initial number of components. FIXME: is this used?
+         max.responses = 10,     # max. responses # FIXME: check if really used
+         max.subnet.size = 20,   # max. subnetwork size
+         rseed = 123,            # random seed
+         verbose = TRUE,         # print proc. information
+         prior.alpha    = 1,     # Prior parameters
+         prior.alphaKsi = 0.01,  # for VDP mixture
+         prior.betaKsi  = 0.01,  # scale parameter for inverse Gamma
          update.hyperparams = 0, # update hyperparameters. FIXME: check if this is applicable.
          implicit.noise = 0, # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
          threshold = 1.0e-5, # min. free energy improvement that stops VDP
-
          ite = Inf          # max. iterations in updatePosterior
-
          )
 
 {
@@ -147,11 +145,10 @@ function(datamatrix,
                                 ite = ite,
                                 c.max = max.responses - 1 )
     
-    H[[k]]          <- cost  <- model$free.energy     # -cost is lower bound for log(P(D|H))
-    #Nresponses[[k]] <- model$Kreal                   # Number of nonempty components
-    Nparams[k, k]   <- model$Nparams                  # number of parameters for model
-    bic             <- Nparams[k, k]*Nlog - 2*(-H[[k]]) # BIC for model
-    C               <- C + bic                        # Total cost, previously: C + H(k)
+    H[[k]]         <- cost  <- model$free.energy # -cost is lower bound for log(P(D|H))
+    Nparams[k, k]  <- model$posterior$Nparams # number of parameters for model
+    bic            <- Nparams[k, k]*Nlog + 2*H[[k]] # BIC for model
+    C              <- C + bic # Total cost, previously: C + H(k)
   }
 
 if (verbose) {cat('done\n')}
@@ -182,7 +179,7 @@ for (a in 1:(dim - 1)){
                                   c.max = max.responses - 1)
       
       costs[a, b]     <- costs[b, a]   <- model$free.energy # Store cost for joint model. 
-      Nparams[a, b]   <- Nparams[b, a] <- model$Nparams     # number of parameters in joint model
+      Nparams[a, b]   <- Nparams[b, a] <- model$posterior$Nparams     # number of parameters in joint model
 
       # Compute BIC-value for two independent subnets vs. joint model 
       # Negative free energy (-cost) is (variational) lower bound for P(D|H)
@@ -273,9 +270,9 @@ for (j in 2:dim0){
       # compute combined model only if a and i are linked
       if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
 
-        vars         <- sort(c(G[[a]], G[[i]]))
+        vars  <- sort(c(G[[a]], G[[i]]))
 
-        model        <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
+        model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
                                 implicit.noise = implicit.noise,
                                 prior.alpha = prior.alpha,
                                 prior.alphaKsi = prior.alphaKsi,
@@ -286,7 +283,7 @@ for (j in 2:dim0){
                                 c.max = max.responses - 1 )
         
         costs[a,i]   <- costs[i, a]   <- model$free.energy  # cost for joint model
-        Nparams[a,i] <- Nparams[i, a] <- model$Nparams  # number of parameters in joint model
+        Nparams[a,i] <- Nparams[i, a] <- model$posterior$Nparams  # number of parameters in joint model
 
         # BIC-cost for two independent vs. joint model
         # Negative free energy (-cost) is (variational) lower bound for P(D|H)

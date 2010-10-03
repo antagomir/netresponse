@@ -3,7 +3,7 @@
   This file is a part of the NetResponse R package.
 
   Copyright (C) 2008-2010 Leo Lahti, Olli-Pekka Huovilainen and
-  António Gusmão. Contact: Leo Lahti <leo.lahti@iki.fi>
+  Antï¿½nio Gusmï¿½o. Contact: Leo Lahti <leo.lahti@iki.fi>
 
   This file is based on the Agglomerative Independent Variable Group
   Analysis package, Copyright (C) 2001-2007 Esa Alhoniemi, Antti
@@ -22,6 +22,12 @@
 
 */
 
+/* --------------------------------------------------- */
+
+/* ---------------- vdp_mk_hp_posterior.c ------------ */
+
+/* --------------------------------------------------- */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
@@ -30,6 +36,7 @@
 #include <Rdefines.h>
 
 #define POW2(x) ((x) * (x))
+
 
 void compute_nc(int ncentroids, long datalen, double *trueNc,
 		double *qOFz, double *Nc)
@@ -172,7 +179,7 @@ free_memory_A(int ncentroids, int dim2,
 
 
 void
-vdp_mk_HPposterior(double *Mumu, double *S2mu, double *Mubar, double *Mutilde, 
+vdp_mk_hp_posterior(double *Mumu, double *S2mu, double *Mubar, double *Mutilde, 
 		    double *AlphaKsi, double *BetaKsi, 
 		    double *KsiAlpha, double *KsiBeta, 
 		    double *post_gamma, double *prior_alpha,
@@ -197,7 +204,7 @@ vdp_mk_HPposterior(double *Mumu, double *S2mu, double *Mubar, double *Mutilde,
   }
 
   compute_nc(ncentroids, datalen, trueNc, qOFz, Nc);
-
+  
   update_centroids(datalen, ncentroids, dim1, dim2,
 		   data1, data2_int,
 		   Nc, qOFz, Mumu, S2mu,
@@ -218,21 +225,27 @@ vdp_mk_HPposterior(double *Mumu, double *S2mu, double *Mubar, double *Mutilde,
   }
 
   free_memory_A(ncentroids, dim2, &U_hat_table, &data2_int);
-
   return;
 }
+
+
+
 
 
 /************************************************************/
 /* bridge function                                          */
 
-SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, SEXP X2, SEXP X2_Columns,
-        SEXP realS, SEXP OPTSimplicitnoisevar,
-        SEXP HP_PRIOR_Mumu, SEXP HP_PRIOR_S2mu,
-	SEXP HP_PRIOR_AlphaKsi, SEXP HP_PRIOR_BetaKsi,
-	SEXP HP_PRIOR_U_p, SEXP HP_PRIOR_prior_alpha,
-	SEXP QOFZ, SEXP QOFZ_Columns)
-{
+SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, 
+               SEXP X2, SEXP X2_Columns,
+               SEXP realS, SEXP OPTSimplicitnoisevar,
+               SEXP HP_PRIOR_Mumu,
+               SEXP HP_PRIOR_S2mu,
+               SEXP HP_PRIOR_AlphaKsi,
+               SEXP HP_PRIOR_BetaKsi,
+               SEXP HP_PRIOR_U_p,
+               SEXP HP_PRIOR_prior_alpha,
+               SEXP QOFZ,
+               SEXP QOFZ_Columns){
   long datalen;
   int  i, dim1, dim2, ncentroids;
   double *Mumu, *S2mu, *Mubar, *Mutilde, 
@@ -253,6 +266,7 @@ SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, SEXP X2, SEXP X2_Columns,
   SEXP oMubar, oMutilde,  oKsiAlpha, oKsiBeta, opost_gamma,
        oNc    , otrueNc ,  oqOFz   , oU_hat;
   SEXP* U_hat;
+  
 
   /************ CONVERTED input variables ******************/
   PROTECT(X1 = AS_NUMERIC(X1));  
@@ -267,48 +281,47 @@ SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, SEXP X2, SEXP X2_Columns,
   Ns = NUMERIC_POINTER(realS);
   implicitnoisevar = NUMERIC_VALUE(OPTSimplicitnoisevar);
 
+
   /************ CONVERTED initial values of model parameters ******************/
-  Mumu        = NUMERIC_POINTER(HP_PRIOR_Mumu);
-  S2mu        = NUMERIC_POINTER(HP_PRIOR_S2mu);
-  AlphaKsi    = NUMERIC_POINTER(HP_PRIOR_AlphaKsi);
-  BetaKsi     = NUMERIC_POINTER(HP_PRIOR_BetaKsi);
+  Mumu       = NUMERIC_POINTER(HP_PRIOR_Mumu);
+  S2mu       = NUMERIC_POINTER(HP_PRIOR_S2mu);
+  AlphaKsi   = NUMERIC_POINTER(HP_PRIOR_AlphaKsi);
+  BetaKsi    = NUMERIC_POINTER(HP_PRIOR_BetaKsi);
   U_p         = NUMERIC_POINTER(HP_PRIOR_U_p);
   prior_alpha = NUMERIC_POINTER(HP_PRIOR_prior_alpha);
-  qOFz_in     = NUMERIC_POINTER(QOFZ);
+
+  qOFz_in   = NUMERIC_POINTER(QOFZ);
   ncentroids  = INTEGER_VALUE(QOFZ_Columns);
+
 
   /********* CONVERTED output variables ***********************/
   /* Necessary to allocate memory for the output variables :| */
   /*Allocation **/
-
-  //printf("b0");
-  PROTECT(oMubar      = NEW_NUMERIC(ncentroids*dim1));
-
-  //printf("b1");
-  PROTECT(oMutilde    = NEW_NUMERIC(ncentroids*dim1));
-  PROTECT(oKsiAlpha   = NEW_NUMERIC(ncentroids*dim1));
-  PROTECT(oKsiBeta    = NEW_NUMERIC(ncentroids*dim1));
+  PROTECT(oMubar     = NEW_NUMERIC(ncentroids*dim1));
+  PROTECT(oMutilde   = NEW_NUMERIC(ncentroids*dim1));
+  PROTECT(oKsiAlpha  = NEW_NUMERIC(ncentroids*dim1));
+  PROTECT(oKsiBeta   = NEW_NUMERIC(ncentroids*dim1));
   PROTECT(opost_gamma = NEW_NUMERIC(2*ncentroids));
   PROTECT(oNc         = NEW_NUMERIC(1*ncentroids));
-  PROTECT(otrueNc     = NEW_NUMERIC(1*ncentroids));
-  PROTECT(oqOFz       = NEW_NUMERIC(datalen*ncentroids));
+  PROTECT(otrueNc    = NEW_NUMERIC(1*ncentroids));
+  PROTECT(oqOFz     = NEW_NUMERIC(datalen*ncentroids));
   PROTECT(oU_hat      = NEW_LIST(dim2)); /* CHECK This should be a Cell Matrix??? */
-
-  Mubar      = NUMERIC_POINTER(oMubar);
-  Mutilde    = NUMERIC_POINTER(oMutilde);
-  KsiAlpha   = NUMERIC_POINTER(oKsiAlpha);
-  KsiBeta    = NUMERIC_POINTER(oKsiBeta);
+  
+  Mubar     = NUMERIC_POINTER(oMubar);
+  Mutilde   = NUMERIC_POINTER(oMutilde);
+  KsiAlpha  = NUMERIC_POINTER(oKsiAlpha);
+  KsiBeta   = NUMERIC_POINTER(oKsiBeta);
   post_gamma = NUMERIC_POINTER(opost_gamma);
   Nc         = NUMERIC_POINTER(oNc);
-  trueNc     = NUMERIC_POINTER(otrueNc);
-  qOFz       = NUMERIC_POINTER(oqOFz);
+  trueNc    = NUMERIC_POINTER(otrueNc);
+  qOFz     = NUMERIC_POINTER(oqOFz);
   U_hat      = &oU_hat;
 
   for (i=0; i<datalen*ncentroids; i++) {
     qOFz[i] = qOFz_in[i];
   }
 
-  vdp_mk_HPposterior(Mumu, S2mu, Mubar, Mutilde, 
+  vdp_mk_hp_posterior(Mumu, S2mu, Mubar, Mutilde, 
 		      AlphaKsi, BetaKsi, KsiAlpha, KsiBeta, 
 		      post_gamma, prior_alpha,
 		      U_p, U_hat,
@@ -320,14 +333,13 @@ SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, SEXP X2, SEXP X2_Columns,
   // of the "names" attribute of the
   // objects in out list:
 
-  PROTECT(list_names = NEW_CHARACTER(9));    
+   PROTECT(list_names = NEW_CHARACTER(9));    
 
   for(i = 0; i < 9; i++)   
     SET_STRING_ELT(list_names,i,mkChar(posterior_fields[i])); 
 
   // Creating a list with 9 vector elements:
   PROTECT(list = NEW_LIST(9)); 
-
   // attaching elements to the list:
   SET_ELEMENT(list, 0, oMubar);
   SET_ELEMENT(list, 1, oMutilde);
@@ -341,14 +353,19 @@ SEXP mHPpost(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, SEXP X2, SEXP X2_Columns,
 
   // and attaching the vector names:
   SET_NAMES(list, list_names);
-
+  
   UNPROTECT(2+9+2+dim2);
   //CHECK UPDATE NUMBER OF UNPROTECTS : UNPROTECT(4);
   return list;
 }
- 
+
+
 /************************************************************/
- 
+
+/*******  vdp_mk_log_lambda.c *******************************/
+
+/************************************************************/
+
 #define DIGAMMA_S 1e-5
 #define DIGAMMA_C 8.5
 #define DIGAMMA_S3 1.0/12
@@ -372,6 +389,8 @@ SEXP getListElement(SEXP list, const char *str)
     }
   return elmt;
 }
+
+/************************************************************/
 
 /************************************************************/
 /* digamma function (by Antti Honkela)                      */
@@ -463,7 +482,6 @@ compute_tempmat(long datalen, int dim1, int dim2, int ncentroids,
   }
   return;
 }
-
 
 void log_p_of_z_given_other_z_c(int datalen, long ncentroids,
 				double *post_gamma, double *log_lambda)
@@ -629,7 +647,7 @@ SEXP
 mLogLambda(SEXP X1, SEXP X1_Columns, SEXP X1_Rows, 
              SEXP X2, SEXP X2_Columns,
              SEXP realS, SEXP OPTSimplicitnoisevar,
-             SEXP hp_prior, SEXP HPposterior) {
+             SEXP hp_prior, SEXP hp_posterior) {
   long datalen;
   int  dim1, dim2, ncentroids;
   double *Mumu, *S2mu, *Mubar, *Mutilde, 
@@ -668,26 +686,27 @@ mLogLambda(SEXP X1, SEXP X1_Columns, SEXP X1_Rows,
     S2mu       = NUMERIC_POINTER(getListElement(hp_prior,"S2mu"));
     AlphaKsi   = NUMERIC_POINTER(getListElement(hp_prior,"AlphaKsi"));
     BetaKsi    = NUMERIC_POINTER(getListElement(hp_prior,"BetaKsi"));
-    Mubar      = NUMERIC_POINTER(getListElement(HPposterior,"Mubar"));
-    Mutilde    = NUMERIC_POINTER(getListElement(HPposterior,"Mutilde"));
-    KsiAlpha   = NUMERIC_POINTER(getListElement(HPposterior,"KsiAlpha"));
-    KsiBeta    = NUMERIC_POINTER(getListElement(HPposterior,"KsiBeta"));
+    Mubar      = NUMERIC_POINTER(getListElement(hp_posterior,"Mubar"));
+    Mutilde    = NUMERIC_POINTER(getListElement(hp_posterior,"Mutilde"));
+    KsiAlpha   = NUMERIC_POINTER(getListElement(hp_posterior,"KsiAlpha"));
+    KsiBeta    = NUMERIC_POINTER(getListElement(hp_posterior,"KsiBeta"));
   }
   if(dim2) {
     U_p         = NUMERIC_POINTER(getListElement(hp_prior,"U_p"));
-    oU_hat      = getListElement(HPposterior,"Uhat");
+    oU_hat      = getListElement(hp_posterior,"Uhat");
     U_hat       = &oU_hat;
   }
   
-  prior_alpha = NUMERIC_POINTER(getListElement(hp_prior,"alpha"));
-  post_gamma  = NUMERIC_POINTER(getListElement(HPposterior,"gamma"));
 
-  ncentroids = INTEGER_POINTER( GET_DIM(getListElement(HPposterior,"Mubar")) )[0];
+  prior_alpha = NUMERIC_POINTER(getListElement(hp_prior,"alpha"));
+  post_gamma  = NUMERIC_POINTER(getListElement(hp_posterior,"gamma"));
+
+  ncentroids = INTEGER_POINTER( GET_DIM(getListElement(hp_posterior,"Mubar")) )[0];
+
 
   /******************** output variables ********************/
   PROTECT(olog_lambda     = NEW_NUMERIC(datalen*ncentroids));
   log_lambda = NUMERIC_POINTER(olog_lambda);
-
 
   vdp_mk_log_lambda(Mumu, S2mu, Mubar, Mutilde, 
 		    AlphaKsi, BetaKsi, KsiAlpha, KsiBeta, 
@@ -703,6 +722,10 @@ mLogLambda(SEXP X1, SEXP X1_Columns, SEXP X1_Rows,
  
 /************************************************************/
 
+/*********  vdp_softmax.c      ******************************/
+
+/************************************************************/
+
 
 void softmax(int dim1, int dim2, double *in, double *out)
 {
@@ -713,7 +736,7 @@ void softmax(int dim1, int dim2, double *in, double *out)
     rowmax = DBL_MIN;
     for (j=0; j<dim2; j++) {
       if (in[j*dim1 + i] > rowmax)
-	rowmax = in[j*dim1 + i];
+	      rowmax = in[j*dim1 + i];
     }
     rowsum = 0;
     for (j=0; j<dim2; j++) {
@@ -758,6 +781,10 @@ vdpSoftmax(SEXP matrix_M) {
  
 /************************************************************/
 
+/********    vdp_sumlogsumexp.c   ***************************/
+
+/************************************************************/
+
 void sumlogsumexp(int dim1, int dim2, double *in, double *out)
 {
   register int i, j;
@@ -777,6 +804,8 @@ void sumlogsumexp(int dim1, int dim2, double *in, double *out)
     *out += rowmax + log(rowsum);
   }
 }
+
+
 
 
 /************************************************************/

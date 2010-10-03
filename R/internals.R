@@ -78,6 +78,18 @@ function (model, subnet.id, datamatrix, level = NULL) {
 
 }
 
+##############################################################################
+
+
+
+# INPUT:   data, hp_posterior, hp_prior, opts
+# OUTPUT:  list(free_energy,hp_posterior,data,c)
+#        * free_energy: free energy of the best split found
+#        * hp_posterior: posterior info of the best split found
+#        * c: index of the cluster that resulted in the best split found
+#
+# DESCRIPTION: Implements the VDP algorithm steps 2 to 4.
+
 
 
 find.best.splitting <-
@@ -93,9 +105,12 @@ function(data, hp.posterior, hp.prior, opts){
   #  Paul Wagner  
 
   dat <- data$given.data$X1
-  
-  epsilon <- 1e-10
-  c.max <- opts$c.max
+  Max_PCA_on_Split <- opts$Max_PCA_on_Split
+  epsilon <- 1e-10    # FIXME: should this be a tunable function parameter?
+  c.max <- opts$c.max # FIXME: should this be a tunable function parameter?
+
+  # ALGORITHM STEP 2
+ 
   candidates <- which(hp.posterior$Nc > 2)
   if ( length(candidates) == 0 ) { c <- 1 }
   
@@ -105,26 +120,42 @@ function(data, hp.posterior, hp.prior, opts){
 
   # Get initial data/cluster assignments with PCA
   # the initial split is the same for all clusters
-  dir.pca <- princomp(dat)$scores[, 1]
-  I <- which(dir.pca >= 0)    
+  #dir.pca <- princomp(dat)$scores[, 1]
+  #I <- which(dir.pca >= 0)    
   sub.data  <- data
+
+  # ALGORITHM STEP 3 (3a,3b,3c) check which split gives best improvements in cost
 
   new.qOFz.list <- list()   #Initialize
   new.free.energy <- rep(Inf, max(candidates))
   for (c in candidates[1:min(c.max,length(candidates))]) {
 
+    # relating.n has the indexes of data points that belonged to the candidate cluster prior
+    # to splitting (that's why it is the sum over the now 2 clusters (after splitting).
+    # REMARK: Is this 0.5 correct? when there are lots of clusters it is natural to 
+    # assume points will have less than 0.5 for any cluster.
+
     relating.n <- which(qOFz[, c] > 0.5)
     if (length(relating.n) == 0) { next } else {}
 
+    # ALGORITHM STEP 3a. split the candidate cluster
     # Split cluster c in qOFz into two smaller ones
+
     new.c     <- ncol(qOFz)
-    new.qOFz  <- split.qofz(qOFz, c, new.c, I)
+    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, Max_PCA_on_Split)
+
     new.K     <- ncol( new.qOFz )
     sub.qOFz  <- new.qOFz[relating.n, unique(c(c, new.c, new.K))]
     
     # Ensure it remains a matrix
     sub.data$given.data$data <- sub.data$given.data$X1 <- array(dat[relating.n, ],
                                     dim = c(length(relating.n), ncol(dat)))    
+
+
+    # ALGORITHM STEP 3b and 3c
+    # update the posterior of the split clusters for a small number of iter. (10)
+    # update_posterior sorts the clusters by size.
+
     sub.hp.posterior <- mk.hp.posterior(sub.data, sub.qOFz, hp.prior, opts)
     dummylist        <- updatePosterior(sub.data, sub.hp.posterior, hp.prior, opts, 10, 0)
     sub.hp.posterior <- dummylist$hp.posterior
@@ -249,31 +280,17 @@ function (difexp, mybreaks) {
 }
 
 
+###############################################################################
 
-split.qofz <- function (qOFz, c, new.c, I) {
-    
-    # Initialize split
-    new.qOFz            <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
-    new.qOFz[,  -new.c] <- qOFz
 
-    # Split in two
-    new.qOFz[ I, c]     <- qOFz[ I, c]
-    new.qOFz[-I, new.c] <- qOFz[-I, c]
+# INPUT: matrix (q_of_z)
+# OUTPUT: matrix
 
-    # ensure that rows sum to 1, no duplicate assignments
-    new.qOFz[ I, new.c] <- 0
-    new.qOFz[-I, c]     <- 0
-
-    new.qOFz
-    
-}
-
+# DESCRIPTION: Sorted matrix in decreasing fashion based on the value
+#              of colSums.  Remark: The last column of the matrix is
+#              kept in place (it is not sorted).
 
 sortqofz <- function(qOFz){
-
-  #DESCRIPTION: Sorted matrix in decreasing fashion based on the value
-  #             of colSums.  Remark: The last column of the matrix is
-  #             kept in place (it is not sorted).
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -293,7 +310,14 @@ sortqofz <- function(qOFz){
   
 }
 
+############################################################
 
+
+# INPUT:   data   - matrix with data vectors
+#          K      - number of clusters
+# OUTPUT:  q_of_z - matrix of size N*(K+1).
+# DESCRIPTION: This function assigns data randomly to K clusters by drawing cluster
+#              membership values from a uniform distribution.
 
 rand.qOFz <-
 function(N, K){
@@ -315,6 +339,14 @@ function(N, K){
 
 }
 
+
+
+############################################################
+
+
+# INPUT: "old" free_energy value, "new" free_energy value, options
+# OUTPUT: bool: 0 if the there was no significant improvement.
+#               1 if new_free_energy is smaller than free_energy (more than opts$threshold).
 
 
 free.energy.improved <-
@@ -359,6 +391,17 @@ function(free.energy, new.free.energy,
   bool
 }
 
+#################################################################################
+
+
+# INPUT:   data: structure with data matrix
+#          hp_posterior: posterior information for the current mixture model
+#          hp_prior: prior information
+#          opts: options list.
+#
+# OUTPUT:  list(free_energy, hp_posterior, hp_prior, data);
+# 
+# DESCRIPTION: Read the main description on the beginning of the file.
 
 
 greedy <-
@@ -376,11 +419,17 @@ function(data, hp.posterior, hp.prior, opts){
   free.energy <- mk.free.energy(data, hp.posterior, hp.prior, opts)$free.energy
 
   while(1){
+
+    # ALGORITHM STEP 2-4
+
     templist <- find.best.splitting(data, hp.posterior, hp.prior, opts)
     new.free.energy  <- templist$free.energy
     new.hp.posterior <- templist$hp.posterior
     c                <- templist$c
     if ( c == (-1) ) { break } # infinite free energy
+
+
+   # ALGORITHM STEP 5
 
     dummylist <- updatePosterior(data, new.hp.posterior, hp.prior,
                                   opts, ite = opts$ite, do.sort = 1)
@@ -391,6 +440,9 @@ function(data, hp.posterior, hp.prior, opts){
       stop("Free energy is not finite, please consider adding implicit noise or not updating the hyperparameters")
     } 
     
+
+    # ALGORITHM STEP 6
+  
     if( free.energy.improved(free.energy, new.free.energy, 0, opts$threshold) == 0 ) {
       break #free.energy didn't improve, greedy search is over
     } 
@@ -406,6 +458,16 @@ function(data, hp.posterior, hp.prior, opts){
        data = data)
 }
 
+###############################################################################
+
+
+#INPUT:   data, hp_posterior, hp_prior, opts, ite, do_sort
+#             * do_sort: TRUE/FALSE: indicates whether the clusters should be 
+#                        sorted by size or not.
+#             * ite: number of update iterations.
+#OUTPUT:  Updated parameters: list(free_energy, hp_posterior, q_of_z)
+#DESCRIPTION: Updates the posterior of the mixture model. if do_sort=true it also
+#             sorts the cluster labels by size. (i.e. cluster 1 = largest cluster)
 
 
 updatePosterior <-
@@ -425,7 +487,7 @@ function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
   free.energy <- Inf
   i <- last.Nc <- start.sort <- 0
 
-  while( 1 ){
+  while( 1 ){ 
     i <- i + 1
 
     templist <- mk.free.energy(data, hp.posterior, hp.prior, opts)
@@ -477,12 +539,12 @@ function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
                qOFz = qOFz)
 }
 
-
+###########################################################################
 
 sumlogsumexp <-
 function(log.lambda){.Call("vdpSumlogsumexp", log.lambda, PACKAGE = "netresponse")}
 
-
+###############################################################################
 
 softmax <- function( A ){
   qOFz <- .Call("vdpSoftmax", A, PACKAGE = "netresponse")
@@ -583,6 +645,14 @@ function(data, opts){
   #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
   #  Paul Wagner
 
+ # INPUT:   data     - matrix with data vectors
+ #          opts     - list with algorithm options
+ # OUTPUT:  hp_prior - list with prior information
+ #
+ # DESCRIPTION: Prior for the mean     = mean of data
+ #              Prior for the variance = variance of data
+
+
   dat <- data$given.data$X1 # real-valued. Data to be clustered.
   
   Mean  <- colMeans(dat)     # mean of each dimension
@@ -593,6 +663,7 @@ function(data, opts){
   hp.prior <- list(Mumu = Mean, S2mu = Var, U.p = Inf)
 
   # priors for data variance Ksi ~ Gamma(AlphaKsi, BetaKsi)
+  # variance is modeled with inverse Gamma distribution
   hp.prior <- c(hp.prior, list(AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
            BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha))
   
@@ -600,6 +671,13 @@ function(data, opts){
 
 }
 
+########################################################################################
+
+
+# INPUT:   data, hp_posterior, hp_prior, opts
+# OUTPUT:  free_energy: value of mixture model's free energy
+#          log_lambda: Used for posterior of labels q_of_z <- softmax(log_lambda);
+# DESCRIPTION: ...
 
 
 mk.free.energy <-
@@ -696,6 +774,12 @@ function(data, hp.posterior, hp.prior, opts){
   
 }
 
+###########################################################################
+
+
+# INPUT:   data, hp_posterior, hp_prior, opts
+# OUTPUT:  matrix [1xk]: used to compute the free_energy formula. 
+# DESCRIPTION: Regards the gaussian model's parameters.
 
 
 mk.E.log.q.p.eta <-
@@ -967,4 +1051,81 @@ function(data, hp.posterior, hp.prior, opts){
 
   t(l.codebook)
 }
+
+############################################################################
+
+# INPUT:   data, qOFz, hp_posterior, hp_prior, opts
+# OUTPUT:  list(new.qOFz, new.c);
+#             * new.qOFz: posterior over labels including the split clusters.
+#             * new.c: index of the newly created cluster.
+# DESCRIPTION: Implements the VDP algorithm step 3a.
+
+#split.qofz <- function (qOFz, c, new.c, I) {
+
+split.qofz <- function(qOFz, c, new.c, dat, Max_PCA_on_Split){
+
+  # compute the first principal component of the candidate cluster,
+  # not the whole data set.
+
+  # Pick sample indices and samples corresponding to cluster c
+  cluster_assignments <- apply(qOFz, 1, which.max);
+  indices <- which(cluster_assignments == c);
+  component.data <- matrix(dat[indices,], length(indices))
+
+  # If the number of samples is high calculating PCA might take long
+  # but can be approximated by using less samples:
+
+  pcadata <- component.data
+
+  if(nrow(component.data) > Max_PCA_on_Split){
+    # Max_PCA_on_Split: when a candidate cluster, C, is split to generate two 
+    # new clusters, it is split by mapping the data onto the first principal 
+    # component of the data in C and then splitting that in half. To speed up, 
+    # one can compute an approximate first principal component by considering
+    # a randomly selected subset of the data belonging to C, and computing its
+    # first principal component.
+    # No Speedup: Max_PCA_on_Split = Inf;
+
+    # Pick Max_PCA_on_Split data points at random from the component
+    # to calculate PCA with a smaller sample size
+    rinds <- sample(nrow(component.data), Max_PCA_on_Split)
+    pcadata <- component.data[rinds,]
+
+  }
+
+  # Split the cluster based on the first PCA component
+  dir <- prcomp(pcadata)$x[,1]
+  I1 <- indices[dir >= 0];
+  I2 <- indices[dir < 0];
+
+  # Initialize split by adding a zero column on qOFz
+  new.qOFz            <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
+  new.qOFz[,  -new.c] <- qOFz
+
+  # Split this component (samples given in I1, I2) into two smaller components
+  new.qOFz[ I1, c]     <- qOFz[ I1, c]
+  new.qOFz[ I2, new.c] <- qOFz[ I2, c]
+
+  new.qOFz
+}
+
+###############################################################################
+
+#split.qofz <- function (qOFz, c, new.c, I) {
+#    
+#    # Initialize split
+#    new.qOFz            <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
+#    new.qOFz[,  -new.c] <- qOFz
+#
+#    # Split in two
+#    new.qOFz[ I, c]     <- qOFz[ I, c]
+#    new.qOFz[-I, new.c] <- qOFz[-I, c]#
+#
+#    # ensure that rows sum to 1, no duplicate assignments
+#    new.qOFz[ I, new.c] <- 0
+#    new.qOFz[-I, c]     <- 0
+#
+#    new.qOFz
+#   
+#}
 

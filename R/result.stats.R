@@ -16,7 +16,7 @@ function ( model, datamatrix, level = NULL ) {
     m <- get.model(model, subnet.id, datamatrix, level)
     
     # number of mixture components
-    Ncomps[[subnet.id]] <- m$K
+    Ncomps[[subnet.id]] <- m$posterior$K
     
   }
 
