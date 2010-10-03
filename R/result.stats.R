@@ -1,6 +1,6 @@
 result.stats <-
   
-function ( model, datamatrix, level = NULL ) {
+function ( model, level = NULL ) {
 
 
   # Check statistics for subnetworks
@@ -9,11 +9,12 @@ function ( model, datamatrix, level = NULL ) {
 
   # FIXME add level option
   subnets <- model@last.grouping
-  
+  datamatrix <- model@datamatrix  
+
   Ncomps <- c()
   for (subnet.id in names(subnets)) {
     
-    m <- get.model(model, subnet.id, datamatrix, level)
+    m <- get.model(model, subnet.id, level)
     
     # number of mixture components
     Ncomps[[subnet.id]] <- m$posterior$K

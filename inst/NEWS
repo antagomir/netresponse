@@ -1,3 +1,15 @@
+CHANGES IN VERSION 0.99.3 (2010-10-03)
+
+o Added slots 'datamatrix' and 'network' into NetResponseModel
+  class. These are used to store the input data used to learn the
+  model. Subsequently, removed data inputs from functions such as
+  get.parameters etc. since now they can fetch the data matrix
+  directly from the model object.
+
+o Added project URL address to DESCRIPTION file
+
+o Added 'speedup' option to vdp.mixt
+
 CHANGES IN VERSION 0.99.2 (2010-09-28)
 
 o Fixed bug in C code. The previous version had convergence problems

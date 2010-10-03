@@ -3,7 +3,7 @@
 \title{vdp.mixt}
 \description{Accelerated variational Dirichlet process Gaussian mixture.}
 \usage{
-vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.sort = TRUE, threshold = 1e-05, initial.K = 1, ite = Inf, implicit.noise = 0, c.max = 10)
+vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.sort = TRUE, threshold = 1e-05, initial.K = 1, ite = Inf, implicit.noise = 0, c.max = 10, speedup = TRUE)
 }
 \arguments{
     \item{dat}{Data matrix (samples x features).}
@@ -38,6 +38,12 @@ vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.s
       mixture components can be created until this upper limit has
       been reached. Defines the level of truncation for a truncated
       stick-breaking process.}
+
+   \item{speedup}{When learning the number of components, each
+	          component is splitted based on its first PCA
+	          component. To speed up, approximate by using only
+	          subset of data to calculate PCA.}
+
   }
 
 \value{

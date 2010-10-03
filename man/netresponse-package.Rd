@@ -52,6 +52,6 @@ get.subnets( model )
 # means, standard devations and weights for the components
 inds <- which(sapply(model@last.grouping, length) > 2)
 subnet.id <- names(which.min(model@costs[inds]))
-m <- get.model.parameters(model, subnet.id, D) 
+m <- get.model.parameters(model, subnet.id) 
 print(m)
 }

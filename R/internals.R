@@ -61,7 +61,7 @@ compute.weight <-
 
 
 get.model <-
-function (model, subnet.id, datamatrix, level = NULL) {
+function (model, subnet.id, level = NULL) {
 
   # model: output from run.netresponse function
   # subnet.id: id/index of the subnet to check
@@ -74,7 +74,7 @@ function (model, subnet.id, datamatrix, level = NULL) {
   nodes <- get.subnets(model, level)[[subnet.id]]
 
   # Compute the model
-  vdp.mixt(matrix(datamatrix[, nodes], nrow = length(model@samples)))
+  vdp.mixt(matrix(model@datamatrix[, nodes], nrow = length(model@samples)))
 
 }
 
@@ -105,7 +105,6 @@ function(data, hp.posterior, hp.prior, opts){
   #  Paul Wagner  
 
   dat <- data$given.data$X1
-  Max_PCA_on_Split <- opts$Max_PCA_on_Split
   epsilon <- 1e-10    # FIXME: should this be a tunable function parameter?
   c.max <- opts$c.max # FIXME: should this be a tunable function parameter?
 
@@ -142,7 +141,7 @@ function(data, hp.posterior, hp.prior, opts){
     # Split cluster c in qOFz into two smaller ones
 
     new.c     <- ncol(qOFz)
-    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, Max_PCA_on_Split)
+    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, opts$speedup)
 
     new.K     <- ncol( new.qOFz )
     sub.qOFz  <- new.qOFz[relating.n, unique(c(c, new.c, new.K))]
@@ -657,12 +656,12 @@ function(data, opts){
   
   Mean  <- colMeans(dat)     # mean of each dimension
   Var   <- colVariances(dat, Mean) # Variance of each dimension
-                                        #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 
+                  #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 
 
   # priors for distribution of codebook vectors Mu ~ N(MuMu, S2.Mu)..
   hp.prior <- list(Mumu = Mean, S2mu = Var, U.p = Inf)
 
-  # priors for data variance Ksi ~ Gamma(AlphaKsi, BetaKsi)
+  # priors for data variance Ksi ~ invgam(AlphaKsi, BetaKsi)
   # variance is modeled with inverse Gamma distribution
   hp.prior <- c(hp.prior, list(AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
            BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha))
@@ -1060,9 +1059,7 @@ function(data, hp.posterior, hp.prior, opts){
 #             * new.c: index of the newly created cluster.
 # DESCRIPTION: Implements the VDP algorithm step 3a.
 
-#split.qofz <- function (qOFz, c, new.c, I) {
-
-split.qofz <- function(qOFz, c, new.c, dat, Max_PCA_on_Split){
+split.qofz <- function(qOFz, c, new.c, dat, speedup){
 
   # compute the first principal component of the candidate cluster,
   # not the whole data set.
@@ -1077,18 +1074,30 @@ split.qofz <- function(qOFz, c, new.c, dat, Max_PCA_on_Split){
 
   pcadata <- component.data
 
-  if(nrow(component.data) > Max_PCA_on_Split){
-    # Max_PCA_on_Split: when a candidate cluster, C, is split to generate two 
-    # new clusters, it is split by mapping the data onto the first principal 
-    # component of the data in C and then splitting that in half. To speed up, 
-    # one can compute an approximate first principal component by considering
-    # a randomly selected subset of the data belonging to C, and computing its
-    # first principal component.
-    # No Speedup: Max_PCA_on_Split = Inf;
+  if ( speedup ) {
 
-    # Pick Max_PCA_on_Split data points at random from the component
-    # to calculate PCA with a smaller sample size
-    rinds <- sample(nrow(component.data), Max_PCA_on_Split)
+    # when a candidate cluster, C, is split to generate two new
+    # clusters, it is split by mapping the data onto the first
+    # principal component of the data in C and then splitting that in
+    # half. To speed up, one can compute an approximate first
+    # principal component by considering a randomly selected subset of
+    # the data belonging to C, and computing its first principal
+    # component.
+
+    # number of samples in this component
+    ns <- nrow(component.data) 
+    nd <- ncol(component.data) 
+
+    # If component size exceeds cmax, 
+    # use only a random subset of data to calculate PCA
+    # size of the random subset increases slowly (linearly) 
+    # with component size. 
+    cmax <- 20
+    prop <- .1     # linear sample size increase
+    nr <- min(ns, cmax + floor(prop*ns)) 
+
+    rinds <- sample(ns, nr)
+
     pcadata <- component.data[rinds,]
 
   }

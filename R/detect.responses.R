@@ -321,7 +321,10 @@ for (j in 2:dim0){
       last.grouping = G,
       params = params,
       nodes = nodes,
-      samples = samples)
+      samples = samples,
+      datamatrix = datamatrix,
+      network = network
+      )
 
 }
 
