@@ -13,14 +13,14 @@ get.model.parameters <- function (model, subnet.id, datamatrix, level = NULL) {
   m <- vdp.mixt(matrix(datamatrix[, nodes], nrow = length(model@samples) ))
 
   # Pick parameters
-  sds  <- sqrt(m$variances)              # component standard devs
-  mu   <- m$means #m$hp.posterior$Mubar  # component centroids
-  w    <- m$weights                      # component weights
+  w    <- m$posterior$weights    # component weights
+  mu   <- m$posterior$centroids  # component centroids
+  sds  <- sqrt(m$posterior$sds)  # component standard devs
 
   rownames(mu) <- rownames(sds) <- names(w) <- paste("Response", 1:length(w), sep = "-")
   colnames(mu) <- colnames(sds) <- nodes
 
-  # For mu and std, rows correspond to the clusters, in w the elements
-  list(mu = mu, std = sds, w = w, nodes = nodes, K = m$K)
+  # For mu and std, rows correspond to the mixture components, in w the elements
+  list(mu = mu, sd = sds, w = w, nodes = nodes, K = m$K)
 
 }

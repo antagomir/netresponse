@@ -24,7 +24,7 @@ get.model.parameters(model, subnet.id, datamatrix, level = NULL)
 \value{
   A list with the following elements:
   \item{mu}{ Centroids for the mixture components. Components x nodes.}
-  \item{std}{ Standard deviations for the mixture components. A vector
+  \item{sd}{ Standard deviations for the mixture components. A vector
     over the nodes for each component, implying the diagonal covariance
     matrix of the model (i.e. diag(std^2)). Components x nodes}
   \item{w}{Vector of component weights.}

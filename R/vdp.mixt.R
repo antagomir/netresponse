@@ -23,6 +23,54 @@
   #  Paul Wagner
   #
 
+# INPUT: mydat::
+#       Each Row is an observation.
+#       Each Column is a variable.
+#
+# OUTPUT:
+#    list(hp_prior, opts, free_energy, hp_posterior, K);
+#
+#    * hp_prior: prior info
+#         - hp_prior$q_of_z: prior on observation labels
+#         - Mu_mu: centroids, 
+#         - S2_mu: variance,
+#
+#    * opts: option list used in training
+#
+#    * free_energy: free energy of mixture model found.
+#
+#    * hp_posterior = templist$hp_posterior
+#
+#    * K: Number of mixture components (clusters)
+#  
+#
+################  ALGORITHM SUMMARY  ################
+# This code implements Gaussian mixture models with diagonal covariance matrices. 
+# The following greedy iterative approach is taken in order to obtain the number
+# of mixture models and their corresponding parameters:
+#
+# 1. Start from one cluster, $T = 1$.
+# 2. Select a number of candidate clusters according to their values of 
+#    "Nc" = \sum_{n=1}^N q_{z_n} (z_n = c) (larger is better).
+# 3. For each of the candidate clusters, c: 
+#     3a. Split c into two clusters, c1 and c2, through the bisector of its 
+#         principal component. Initialise the responsibilities 
+#         q_{z_n}(z_n = c_1) and q_{z_n}(z_n = c_2). 
+#     3b. Update only the parameters of c1 and c2 using the observations that
+#         belonged to c, and determine the new value for the free energy, F{T+1}.
+#     3c. Reassign cluster labels so that cluster 1 corresponds to the largest 
+#         cluster, cluster 2 to the second largest, and so on.
+# 4. Select the split that lead to the maximal reduction of free energy, F{T+1}.
+# 5. Update the posterior using the newly split data.
+# 6. If FT - F{T+1} < \epsilon then halt, else set T := T +1 and go to step 2.
+#
+# The loop is implemented in the function greedy(...)
+
+
+#   prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01;
+#    do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf;
+#    implicit.noise = 0; c.max = 10
+
 
 vdp.mixt <-
 function(dat,
@@ -33,17 +81,43 @@ function(dat,
          threshold = 1.0e-5, # minimal free energy improvement that stops the algorithm
          initial.K = 1,      # initial number of components
                ite = Inf,    # used on updatePosterior: maximum number of iterations
-         implicit.noise = 0, # Adds implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
-             c.max = 10      # max. candidates to consider in find.best.splitting.
+         implicit.noise = 0, # Adds implicit noise in 
+	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
+             c.max = 10      # max. candidates to consider in find.best.splitting. 
+	     	             # i.e. truncation parameter
+                             # Candidates are chosen based on their Nc value 
+                             # (larger = better). Nc = colSums(qOFz)
+
                      )
 {
+
+
+    # Max_PCA_on_Split: when a candidate cluster, C, is split to generate two 
+    # new clusters, it is split by mapping the data onto the first principal 
+    # component of the data in C and then splitting that in half. To speed up, 
+    # one can compute an approximate first principal component by considering
+    # a randomly selected subset of the data belonging to C, and computing its
+    # first principal component.
+    # No Speedup: Max_PCA_on_Split = Inf;
+    Max_PCA_on_Split = Inf # default = Inf;
+
+#system("/home/tuli/bin/R-alpha/bin/R CMD SHLIB /home/tuli/Rpackages/netresponse/netresponse/src/netresponse.c")
+#dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
+
+	##dyn.load("vdp_mk_log_lambda.so");
+	##dyn.load("vdp_mk_hp_posterior.so")
+	##dyn.load("vdp_softmax.so");
+	##dyn.load("vdp_sumlogsumexp.so");
+	##dyn.load("netresponse.so");
+
 
   
   # Prior parameters
   opts <- list(
-    prior.alpha    = prior.alpha,
-    prior.alphaKsi = prior.alphaKsi,
-    prior.betaKsi  = prior.betaKsi,
+    prior.alpha    = prior.alpha,    # Remark: result is quite insensitive to this variable
+    prior.alphaKsi = prior.alphaKsi, # smaller -> less clusters (and big!) -> quite sensitive
+    prior.betaKsi  = prior.betaKsi,  # larger -> less clusters (and big!)
+  Max_PCA_on_Split = Inf,
            do.sort = do.sort,
          threshold = threshold,
          initial.K = initial.K,      
@@ -56,8 +130,13 @@ function(dat,
   data[["given.data"]]         <- list()
   data[["given.data"]][["X1"]] <- dat
 
+  # sample-component assignments
   qOFz         <- rand.qOFz(nrow(dat), initial.K)
+
+  # The hyperparameters of priors
   hp.prior     <- mk.hp.prior(data, opts)
+
+  # Posterior
   hp.posterior <- mk.hp.posterior(data, qOFz, hp.prior, opts)
 
   # Note: greedy gives components in decreasing order by size
@@ -65,12 +144,14 @@ function(dat,
   templist$hp.prior <- c(templist$hp.prior, list(qOFz = qOFz))
   qOFz <- matrix(templist$hp.posterior$qOFz, nrow(dat))
 
+
+  ###############################################
+  # Retrieve model parameters 
+
   # number of mixture components (nonempty components only!)
   Kreal <- sum(colSums(qOFz) > 0)
   qOFz  <- matrix(qOFz[, 1:Kreal], nrow(dat))
-    
-  ###############################################
-  
+      
   # Calculate mixture model parameters
   # FIXME: move this outside from this vdp.mixt function
   
@@ -84,13 +165,21 @@ function(dat,
   # Calculate map estimates of model parameters from the posterior
 
   # variances are assumed inverse Gamma distributed and here beta/alpha gives the expectation)
-  variances  <-  templist$hp.posterior$KsiBeta/templist$hp.posterior$KsiAlpha  # Cluster variances
-  variances  <-  matrix(variances[1:Kreal,], Kreal)
+
+  # Parameters of the inverse Gamma function for component variances
+  invgam.shape <- matrix(templist$hp.posterior$KsiAlpha[1:Kreal,], Kreal)
+  invgam.scale <- matrix(templist$hp.posterior$KsiBeta[1:Kreal,],  Kreal)
+
+  # Calculate variances (mean and mode of the invgam distr.) from scale and shape
+  # FIXME: beta/alpha used in C code
+  var.mean <- matrix(invgam.scale/(invgam.shape - 1), Kreal)
+  var.mode <- matrix(invgam.scale/(invgam.shape + 1), Kreal)
+  variances <- var.mode
 
   # Ignore empty components assuming that the components have been
   # ordered in decreasing order by size
-  means     <- templist$hp.posterior$Mubar    # component centroids
-  means    <-  matrix(means[1:Kreal,], Kreal)
+  # component centroids
+  centroids    <-  matrix(templist$hp.posterior$Mubar[1:Kreal,], Kreal)
 
   #############################################
   
@@ -100,26 +189,35 @@ function(dat,
 
   ws  <- array(NA, dim = c(nrow(dat), Kreal))
   for (datapoint in 1:nrow(dat)) {
-    ws[datapoint,] <- compute.weight(qOFz, means, variances, dat, datapoint)             
+    ws[datapoint,] <- compute.weight(qOFz, centroids, variances, dat, datapoint)             
   }
 
   # Remove those with NAs (zero densities in some components mess the weights)
   w <- apply(ws, 2, function (wcol) { mean(na.omit(wcol)) })
 
- 
+  posterior <- list(
+                  weights = w, 
+                  centroids = centroids, # Mubar
+                  sds = sqrt(variances), # alpha, beta
+                  qOFz = qOFz,
+		  Nc = colSums(qOFz), # component sizes
+		  invgam.shape = invgam.shape, # KsiAlpha
+		  invgam.scale = invgam.scale,  # KsiBeta
+                  Nparams = Nparams, # number of model parameters
+                  K = Kreal # number of components
+  )
+
+    # Later: include these from hp.posterior to the output later if needed.
+    # "Mutilde[1:Kreal,]"  "gamma[,1:Kreal]"  "Uhat"
+
+
   #######################################
   
   results <- list(
-                  hp.prior     = templist$hp.prior,
-                  opts         = opts,
-                  free.energy  = templist$free.energy,
-                  hp.posterior = templist$hp.posterior,
-                  K = Kreal,
-                  qOFz = qOFz,
-                  Nparams = Nparams,
-                  means = means,
-                  variances = variances,
-                  weights = w 
+                  prior        = templist$hp.prior, 
+		  posterior    = posterior,  
+                  opts         = opts,   # input parameters
+                  free.energy  = templist$free.energy
                   )
   results
 }

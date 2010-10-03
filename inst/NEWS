@@ -1,3 +1,18 @@
+CHANGES IN VERSION 0.99.2 (2010-09-28)
+
+o Fixed bug in C code. The previous version had convergence problems
+  related to PCA initialization of component split during
+  stick-breaking process, and mixture component centroids were
+  subsequently not retrieved optimally 
+
+o changed the output format of function vdp.mixt to focus on variables
+  relevant for the end user.
+
+o updated toydata and man pages according to the change to vdp.mixt output
+
+o added test/demo.R testing and demonstrating vdp.mixt
+
+
 CHANGES IN VERSION 0.99.0 (2010-09-23)
 
 o Improved man pages and examples

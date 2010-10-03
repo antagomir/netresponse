@@ -29,7 +29,7 @@ vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.s
     more accurate results, but computation may take longer.}
 
     \item{implicit.noise}{Adds implicit noise; used by
-    vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so By adding noise
+    vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so. By adding noise
     (positive values), one can avoid overfitting to local optima in
     some cases, if this happens to be a problem.}
 
@@ -41,19 +41,29 @@ vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.s
   }
 
 \value{
-  \item{ hp.prior }{Prior. }
-  \item{ opts }{Optional model parameters that were used.}
+  \item{ prior }{Prior parameters of the vdp-gm model.}
+  \item{ posterior }{Posterior estimates for the model parameters and statistics. 
+
+    weights: Mixture proportions, or weights, for the Gaussian mixture components.
+
+    centroids: Centroids of the mixture components.
+
+    sds: Standard deviations for the mixture model components (posterior modes of the covariance diagonals square root). Calculated as sqrt(invgam.scale/(invgam.shape + 1)).
+
+    qOFz: Sample-to-cluster assigments (soft probabilistic associations).
+
+    Nc: Component sizes    
+
+    invgam.shape: Shape parameter (alpha) of the inverse Gamma distribution
+
+    invgam.scale: Scale parameter (beta) of the inverse Gamma distribution
+
+    Nparams: Number of model parameters
+
+    K: Number of components in the mixture model
+  }
+  \item{ opts }{Model parameters that were used.}
   \item{ free.energy }{Free energy of the model.}
-  \item{ hp.posterior }{Posterior estimates for the model parameters and statistics.}
-  \item{ Kreal }{Number of non-empty mixture components.}
-  \item{ qOFz }{Mixture component assignments for the samples;
-  probability of each component, given sample.}
-  \item{ Nparams }{Number of model parameters.}
-  \item{ means }{Posterior modes for component centroids.}
-  \item{ variances }{Posterior modes for component variances. Each
-    component has a vector of variance parameters over the nodes, this
-    determines the diagonal of the diagonal covariance matrices in the model)}
-  \item{ weights }{Weight for each mixture component.}
 }
 
 \details{Implementation of the Accelerated variational Dirichlet
@@ -88,10 +98,10 @@ Maintainer: Leo Lahti <leo.lahti@iki.fi>}
   mixt <- vdp.mixt( dat )
 
   # Centroids of the detected Gaussian components
-  mixt$hp.posterior$Mubar
+  mixt$posterior$centroids
 
-  # Mixture component assignments for the samples
-  apply(mixt$hp.posterior$qOFz, 1, which.max)
+  # Hard mixture component assignments for the samples
+  apply(mixt$posterior$qOFz, 1, which.max)
 
 }
 \keyword{methods}

@@ -5,7 +5,7 @@ function (model, subnet.id, datamatrix) {
   m <- get.model(model, subnet.id, datamatrix) 
 
   # P(response | sample)
-  assignment.matrix <- m$qOFz
+  assignment.matrix <- m$posterior$qOFz
   rownames(assignment.matrix) <- model@samples
   
   assignment.matrix
