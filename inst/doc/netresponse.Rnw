@@ -55,10 +55,9 @@ for functional network analysis.
 The current version provides the algorithmic implementation. The
 implementations are partially based on the agglomerative independent
 variable group analysis \citep{Honkela08} and variational Dirichlet
-Process mixture model algorithms \cite{Kurihara07nips}. Further tools
+process mixture model algorithms \cite{Kurihara07nips}. Further tools
 for visualization and analysis will be provided in the later
-versions. Your feedback and contributions are
-welcome\footnote{leo.lahti@iki.fi}.
+versions. 
 
 %The R package depends on \Rpackage{igraph} and \Rpackage{Rgraphviz}
 %packages. 
@@ -149,8 +148,30 @@ response.probabilities <- sample2response(model, subnet.id)
 @
 
 
+\section{Variational Dirichlet process Gaussian mixture model}
 
-%\bibliographystyle[numbers]{natbib}
+The package provides additional tools for nonparametric Gaussian
+mixture modeling based on previous work and implementations by
+\citep{Kurihara07nips, Honkela08}. See the example in help(vdp.mixt).
+
+
+\section{Citing NetResponse}
+
+Please cite \cite{Lahti10bioinf} when using the package.
+
+
+\section{Version information}
+
+This document was written using:
+
+<<details>>=
+sessionInfo()
+@
+
+
+
+%\bibliographystyle[numbers]{natbib} 
+
 \begin{thebibliography}{1}
 
 \bibitem{Lahti10bioinf}
@@ -159,14 +180,12 @@ Leo Lahti {\em et~al.} (2010).
 \newblock {\em Bioinformatics}.
 \newblock Preprint: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
 
-\bibitem[Honkela {\em et~al.}(2008)Honkela, Sepp{\"a}, and
-  Alhoniemi]{Honkela08}
+\bibitem{Honkela08}
 Antti Honkela {\em et~al.} (2008).
 \newblock Agglomerative independent variable group analysis.
 \newblock {\em Neurocomputing\/}, {\bf 71}, 1311--1320.
 
-\bibitem[Kurihara {\em et~al.}(2007)Kurihara, Welling, and
-  Vlassis]{Kurihara07nips}
+\bibitem{Kurihara07nips}
 Kenichi Kurihara {\em et~al.} (2007).
 \newblock Accelerated variational Dirichlet process mixtures.
 \newblock In B.~Sch\"olkopf, J.~Platt, and T.~Hoffman, eds., {\em Advances
