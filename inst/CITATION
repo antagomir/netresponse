@@ -9,11 +9,14 @@ citEntry(entry="article",
 	 	  ),
 	 journal = "Bioinformatics",
 	 year = "2010",
+         volume = "26", 
+	 issue = "21", 
+	 pages = "2713--2720", 
          textVersion =
          paste("Leo Lahti et al.",
                "Global modeling of transcriptional responses in interaction networks",
-               "Bioinformatics (2010)",
+               "Bioinformatics 26(21):2713--2720, 2010",
                sep=" ")
          )
 
-citFooter("Particular thanks for Olli-Pekka Huovilainen and Antonio Gusmao for contributions to the R/C implementation of the algorithm.")
+citFooter("Thanks for Olli-Pekka Huovilainen and Antonio Gusmao for contributions to the R/C implementation of the algorithm.")
