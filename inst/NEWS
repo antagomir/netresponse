@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.1.1 (2010-12-29)
+
+o Code has been optimized for speed
+
 CHANGES IN VERSION 0.99.3 (2010-10-03)
 
 o Added slots 'datamatrix' and 'network' into NetResponseModel
