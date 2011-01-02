@@ -93,11 +93,8 @@ function(dat,
 			     # data to calculate PCA.
 ) {
 
-
-
-
-  #system("/home/tuli/bin/R-alpha/bin/R CMD SHLIB /path/netresponse.c")
-  #dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
+  #system("/Rpath/bin/R CMD SHLIB /path/netresponse.c")
+  #dyn.load("/path/netresponse/src/netresponse.so")
 
   # Prior parameters
   opts <- list(
@@ -159,14 +156,15 @@ function(dat,
 
   # Calculate variances (mean and mode of the invgam distr.) from scale and shape
   # FIXME: beta/alpha used in C code
-  var.mean <- matrix(invgam.scale/(invgam.shape - 1), Kreal)
-  var.mode <- matrix(invgam.scale/(invgam.shape + 1), Kreal)
-  variances <- var.mode
+  #var.update <- matrix(invgam.scale/invgam.shape, Kreal)
+  #var.mean <- matrix(invgam.scale/(invgam.shape - 1), Kreal)
+  var.mode  <- matrix(invgam.scale/(invgam.shape + 1), Kreal)
+  variances <- var.mode # select mean, mode, or their average for update
 
   # Ignore empty components assuming that the components have been
   # ordered in decreasing order by size
   # component centroids
-  centroids    <-  matrix(templist$hp.posterior$Mubar[1:Kreal,], Kreal)
+  centroids <- matrix(templist$hp.posterior$Mubar[1:Kreal,], Kreal)
 
   #############################################
   

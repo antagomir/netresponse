@@ -25,8 +25,7 @@ Pgm <- function (dat, pars) {
 }
 
 
-get.subnet <-
-function (res, subnet.id, level = NULL) {
+get.subnet <- function (res, subnet.id, level = NULL) {
 
   # Nodes for a given subnet
   get.subnets(res, level)[[subnet.id]]
@@ -34,8 +33,7 @@ function (res, subnet.id, level = NULL) {
 }
 
 
-compute.weight <-
-  function (qOFz, mu, vars, dat, t) {
+compute.weight <- function (qOFz, mu, vars, dat, t) {
 
   # Initial weights are zero
   w <- rep.int(0, nrow(mu))
@@ -60,8 +58,7 @@ compute.weight <-
 }
 
 
-get.model <-
-function (model, subnet.id, level = NULL) {
+get.model <- function (model, subnet.id, level = NULL) {
 
   # model: output from run.netresponse function
   # subnet.id: id/index of the subnet to check
@@ -92,8 +89,7 @@ function (model, subnet.id, level = NULL) {
 
 
 
-find.best.splitting <-
-function(data, hp.posterior, hp.prior, opts){
+find.best.splitting <- function(data, hp.posterior, hp.prior, opts){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -205,8 +201,7 @@ function(data, hp.posterior, hp.prior, opts){
 
 
 
-find.best.neighbor <-
-  function (delta, G, max.subnet.size, network) {
+find.best.neighbor <- function (delta, G, max.subnet.size, network) {
 
   dim <- nrow(network)
   
@@ -245,8 +240,7 @@ find.best.neighbor <-
 
 
 
-join.subnets <-
-function (network, a, b) {
+join.subnets <- function (network, a, b) {
 
   # put merged a,b into a's place and remove b  
   network[a, ] <- as.numeric(network[a, ] | network[b, ]) 
@@ -259,8 +253,7 @@ function (network, a, b) {
 }
 
 
-check.bins <-
-function (difexp, mybreaks) {
+check.bins <- function (difexp, mybreaks) {
 
   # check color scale bin for each expression value
   bins <- c()
@@ -318,8 +311,7 @@ sortqofz <- function(qOFz){
 # DESCRIPTION: This function assigns data randomly to K clusters by drawing cluster
 #              membership values from a uniform distribution.
 
-rand.qOFz <-
-function(N, K){
+rand.qOFz <- function(N, K){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -348,8 +340,7 @@ function(N, K){
 #               1 if new_free_energy is smaller than free_energy (more than opts$threshold).
 
 
-free.energy.improved <-
-function(free.energy, new.free.energy,
+free.energy.improved <- function(free.energy, new.free.energy,
                                  warn.when.increasing, threshold)
 {
 
@@ -403,8 +394,7 @@ function(free.energy, new.free.energy,
 # DESCRIPTION: Read the main description on the beginning of the file.
 
 
-greedy <-
-function(data, hp.posterior, hp.prior, opts){
+greedy <- function(data, hp.posterior, hp.prior, opts){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -469,8 +459,7 @@ function(data, hp.posterior, hp.prior, opts){
 #             sorts the cluster labels by size. (i.e. cluster 1 = largest cluster)
 
 
-updatePosterior <-
-function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
+updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
                             
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -540,8 +529,7 @@ function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
 
 ###########################################################################
 
-sumlogsumexp <-
-function(log.lambda){.Call("vdpSumlogsumexp", log.lambda, PACKAGE = "netresponse")}
+sumlogsumexp <- function(log.lambda){.Call("vdpSumlogsumexp", log.lambda, PACKAGE = "netresponse")}
 
 ###############################################################################
 
@@ -603,6 +591,8 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 
   # Compatibility variables not needed for the current functionality
   tmp.realS <- X2 <- dimX2 <- 0
+
+  #hp.prior <- update.hyper(qOFz, data, hp.prior, hp.posterior) # test 7.5.2010
   
   out <- .Call("mHPpost",
                dat,
@@ -632,8 +622,10 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 
 
 
-mk.hp.prior <-
-function(data, opts){
+
+
+
+mk.hp.prior <- function(data, opts){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -670,6 +662,15 @@ function(data, opts){
 
 }
 
+
+
+
+
+
+
+
+
+
 ########################################################################################
 
 
@@ -679,8 +680,7 @@ function(data, opts){
 # DESCRIPTION: ...
 
 
-mk.free.energy <-
-function(data, hp.posterior, hp.prior, opts,
+mk.free.energy <- function(data, hp.posterior, hp.prior, opts,
                            fc = NULL, log.lambda = NULL)
 {
 
@@ -714,11 +714,9 @@ function(data, hp.posterior, hp.prior, opts,
   list(free.energy = free.energy, log.lambda = log.lambda)
 
 }
+  
 
-
-
-mk.qOFz <-
-function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
+mk.qOFz <- function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -733,15 +731,14 @@ function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
     log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts)
   }
 
-  #qOFz <-
-  softmax( log.lambda )
+  qOFz <- softmax( log.lambda )
 
+  # Do not allow empty clusters
+  as.matrix(qOFz[, !colSums(qOFz) == 0], nrow(log.lambda))
+  
 }
 
-
-
-mk.log.lambda <-
-function(data, hp.posterior, hp.prior, opts){
+mk.log.lambda <- function(data, hp.posterior, hp.prior, opts){
 
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
@@ -767,11 +764,13 @@ function(data, hp.posterior, hp.prior, opts){
                nrow(dat),
                X2, dimX2,
                tmp.realS, opts$implicitnoisevar,
-               hp.prior, hp.posterior, PACKAGE = "netresponse")
+               hp.prior, hp.posterior,
+               PACKAGE = "netresponse")
   
   matrix(out, nrow(dat))
   
 }
+
 
 ###########################################################################
 
@@ -781,233 +780,7 @@ function(data, hp.posterior, hp.prior, opts){
 # DESCRIPTION: Regards the gaussian model's parameters.
 
 
-mk.E.log.q.p.eta <-
-function(data, hp.posterior, hp.prior, opts){
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-  
-  # returns E [ log q(eta)/p(eta) ].q
-  # fc: 1 by k
-
-  dat <- data$given.data$X1
-  
-  # Ensure matrix for data
-  if (!is.matrix(dat)) {stop("Error in mk.E.log.q.p.eta: dat is not a matrix!")}
-  
-  N  <- nrow(dat)
-  M1 <- ncol(dat)
-  K  <- nrow(hp.posterior$Mubar)
-  l.codebook <- (- M1/2) * matrix(1, K)
-  Ksi.log <- (digamma(hp.posterior$KsiAlpha) - log(hp.posterior$KsiBeta))
-  
-  for (j in 1:M1) {
-    l.codebook <- l.codebook +
-      .5 * ( log(hp.prior$S2mu[[j]] / hp.posterior$Mutilde[, j]) +
-             ( (hp.posterior$Mubar[, j] - hp.prior$Mumu[[j]])^2 +
-                hp.posterior$Mutilde[, j] 
-             ) / hp.prior$S2mu[[j]]
-           ) +
-      lgamma(hp.prior$AlphaKsi[[j]]) - 
-      lgamma(hp.posterior$KsiAlpha[, j]) +
-      hp.posterior$KsiAlpha[, j] * log(hp.posterior$KsiBeta[, j]) -
-      hp.prior$AlphaKsi[[j]] * log(hp.prior$BetaKsi[[j]]) + 
-      (hp.posterior$KsiAlpha[, j] - hp.prior$AlphaKsi[[j]]) * Ksi.log[, j] +
-      (hp.prior$BetaKsi[[j]] - hp.posterior$KsiBeta[, j]) *
-        (hp.posterior$KsiAlpha[, j] / hp.posterior$KsiBeta[, j]);
-  }
-
-  t(l.codebook)
-}
-
-mk.hp.posterior <-
-function(data, qOFz, hp.prior, opts){
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-
-  dat <- data$given.data$X1
-  
-  # Ensure that qOFz is a matrix
-  qOFz <- matrix(qOFz, nrow(dat))
-
-  # Compatibility variables not needed for the current functionality
-  tmp.realS <- X2 <- dimX2 <- 0.0
-
-  #hp.prior <- update.hyper(qOFz, data, hp.prior, hp.posterior) # test 7.5.2010
-  
-  out <- .Call("mHPpost",
-               dat,
-               ncol(dat), nrow(dat),
-               X2, dimX2,
-               tmp.realS, opts$implicitnoisevar,
-               hp.prior$Mumu, hp.prior$S2mu,
-               hp.prior$AlphaKsi, hp.prior$BetaKsi,
-               hp.prior$U.p, hp.prior$alpha,
-               qOFz, ncol(qOFz), PACKAGE = "netresponse")
-
-  qOFz <- matrix(out$qOFz, nrow(qOFz))
-  
-  hp.posterior <- list(
-    Mubar     = matrix(out$Mubar,    ncol(qOFz)),
-    Mutilde   = matrix(out$Mutilde,  ncol(qOFz)),
-    KsiAlpha  = matrix(out$KsiAlpha, ncol(qOFz)),
-    KsiBeta   = matrix(out$KsiBeta,  ncol(qOFz)),
-    gamma     = matrix(out$gamma, 2),
-    Nc        = out$Nc, 
-    qOFz      = qOFz,
-    Uhat      = out$Uhat)
-
-  hp.posterior
-}
-
-
-
-mk.hp.prior <-
-function(data, opts){
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-
-  
-  dat   <- data$given.data$X1 # real-valued. Data to be clustered.
-  Mean  <- colMeans(dat)      # mean of each dimension
-  Var   <- colVariances(dat, Mean)  # Variance of each dimension
-                                        #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 
-
-  # priors for distribution of codebook vectors Mu ~ N(MuMu, S2.Mu)..
-  hp.prior <- list(Mumu = Mean, S2mu = Var, U.p = Inf)
-
-  # priors for data variance Ksi ~ Gamma(AlphaKsi, BetaKsi)
-  hp.prior <- c(hp.prior, list(AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
-           BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha))
-  
-  hp.prior
-
-}
-
-colVariances <- function (dat, Mean) {
-  # This is about 5x faster than apply(dat, 2, var)
-  #max(abs(colVariances(dat) - apply(dat,2,var)))
-  colSums((dat - rep(Mean, each = nrow(dat)))^2)/(nrow(dat) - 1)
-}
-
-
-mk.free.energy <-
-function(data, hp.posterior, hp.prior, opts,
-                           fc = NULL, log.lambda = NULL)
-{
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-  
-  if(is.null(fc) || is.null(log.lambda) ){
-    fc <- mk.E.log.q.p.eta(data, hp.posterior, hp.prior, opts)      # 1*K
-    log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts) # N*K
-  } 
- 
-  E.log.p.of.V <- lgamma(colSums(hp.posterior$gamma)) -
-      lgamma(1 + hp.prior$alpha) -
-      colSums(lgamma(hp.posterior$gamma)) +
-      lgamma(hp.prior$alpha) +
-      ( (hp.posterior$gamma[1, ] - 1) * 
-        (digamma(hp.posterior$gamma[1, ]) - digamma(colSums(hp.posterior$gamma)))) +
-      ( (hp.posterior$gamma[2, ] - hp.prior$alpha) *
-        (digamma(hp.posterior$gamma[2, ]) - digamma(colSums(hp.posterior$gamma))))
-
-  extra.term <- sum(E.log.p.of.V)
-  free.energy <- extra.term + sum(fc) - sumlogsumexp(log.lambda)
-
-  # Return
-  list(free.energy = free.energy, log.lambda = log.lambda)
-
-}
-
-
-
-mk.qOFz <-
-function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-
-  if( is.null( log.lambda ) ){
-    log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts)
-  }
-
-  #qOFz <-
-  softmax( log.lambda )
-
-}
-
-
-
-mk.log.lambda <-
-function(data, hp.posterior, hp.prior, opts){
-
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
-  #  Licence: GPL >=2
-  #  This function is based on the Variational Dirichlet Process Gaussian
-  #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
-  #  (all rights reserved) and the Agglomerative Independent Variable
-  #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
-  #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
-  #  Paul Wagner
-
-  dat <- data$given.data$X1
-  
-  # Ensure matrix for data
-  if (!is.matrix(dat)) {stop("Error in mk.log.lambda: dat should be a matrix!")}
-  
-  # Compatibility variables, not needed for current functionality
-  tmp.realS <- X2 <- dimX2 <- 0
-
-  out <- .Call("mLogLambda",
-               dat,
-               ncol(dat),
-               nrow(dat),
-               X2, dimX2,
-               tmp.realS, opts$implicitnoisevar,
-               hp.prior, hp.posterior, PACKAGE = "netresponse")
-  
-  matrix(out, nrow(dat))
-  
-}
-
-
-
-mk.E.log.q.p.eta <-
-function(data, hp.posterior, hp.prior, opts){
+mk.E.log.q.p.eta <- function(data, hp.posterior, hp.prior, opts){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -1050,6 +823,18 @@ function(data, hp.posterior, hp.prior, opts){
 
   t(l.codebook)
 }
+
+
+#################################################
+
+
+colVariances <- function (dat, Mean) {
+  # This is about 5x faster than apply(dat, 2, var)
+  #max(abs(colVariances(dat) - apply(dat,2,var)))
+  colSums((dat - rep(Mean, each = nrow(dat)))^2)/(nrow(dat) - 1)
+}
+
+
 
 ############################################################################
 
@@ -1108,33 +893,29 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup){
   I2 <- indices[dir < 0];
 
   # Initialize split by adding a zero column on qOFz
-  new.qOFz            <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
-  new.qOFz[,  -new.c] <- qOFz
 
+  # If one of qOFz clusters is empty, then do not create new clusters but instead fill in the empty cluster
+  # during cluster split.
+  # FIXME: ensure already in creating qOFz-matrices that no zero columns are allowed. This will
+  # avoid the need to address the issue here.
+  # -> OK, done this. w remove this unnecessary check here and test if
+    # the code works ok
+  empty.cols <- (colSums(qOFz) == 0)
+  if ( !any(empty.cols) ) { # no empty columns -> add an empty cluster
+    new.qOFz <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
+    new.qOFz[,  -new.c] <- qOFz
+  } else { # an empty column -> no need to add new clusters
+    new.qOFz <- qOFz
+    new.c <- which(empty.cols)[[1]]
+  }
+  
   # Split this component (samples given in I1, I2) into two smaller components
   new.qOFz[ I1, c]     <- qOFz[ I1, c]
-  new.qOFz[ I2, new.c] <- qOFz[ I2, c]
+  new.qOFz[ I2, c]     <- 0 # Remove entries from cluster c
+  new.qOFz[ I2, new.c] <- qOFz[ I2, c] # Add same entries to cluster new.c
 
   new.qOFz
 }
 
 ###############################################################################
-
-#split.qofz <- function (qOFz, c, new.c, I) {
-#    
-#    # Initialize split
-#    new.qOFz            <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
-#    new.qOFz[,  -new.c] <- qOFz
-#
-#    # Split in two
-#    new.qOFz[ I, c]     <- qOFz[ I, c]
-#    new.qOFz[-I, new.c] <- qOFz[-I, c]#
-#
-#    # ensure that rows sum to 1, no duplicate assignments
-#    new.qOFz[ I, new.c] <- 0
-#    new.qOFz[-I, c]     <- 0
-#
-#    new.qOFz
-#   
-#}
 

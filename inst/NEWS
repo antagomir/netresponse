@@ -1,6 +1,20 @@
-CHANGES IN VERSION 1.1.1 (2010-12-29)
+
+CHANGES IN VERSION 1.1.12 (2011-01-02)
+
+
+BUG FIXES 
+
+  o in internals.R some functions (mk.qOFz, mk.E.log.q.p.eta,
+    mk.free.energy, mk.hp.posterior, mk.hp.prior, mk.log.lambda) were  defined
+    multiple times.  Removed multiple copies. Also ensuring that no
+    empty clusters are returned; this caused problems in split.qOFz
+    and updatePosterior
+
+OTHER CHANGES
 
 o Code has been optimized for speed
+
+o updated citation info
 
 CHANGES IN VERSION 0.99.3 (2010-10-03)
 
