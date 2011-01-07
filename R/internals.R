@@ -111,12 +111,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts){
   
   qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts)
   fc   <- mk.E.log.q.p.eta(data, hp.posterior, hp.prior, opts)
-  log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts)
-
-  # Get initial data/cluster assignments with PCA
-  # the initial split is the same for all clusters
-  #dir.pca <- princomp(dat)$scores[, 1]
-  #I <- which(dir.pca >= 0)    
+  log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts) 
   sub.data  <- data
 
   # ALGORITHM STEP 3 (3a,3b,3c) check which split gives best improvements in cost
@@ -853,7 +848,7 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup){
   cluster_assignments <- apply(qOFz, 1, which.max);
   indices <- which(cluster_assignments == c);
   component.data <- matrix(dat[indices,], length(indices))
-
+  
   # If the number of samples is high calculating PCA might take long
   # but can be approximated by using less samples:
 
@@ -883,8 +878,10 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup){
 
     rinds <- sample(ns, nr)
 
+    # Take subset for both data and accompanying indices
     pcadata <- component.data[rinds,]
-
+    indices <- indices[rinds]
+    
   }
 
   # Split the cluster based on the first PCA component
@@ -892,6 +889,7 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup){
   I1 <- indices[dir >= 0];
   I2 <- indices[dir < 0];
 
+  
   # Initialize split by adding a zero column on qOFz
 
   # If one of qOFz clusters is empty, then do not create new clusters but instead fill in the empty cluster
@@ -908,7 +906,7 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup){
     new.qOFz <- qOFz
     new.c <- which(empty.cols)[[1]]
   }
-  
+
   # Split this component (samples given in I1, I2) into two smaller components
   new.qOFz[ I1, c]     <- qOFz[ I1, c]
   new.qOFz[ I2, c]     <- 0 # Remove entries from cluster c
