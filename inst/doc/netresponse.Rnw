@@ -39,9 +39,9 @@ time points, it becomes possible to construct a global view of network
 activation patterns. Different parts of the network respond to
 different conditions, and in different ways. Systematic, data-driven
 identification of these responses will help to obtain a holistic view
-of network activity. The NetResponse algorithm, implemented in this R
-package, provides efficient probabilistic tools for such analysis
-\cite{Lahti10bioinf}. 
+of network activity \cite{Lahti10thesis, Lahti10bioinf}. The
+NetResponse algorithm, implemented in this R package, provides
+efficient probabilistic tools for such analysis \cite{Lahti10bioinf}. 
 
 In summary, the algorithm detects local subnetworks that show
 particular activation patterns in a subset of conditions. The
@@ -180,6 +180,17 @@ Leo Lahti {\em et~al.} (2010).
 \newblock {\em Bioinformatics}.
 \newblock Preprint: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
 
+
+\bibitem{Lahti10thesis}                                           
+Leo Lahti (2010).                                     
+\newblock Probabilistic analysis of the human transcriptome with side
+information.                       
+\newblock PhD thesis. Aalto University School of Science and
+Technology, Department of information and Computer Science, Espoo,
+Finland, 2010.                        
+\newblock http://lib.tkk.fi/Diss/2010/isbn9789526033686/        
+                    
+		       
 \bibitem{Honkela08}
 Antti Honkela {\em et~al.} (2008).
 \newblock Agglomerative independent variable group analysis.

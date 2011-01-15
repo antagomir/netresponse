@@ -839,80 +839,89 @@ colVariances <- function (dat, Mean) {
 #             * new.c: index of the newly created cluster.
 # DESCRIPTION: Implements the VDP algorithm step 3a.
 
-split.qofz <- function(qOFz, c, new.c, dat, speedup){
+split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
 
   # compute the first principal component of the candidate cluster,
   # not the whole data set.
 
+  # min.size option sets the required minimum size of a cluster for
+  # splitting; smaller clusters are not splitted
+
   # Pick sample indices and samples corresponding to cluster c
   cluster_assignments <- apply(qOFz, 1, which.max);
   indices <- which(cluster_assignments == c);
-  component.data <- matrix(dat[indices,], length(indices))
-  
-  # If the number of samples is high calculating PCA might take long
-  # but can be approximated by using less samples:
-
-  pcadata <- component.data
-
-  if ( speedup ) {
-
-    # when a candidate cluster, C, is split to generate two new
-    # clusters, it is split by mapping the data onto the first
-    # principal component of the data in C and then splitting that in
-    # half. To speed up, one can compute an approximate first
-    # principal component by considering a randomly selected subset of
-    # the data belonging to C, and computing its first principal
-    # component.
-
-    # number of samples in this component
-    ns <- nrow(component.data) 
-    nd <- ncol(component.data) 
-
-    # If component size exceeds cmax, 
-    # use only a random subset of data to calculate PCA
-    # size of the random subset increases slowly (linearly) 
-    # with component size. 
-    cmax <- 20
-    prop <- .1     # linear sample size increase
-    nr <- min(ns, cmax + floor(prop*ns)) 
-
-    rinds <- sample(ns, nr)
-
-    # Take subset for both data and accompanying indices
-    pcadata <- component.data[rinds,]
-    indices <- indices[rinds]
-    
-  }
-
-  # Split the cluster based on the first PCA component
-  dir <- prcomp(pcadata)$x[,1]
-  I1 <- indices[dir >= 0];
-  I2 <- indices[dir < 0];
-
-  
-  # Initialize split by adding a zero column on qOFz
-
-  # If one of qOFz clusters is empty, then do not create new clusters but instead fill in the empty cluster
-  # during cluster split.
-  # FIXME: ensure already in creating qOFz-matrices that no zero columns are allowed. This will
-  # avoid the need to address the issue here.
-  # -> OK, done this. w remove this unnecessary check here and test if
-    # the code works ok
-  empty.cols <- (colSums(qOFz) == 0)
-  if ( !any(empty.cols) ) { # no empty columns -> add an empty cluster
-    new.qOFz <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
-    new.qOFz[,  -new.c] <- qOFz
-  } else { # an empty column -> no need to add new clusters
+  if (length(indices) < min.size) {
+    #"Component must have at least 3 samples to be splitted."
+    # -> no splitting
     new.qOFz <- qOFz
-    new.c <- which(empty.cols)[[1]]
-  }
+  } else {
 
-  # Split this component (samples given in I1, I2) into two smaller components
-  new.qOFz[ I1, c]     <- qOFz[ I1, c]
-  new.qOFz[ I2, c]     <- 0 # Remove entries from cluster c
-  new.qOFz[ I2, new.c] <- qOFz[ I2, c] # Add same entries to cluster new.c
+    component.data <- matrix(dat[indices,], length(indices))
+  
+    # If the number of samples is high calculating PCA might take long
+    # but can be approximated by using less samples:
+
+    pcadata <- component.data  
+    if ( speedup ) {
+
+      # when a candidate cluster, C, is split to generate two new
+      # clusters, it is split by mapping the data onto the first
+      # principal component of the data in C and then splitting that in
+      # half. To speed up, one can compute an approximate first
+      # principal component by considering a randomly selected subset of
+      # the data belonging to C, and computing its first principal
+      # component.
+
+      # number of samples in this component
+      ns <- nrow(component.data) 
+      nd <- ncol(component.data) 
+
+      # If component size exceeds cmax, 
+      # use only a random subset of data to calculate PCA
+      # size of the random subset increases slowly (linearly) 
+      # with component size. 
+      cmax <- 20
+      prop <- .1  # linear sample size increase rate
+      nr <- min(ns, cmax + floor(prop*ns)) 
+      rinds <- sample(ns, nr)
+
+      # Pick random subset of the component data and accompanying indices
+      # to speed up PCA calculations
+      pcadata <- matrix(component.data[rinds,], nrow = nr)
+      indices <- indices[rinds]
+    }
+
+    # Split the cluster based on the first PCA component
+    # FIXME: compare speed with other PCA implementations and select fastest
+    dir <- prcomp(pcadata)$x[,1]
+    I1 <- indices[dir >= 0];
+    I2 <- indices[dir < 0];
+
+    # Initialize split by adding a zero column on qOFz
+
+    # If one of qOFz clusters is empty, then do not create new clusters but instead fill in the empty cluster
+    # during cluster split.
+    # FIXME: ensure already in creating qOFz-matrices that no zero columns are allowed. This will
+    # avoid the need to address the issue here.
+    # -> OK, done this. w remove this unnecessary check here and test if
+    # the code works ok
+    empty.cols <- (colSums(qOFz) == 0)
+    if ( !any(empty.cols) ) { # no empty columns -> add an empty cluster
+      new.qOFz <- array(0, dim = c(nrow(qOFz), ncol(qOFz) + 1))
+      new.qOFz[,  -new.c] <- qOFz
+    } else { # an empty column -> no need to add new clusters
+      new.qOFz <- qOFz
+      new.c <- which(empty.cols)[[1]]
+    }
+
+    # Split this component (samples given in I1, I2) into two smaller components
+    new.qOFz[ I1, c]     <- qOFz[ I1, c]
+    new.qOFz[ I2, c]     <- 0 # Remove entries from cluster c
+    new.qOFz[ I2, new.c] <- qOFz[ I2, c] # Add same entries to cluster new.c
+  }
 
   new.qOFz
+
 }
 
 ###############################################################################
