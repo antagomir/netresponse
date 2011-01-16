@@ -243,7 +243,7 @@ join.subnets <- function (network, a, b) {
   network[a, a] <- 0
   
   # remove the merged group
-  network[-b, -b]
+  matrix(network[-b, -b], nrow(network)-1)
     
 }
 
@@ -880,9 +880,9 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
       # use only a random subset of data to calculate PCA
       # size of the random subset increases slowly (linearly) 
       # with component size. 
-      cmax <- 20
+      cmax <- 20 #take at least this many random samples
       prop <- .1  # linear sample size increase rate
-      nr <- min(ns, cmax + floor(prop*ns)) 
+      nr <- min(ns, cmax + floor(prop*ns)) # if sample size is smaller than threshold, take all samples
       rinds <- sample(ns, nr)
 
       # Pick random subset of the component data and accompanying indices

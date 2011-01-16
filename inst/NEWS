@@ -1,4 +1,10 @@
+CHANGES IN VERSION 1.1.16 (2011-01-16)
 
+BUG FIXES 
+
+  o in the last step of the merging stage the network reduced into a
+    numeric which caused error, now corrected by rejecting further
+    operations with completely merged nets in detect.responses
 
 CHANGES IN VERSION 1.1.15 (2011-01-15)
 
