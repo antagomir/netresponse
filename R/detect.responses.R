@@ -213,7 +213,7 @@ for (j in 2:dim0){
   # note that diag(network) has been set to 0
   if (sum(network) > 0 && any( delta < 0 )){
 
-    if (verbose) {cat(paste('Combining groups, ', dim - 1, ' group(s) left...\n'))} else{}
+    if (verbose) {cat(paste('Combining groups, ', nrow(network)-1, ' group(s) left...\n'))} else{}
 
     # Identify the best neighbor pair in the network (also check that
     # the new merged pair would not exceed the max allowed subnetwork
@@ -251,28 +251,30 @@ for (j in 2:dim0){
     costs      <- costs[-b, -b]
     Nparams    <- Nparams[-b, -b]
     delta      <- delta[-b, -b]
-    
-    # update dimensionality - NOTE: only after the network update!
-    dim <- dim - 1
-    if ( dim == 1 ) { next } # only one group left i.e. all nodes have been combined
 
-    # Infinite joint costs etc with a for groups not linked to a
-    # Note that for Nparams we need also a-a information    
-    Nparams[a, -a] <- Nparams[-a, a] <- Inf
-    bic.ind[a, -a] <- bic.ind[-a, a] <- Inf
-    costs[a, ]     <- costs[, a]     <- Inf
-    bic.joint[a, ] <- bic.joint[, a] <- Inf
-    delta[a, ]     <- delta[, a]     <- Inf
+    if ( nrow(network) == 1 ) {
+      if ( verbose ) {cat("All nodes have been merged.\n")}
+      delta > Inf #indicating that no merging can be be done any more
+    }  else {
     
-    # Compute new joint models for a and its neighborghs
-    for (i in 1:dim){
+      # Infinite joint costs etc with a for groups not linked to a
+      # Note that for Nparams we need also a-a information    
+      Nparams[a, -a] <- Nparams[-a, a] <- Inf
+      bic.ind[a, -a] <- bic.ind[-a, a] <- Inf
+      costs[a, ]     <- costs[, a]     <- Inf
+      bic.joint[a, ] <- bic.joint[, a] <- Inf
+      delta[a, ]     <- delta[, a]     <- Inf
+
+    
+       # Compute new joint models for a and its neighborghs
+       for (i in 1:nrow(network)){
       
-      # compute combined model only if a and i are linked
-      if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
+        # compute combined model only if a and i are linked
+        if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
 
-        vars  <- sort(c(G[[a]], G[[i]]))
+          vars  <- sort(c(G[[a]], G[[i]]))
 
-        model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
+          model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
                                 implicit.noise = implicit.noise,
                                 prior.alpha = prior.alpha,
                                 prior.alphaKsi = prior.alphaKsi,
@@ -282,20 +284,20 @@ for (j in 2:dim0){
                                 ite = ite,
                                 c.max = max.responses - 1 )
         
-        costs[a,i]   <- costs[i, a]   <- model$free.energy  # cost for joint model
-        Nparams[a,i] <- Nparams[i, a] <- model$posterior$Nparams  # number of parameters in joint model
+          costs[a,i]   <- costs[i, a]   <- model$free.energy  # cost for joint model
+          Nparams[a,i] <- Nparams[i, a] <- model$posterior$Nparams  # number of parameters in joint model
 
-        # BIC-cost for two independent vs. joint model
-        # Negative free energy (-cost) is (variational) lower bound for P(D|H)
-        # Use this to approximate P(D|H)
-        bic.ind[a, i]   <- bic.ind[i, a]   <- (Nparams[a, a] + Nparams[i, i])*Nlog + 2*(H[a] + H[i])
-        bic.joint[a, i] <- bic.joint[i, a] <- Nparams[a, i]*Nlog + 2*(costs[a, i])
+          # BIC-cost for two independent vs. joint model
+          # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+          # Use this to approximate P(D|H)
+          bic.ind[a, i]   <- bic.ind[i, a]   <- (Nparams[a, a] + Nparams[i, i])*Nlog + 2*(H[a] + H[i])
+          bic.joint[a, i] <- bic.joint[i, a] <- Nparams[a, i]*Nlog + 2*(costs[a, i])
 
-        # change (increase) of the total BIC (cost)
-        delta[a, i] <- delta[i, a] <- bic.joint[a, i] - bic.ind[a, i]
+          # change (increase) of the total BIC (cost)
+          delta[a, i] <- delta[i, a] <- bic.joint[a, i] - bic.ind[a, i]
+        }
       }
     }
-    
   } else{
     if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or no improvement possible on level', j, '\n'))}
     break
