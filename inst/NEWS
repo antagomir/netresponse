@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.1.17 (2011-01-19)
+
+  o users can now give the expression data D in either matrix or
+    data.frame format to detect.responses function, which will
+    automatically convert non-matrix inputs into matrix format.
+
 CHANGES IN VERSION 1.1.16 (2011-01-16)
 
 BUG FIXES 

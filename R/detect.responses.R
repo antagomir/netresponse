@@ -85,6 +85,12 @@ function(datamatrix,
   # network diagonal has to be zero, i.e. self-links not taken into account
   diag( network ) <- 0 
 
+  # ensure datamatrix is a matrix
+  if (!is.matrix(datamatrix)) {
+    message("Converting the input data D into matrix format.")
+    datamatrix <- as.matrix(datamatrix)
+  }
+
   # match the features between network and datamatrix
   # the names need to match if names are given
   if ( !is.null(rownames( network )) && !is.null(rownames( datamatrix )) ) {
