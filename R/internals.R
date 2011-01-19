@@ -851,7 +851,7 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
   cluster_assignments <- apply(qOFz, 1, which.max);
   indices <- which(cluster_assignments == c);
   if (length(indices) < min.size) {
-    #"Component must have at least 3 samples to be splitted."
+    #"Component must have at least min.size samples to be splitted."
     # -> no splitting
     new.qOFz <- qOFz
   } else {
@@ -861,7 +861,8 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
     # If the number of samples is high calculating PCA might take long
     # but can be approximated by using less samples:
 
-    pcadata <- component.data  
+    pcadata <- component.data
+    
     if ( speedup ) {
 
       # when a candidate cluster, C, is split to generate two new
@@ -880,9 +881,8 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
       # use only a random subset of data to calculate PCA
       # size of the random subset increases slowly (linearly) 
       # with component size. 
-      cmax <- 20 #take at least this many random samples
-      prop <- .1  # linear sample size increase rate
-      nr <- min(ns, cmax + floor(prop*ns)) # if sample size is smaller than threshold, take all samples
+      cmax <- 20 #take at least this many random samples    
+      nr <- min(ns, cmax + floor(sqrt(ns))) # do not take more samples than are available
       rinds <- sample(ns, nr)
 
       # Pick random subset of the component data and accompanying indices
