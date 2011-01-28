@@ -1,7 +1,29 @@
+vdp.mixt <-
+function(dat,
+    prior.alpha    = 1,  
+    prior.alphaKsi = 0.01,
+    prior.betaKsi  = 0.01,
+           do.sort = TRUE,   # qOFz sorted in decreasing fashion based on colSums(qOFz) 
+         threshold = 1.0e-5, # minimal free energy improvement that stops the algorithm
+         initial.K = 1,      # initial number of components
+               ite = Inf,    # used on updatePosterior: maximum number of iterations
+         implicit.noise = 0, # Adds implicit noise in 
+	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
+             c.max = 10,     # max. candidates to consider in find.best.splitting. 
+	                     # i.e. truncation parameter
+                             # Candidates are chosen based on their Nc value 
+                             # (larger = better). Nc = colSums(qOFz)
+           speedup = TRUE        
+	   	             # speedup: during DP, components are splitted
+			     # based on their first PCA component.
+                             # To speed up, approximate by using only subset 
+			     # data to calculate PCA.
+) {
+
   #
   #  This file is a part of the NetResponse R package.
   #
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti.
+  #  Copyright (C) 2008-2011 Antonio Gusmao and Leo Lahti.
   #  Contact: Leo Lahti <leo.lahti@iki.fi>
   #
   #  This program is free software; you can redistribute it and/or
@@ -71,28 +93,6 @@
 #    implicit.noise = 0; c.max = 10
 
 
-vdp.mixt <-
-function(dat,
-    prior.alpha    = 1,  
-    prior.alphaKsi = 0.01,
-    prior.betaKsi  = 0.01,
-           do.sort = TRUE,   # qOFz sorted in decreasing fashion based on colSums(qOFz) 
-         threshold = 1.0e-5, # minimal free energy improvement that stops the algorithm
-         initial.K = 1,      # initial number of components
-               ite = Inf,    # used on updatePosterior: maximum number of iterations
-         implicit.noise = 0, # Adds implicit noise in 
-	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
-             c.max = 10,     # max. candidates to consider in find.best.splitting. 
-	                     # i.e. truncation parameter
-                             # Candidates are chosen based on their Nc value 
-                             # (larger = better). Nc = colSums(qOFz)
-           speedup = TRUE        
-	   	             # speedup: during DP, components are splitted
-			     # based on their first PCA component.
-                             # To speed up, approximate by using only subset 
-			     # data to calculate PCA.
-) {
-
   #system("/Rpath/bin/R CMD SHLIB /path/netresponse.c")
   #dyn.load("/path/netresponse/src/netresponse.so")
 
@@ -133,7 +133,9 @@ function(dat,
   # Retrieve model parameters 
 
   # number of mixture components (nonempty components only!)
-  Kreal <- sum(colSums(qOFz) > 0)
+  # response must have 'non-negligible' probability mass!
+  # i.e. at least some points associated with it
+  Kreal <- max(apply(qOFz, 1, which.max))  #sum(colSums(qOFz) > 1e-3)
   qOFz  <- matrix(qOFz[, 1:Kreal], nrow(dat))
       
   # Calculate mixture model parameters
@@ -192,18 +194,11 @@ function(dat,
                   K = Kreal # number of components
   )
 
-    # Later: include these from hp.posterior to the output later if needed.
-    # "Mutilde[1:Kreal,]"  "gamma[,1:Kreal]"  "Uhat"
+  # Later: include these from hp.posterior to the output later if needed.
+  # "Mutilde[1:Kreal,]"  "gamma[,1:Kreal]"  "Uhat"
 
-
-  #######################################
-  
-  results <- list(
-                  prior        = templist$hp.prior, 
-		  posterior    = posterior,  
-                  opts         = opts,   # input parameters
-                  free.energy  = templist$free.energy
-                  )
-  results
+  list(prior = templist$hp.prior, 
+       posterior    = posterior,  
+       opts         = opts,  
+       free.energy  = templist$free.energy)
 }
-

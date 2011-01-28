@@ -42,7 +42,7 @@ m <- get.model.parameters(res, subnet.id = 2)
 # (to ensure responses are listed in the same order)
 # and compare deviation from correct solution
 ord.obs <- order(m$mu[,1])
-ord.real <- order(m$mu[,1])
+ord.real <- order(mu.real[,1])
 
 print(paste("Correlation between real and observed responses:", cor(as.vector(m$mu[ord.obs,]), as.vector(mu.real[ord.real,]))))
 
@@ -50,8 +50,12 @@ print(paste("Correlation between real and observed responses:", cor(as.vector(m$
 print(paste("Maximum deviation from real variances: ", max(abs(rv - range(m$sd))/rv)))
 
 # weights deviate somewhat, this is likely due to relatively small sample size
-print("Maximum deviation from real weights: ")
-print( (w.real[ord.real] - m$w[ord.obs])/w.real[ord.real])
+#print("Maximum deviation from real weights: ")
+#print( (w.real[ord.real] - m$w[ord.obs])/w.real[ord.real])
+
+print("estimated and real mean matrices")
+print(m$mu[ord.obs,])
+print(mu.real[ord.real,])
 
 
 # Test these later: some problems occur during build

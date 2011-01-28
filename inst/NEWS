@@ -1,3 +1,50 @@
+CHANGES IN VERSION 1.1.19 (2011-01-25)
+
+BUG FIXES
+
+  o now providing names for the elements in model@params list
+  
+USER-VISIBLE CHANGES
+
+  o renamed result.stats into model.stats
+  
+  o now NetResponseModel also return the recalculated models for the
+    responses. No need to recalculate them which speeds up analysis of
+    the end results. Also useful since the result is not completely
+    deterministic due to stochastic initializations in model learning
+    etc., and relearning the models can sometimes produce slightly different results.  
+
+NEW FEATURE
+
+  o added find.similar.features function which can be used to find
+    features (genes) that are similar to the subnetwork but not
+    directly interacting with it
+
+CHANGES IN VERSION 1.1.18 (2011-01-25)
+
+USER-VISIBLE CHANGES
+
+  o in get.subnets function now using default min.responses=2
+    and subnet.size=2 (at least 2 genes in a subnetwork)
+
+  o added 'subnets' field to the NetResponseModel class. This lists
+    the subnetworks by feature names.
+
+BUG FIXES
+
+  o NetResponseModel class now returns the original network used in
+    the experiment (diagonal set to zero, however), previous version
+    returned the agglomerated network
+
+NEW FEATURES
+
+  o added functions order.responses and order.samples
+
+BUG FIXES
+
+  o in result.stats function corrected the minimum responses filtering
+    part
+
 CHANGES IN VERSION 1.1.17 (2011-01-19)
 
   o users can now give the expression data D in either matrix or

@@ -3,17 +3,19 @@
 \title{detect.responses}
 \description{ Main function of the NetResponse algorithm. Detecting network responses across the conditions. }
 \usage{detect.responses(datamatrix, network, initial.responses = 1,
-        max.responses = 10, max.subnet.size = 20, rseed = 123, verbose =
+        max.responses = 10, max.subnet.size = 20, verbose =
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
         0.01, update.hyperparams = 0, implicit.noise = 0, threshold =
         1.0e-5, ite = Inf)}
 
 \value{NetResponseModel object.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010). See
+citation("netresponse") for details.}
 
 \author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-        Maintainer: Leo Lahti <leo.lahti@iki.fi>}
+        Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
 
 \arguments{
 
@@ -36,8 +38,6 @@
   states.}
 
   \item{max.subnet.size}{Numeric. Maximum allowed subnetwork size.}
-
-  \item{rseed}{Numeric. Random seed. }
 
   \item{verbose}{Logical. Verbose parameter.}
 

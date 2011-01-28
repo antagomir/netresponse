@@ -4,7 +4,6 @@ function(datamatrix,
          initial.responses = 1,  # initial number of components. FIXME: is this used?
          max.responses = 10,     # max. responses # FIXME: check if really used
          max.subnet.size = 20,   # max. subnetwork size
-         rseed = 123,            # random seed
          verbose = TRUE,         # print proc. information
          prior.alpha    = 1,     # Prior parameters
          prior.alphaKsi = 0.01,  # for VDP mixture
@@ -71,25 +70,48 @@ function(datamatrix,
   #                                                    - Nicola Tesla
 
   ######################################################################
-  
-  # Set random seed
-  rseed <- ifelse( is.null( rseed ), sample(1e8, 1), rseed)
-  set.seed( rseed )
 
+  set.seed(2341)
+  
   # store here all params used in the model (defined in function call)
-  params <- list(initial.responses, max.responses, max.subnet.size,
-                 rseed, verbose, prior.alpha, prior.alphaKsi,
-                 prior.betaKsi, update.hyperparams, implicit.noise,
-                 threshold, ite)
-  
-  # network diagonal has to be zero, i.e. self-links not taken into account
-  diag( network ) <- 0 
+  params <- list(initial.responses = initial.responses, 
+  	    	 max.responses = max.responses,
+		 max.subnet.size = max.subnet.size,
+                 verbose = verbose, 
+		 prior.alpha = prior.alpha, 
+		 prior.alphaKsi = prior.alphaKsi,
+                 prior.betaKsi = prior.betaKsi, 
+		 update.hyperparams = update.hyperparams, 
+		 implicit.noise = implicit.noise,
+                 threshold = threshold, 
+		 ite = ite 
+		 )
 
+  # FIXME: later add other forms of sparse matrices from Matrix package
+  accepted.formats <- c("matrix", "Matrix", "data.frame", "dgCMatrix")
+ 
   # ensure datamatrix is a matrix
   if (!is.matrix(datamatrix)) {
-    message("Converting the input data D into matrix format.")
-    datamatrix <- as.matrix(datamatrix)
+    if (class(datamatrix) %in% accepted.formats) {
+      message("Converting the input data into matrix format.")
+      datamatrix <- as.matrix(datamatrix)
+    } else {
+     stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
+    }    
   }
+
+  # ensure network is a matrix
+  if (!is.matrix(network)) {
+    if (class(network)[[1]] %in% accepted.formats) {
+      message("Converting the input network into matrix format.")
+      network <- as.matrix(network)
+    } else {
+      stop(paste("network needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
+    }
+  }
+	      
+  # network diagonal has to be zero, i.e. self-links not taken into account
+  diag( network ) <- 0
 
   # match the features between network and datamatrix
   # the names need to match if names are given
@@ -110,8 +132,12 @@ function(datamatrix,
 
     stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
 
-  } else {cat("Warning: network and/or data features not named; matched by order.\n")}
-  
+  } else { warning("Warning: network and/or data features not named; matched by order.\n") }
+
+  # store the original network (self-links removed, ordered to match the datamatrix)
+  network.orig <- network
+
+
 #################################################################################
 
 ### INITIALIZE ###
@@ -131,11 +157,19 @@ function(datamatrix,
   bic.joint <- array(Inf, dim = c(dim, dim))
   delta     <- array(Inf, dim = c(dim, dim))
 
+  # Storage list for calculated models
+  model.list <- list()
+  for (i in 1:nrow(network)) {  
+    model.list[[i]] <- vector(length = 1:i, "list")
+  }
+  # nested lists; the first level corresponds to rows and second level to cols of the other matrices
+  # just lower-diagonal used
+
 ########################################################################
 
 ### INDEPENDENT MODEL FOR EACH VARIABLE ###
   
-  if (verbose) {cat("Compute cost for each variable\n")}
+  if (verbose) { cat("Compute cost for each variable\n") }
 
   for (k in 1:dim){
 
@@ -155,9 +189,12 @@ function(datamatrix,
     Nparams[k, k]  <- model$posterior$Nparams # number of parameters for model
     bic            <- Nparams[k, k]*Nlog + 2*H[[k]] # BIC for model
     C              <- C + bic # Total cost, previously: C + H(k)
-  }
 
-if (verbose) {cat('done\n')}
+    model.list[[k]][[k]] <- pick.model.parameters(model, colnames(datamatrix)[[k]])
+
+}
+
+if (verbose) { cat('done\n') }
 
 ##########################################################################################
 
@@ -183,8 +220,11 @@ for (a in 1:(dim - 1)){
                                   initial.K = initial.responses,
                                   ite = ite,
                                   c.max = max.responses - 1)
-      
-      costs[a, b]     <- costs[b, a]   <- model$free.energy # Store cost for joint model. 
+
+      # Store the joint models
+      model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
+    
+      costs[a, b]     <- costs[b, a]   <- model$free.energy           # Store cost for joint model. 
       Nparams[a, b]   <- Nparams[b, a] <- model$posterior$Nparams     # number of parameters in joint model
 
       # Compute BIC-value for two independent subnets vs. joint model 
@@ -219,7 +259,7 @@ for (j in 2:dim0){
   # note that diag(network) has been set to 0
   if (sum(network) > 0 && any( delta < 0 )){
 
-    if (verbose) {cat(paste('Combining groups, ', nrow(network)-1, ' group(s) left...\n'))} else{}
+    if ( verbose ) { cat(paste('Combining groups, ', nrow(network) - 1, ' group(s) left...\n'))} else{}
 
     # Identify the best neighbor pair in the network (also check that
     # the new merged pair would not exceed the max allowed subnetwork
@@ -235,14 +275,16 @@ for (j in 2:dim0){
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
     H[[a]] <- costs[a, b]
-    
+
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
     network <- join.subnets(network, a, b)
 
     # number of parameters for the subnets
     Nparams[a, a] <- Nparams[a, b]
     bic.ind[a, a] <- bic.joint[a, b]
-    
+
+    model.list[[a]][[a]] <- model.list[[a]][[b]]
+
     # Merge groups G[[a]], G[[b]]
     removed.group.vars <- G[[b]]
     G      <- G[-b]
@@ -258,10 +300,22 @@ for (j in 2:dim0){
     Nparams    <- Nparams[-b, -b]
     delta      <- delta[-b, -b]
 
+    # remove bth elements in model list
+    model.list[[b]] <- NULL
+    #if (length(model.list) >= 1) {
+      # if there are more rows available 
+      # then remove the b:th element from each..
+    for (b.idx in 1:length(model.list)) {    
+      model.list[[b.idx]][[b]] <- NULL
+    } 
+    #}
+    
+    # Skip the first b-1 elements as we only apply lower triangle here
+
     if ( nrow(network) == 1 ) {
       if ( verbose ) {cat("All nodes have been merged.\n")}
       delta > Inf #indicating that no merging can be be done any more
-    }  else {
+    } else {
     
       # Infinite joint costs etc with a for groups not linked to a
       # Note that for Nparams we need also a-a information    
@@ -271,9 +325,8 @@ for (j in 2:dim0){
       bic.joint[a, ] <- bic.joint[, a] <- Inf
       delta[a, ]     <- delta[, a]     <- Inf
 
-    
-       # Compute new joint models for a and its neighborghs
-       for (i in 1:nrow(network)){
+      # Compute new joint models for a and its neighborghs
+      for (i in 1:nrow(network)){
       
         # compute combined model only if a and i are linked
         if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
@@ -289,7 +342,14 @@ for (j in 2:dim0){
                                 initial.K = initial.responses,
                                 ite = ite,
                                 c.max = max.responses - 1 )
-        
+
+          # Store the joint models (always a < i)
+          minind <- min(c(a,i))
+	  maxind <- max(c(a,i))
+	  #print(c(minind,maxind, length(model.list)))
+	  
+          model.list[[minind]][[maxind]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
+
           costs[a,i]   <- costs[i, a]   <- model$free.energy  # cost for joint model
           Nparams[a,i] <- Nparams[i, a] <- model$posterior$Nparams  # number of parameters in joint model
 
@@ -318,22 +378,32 @@ for (j in 2:dim0){
   
   if (is.null(colnames(datamatrix))) { nodes <- as.character(1:ncol(datamatrix)) } else {nodes <- colnames(datamatrix)}
   if (is.null(rownames(datamatrix))) { samples <- as.character(1:nrow(datamatrix)) } else {samples <- rownames(datamatrix)}
-  
-  names(G) <- names(costs) <- paste("Subnet-", 1:length(G), sep = "")
-  
-  # model <- 
+    
+  # Form a list of subnetworks (no filters)
+  subnet.list <- lapply(G, function(x) { nodes[unlist(x)] })
+
+  # Pick the final subnetwork models from the model.list (the diagonal)
+  diag.models <- list()
+  for (k in 1:length(model.list)) {
+    diag.models[[k]] <- model.list[[k]][[k]]
+  }
+  model.list <- diag.models
+
+  # name the subnetworks
+  names(model.list) <- names(subnet.list) <- names(G) <- names(costs) <- paste("Subnet-", 1:length(G), sep = "")  
+        
+  model <- 
   new("NetResponseModel",
       moves = matrix(move.cost.hist[1:2,], 2),
       costs = costs,
-      rseed = rseed,
-      last.grouping = G,
+      last.grouping = G, # network nodes given in indices
+      subnets = subnet.list, # network nodes given in feature names
       params = params,
       nodes = nodes,
       samples = samples,
       datamatrix = datamatrix,
-      network = network
-      )
-
+      network = network.orig,
+      models = model.list
+      )      
+   
 }
-
-

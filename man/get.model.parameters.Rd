@@ -4,7 +4,7 @@
 \description{Retrieve the mixture model parameters of the NetResponse
   algorithm for a given subnetwork.}
 \usage{
-get.model.parameters(model, subnet.id, level = NULL)
+get.model.parameters(model, subnet.id)
 }
 \arguments{
   \item{model}{Result from NetResponse (detect.responses function).}
@@ -12,10 +12,10 @@ get.model.parameters(model, subnet.id, level = NULL)
  \item{ subnet.id }{Subnet identifier. A natural number which
   specifies one of the subnetworks within the 'model' object.}
 
- \item{level}{ Agglomeration level to investigate. The agglomerative
-    algorithm grows the subnetworks step-by-step. This option can be
-    used to select a specific step during the learning process. Will
-    be included in the next version. }
+% \item{level}{ Agglomeration level to investigate. The agglomerative
+%    algorithm grows the subnetworks step-by-step. This option can be
+%    used to select a specific step during the learning process. Will
+%    be included in the next version. }
 
 }
 \value{
@@ -30,9 +30,11 @@ get.model.parameters(model, subnet.id, level = NULL)
 }
 \details{Only the non-empty components are returned. Note: the original data matrix needs to be provided for function call separately.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010). See
+citation("netresponse") for details.}
 
-\author{Leo Lahti <leo.lahti@iki.fi>}
+\author{Leo Lahti \email{leo.lahti@iki.fi}}
 
 \examples{
 # Load toy data

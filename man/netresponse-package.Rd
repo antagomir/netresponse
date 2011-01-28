@@ -8,15 +8,17 @@
 \tabular{ll}{
 Package: \tab netresponse\cr
 Type: \tab Package\cr
-Version: \tab 0.99.0\cr
-Date: \tab 2010-09-23\cr
+Version: \tab 1.1.19\cr
+Date: \tab 2011-01-25\cr
 License: \tab GNU GPL >=2\cr
 LazyLoad: \tab yes\cr
 }
 }
 \author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-Maintainer: Leo Lahti <leo.lahti@iki.fi>}
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010). See
+citation("netresponse") for details.}
 \keyword{package}
 %\seealso{%%~~ \code{\link[somepkg:somepkg-package]{somepkg}} ~~}}
 \examples{

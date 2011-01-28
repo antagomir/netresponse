@@ -87,7 +87,6 @@ Detect network responses across the conditions:
 
 <<detect>>=
 model <- detect.responses(D, netw, verbose = FALSE)
-model@datamatrix <- D # FIXME
 @
 
 \section{Analyzing the results}
@@ -95,7 +94,7 @@ model@datamatrix <- D # FIXME
 Subnetwork statistics: size and number of distinct responses for each subnet
 
 <<stat>>=
-stat <- result.stats(model) 
+stat <- model.stats(model) 
 stat
 @
 
@@ -110,7 +109,7 @@ of the differences between conditions, and typically ignored in
 subsequent analysis.
 
 <<getsubnets2>>=
-get.subnets(model, stat = stat, min.size = 2, min.responses = 2)
+get.subnets(model, min.size = 2, min.responses = 2)
 @ 
 
 %Pick one of the subnets (define by identifier)
@@ -146,6 +145,25 @@ Probabilistic sample-response assignments for a given subnet is retrieved with:
 <<probs>>=
 response.probabilities <- sample2response(model, subnet.id)
 @
+
+\section{Extending the subnetworks}
+
+After identifying the locally connected subnetworks, it is possible to
+search for features (genes) that are similar to a given subnetwork but
+not directly interacting with it. To order the remaining features
+in the input data based on similarity with the subnetwork, type
+
+<<findsimilar>>=
+g <- find.similar.features(model, subnet.id = "Subnet-1")
+subset(g, delta < 0)
+@
+
+This gives a data frame which indicates similarity level with the
+subnetwork for each feature. The smaller, the more similar. Negative
+values of delta indicate the presence of coordinated responses,
+positive values of delta indicate independent responses. The data
+frame is ordered such that the features are listed by decreasing
+similarity.
 
 
 \section{Variational Dirichlet process Gaussian mixture model}
@@ -208,7 +226,5 @@ Kenichi Kurihara {\em et~al.} (2007).
 
 %\bibliographystyle{abbrv}
 %\bibliography{my.bib}
-
-
 
 \end{document}
