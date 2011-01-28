@@ -1,21 +1,22 @@
 \name{get.subnets}
 \alias{get.subnets}
+\alias{get.subnets,NetResponseModel-method}
 \title{get.subnets}
 \description{ List the detected subnetworks (each is a list of nodes
   in that subnetwork).
 }
 \usage{
-subnets <- get.subnets(model, level = NULL, get.names = TRUE, stat = NULL, min.size = NULL, max.size = NULL, min.responses = NULL)
+subnets <- get.subnets(model, get.names = TRUE, stat = NULL, min.size = NULL, max.size = NULL, min.responses = NULL)
 }
 \arguments{
 
   \item{model}{Output from the detect.responses function. An object of
   NetResponseModel class.}
 
- \item{level}{ Agglomeration level to investigate. The agglomerative
-    algorithm grows the subnetworks step-by-step. This option can be
-    used to select a particular step during the learning process. Will
-    be included in the next version. }
+% \item{level}{ Agglomeration level to investigate. The agglomerative
+%    algorithm grows the subnetworks step-by-step. This option can be
+%    used to select a particular step during the learning process. Will
+%    be included in the next version. }
 
   \item{get.names}{Logical. Indicate whether to return subnetwork
   nodes using node names (TRUE) or node indices (FALSE).}
@@ -35,7 +36,7 @@ subnets <- get.subnets(model, level = NULL, get.names = TRUE, stat = NULL, min.s
 
 \references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
 
-\author{Leo Lahti <leo.lahti@iki.fi>}
+\author{Leo Lahti \email{leo.lahti@iki.fi}}
 
 \examples{
 
