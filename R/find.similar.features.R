@@ -10,6 +10,11 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
      datamatrix <- model@datamatrix
   }
 
+  if (is.numeric(subnet.id)) {
+    subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+  }
+   
   subnetwork.nodes <- model@subnets[[subnet.id]]
   other.nodes <- setdiff(colnames(datamatrix), subnetwork.nodes)
 

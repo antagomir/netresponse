@@ -49,6 +49,12 @@ order.responses <- function (model, sample, method = "hypergeometric") {
 			    
 response.enrichment <- function (subnet.id, model, investigated.sample, which.response, method = "hypergeometric") {
 
+
+  if (is.numeric(subnet.id)) {
+    subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+  }
+
   response.sample <- response2sample(model, subnet.id, component.list = TRUE)[[which.response]]
 
   # FIXME: there is some minor stochasticity here, perhaps due to numerical limitations?
@@ -62,7 +68,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
   s.ann <- model@samples
 
   # Subnetwork feature names
-  nodes <- model@subnets[[subnet.id]]
+  nodes <- pars@nodes
 
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
@@ -71,7 +77,6 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
   colnames(dat) <- nodes
   # dat is now samples x features matrix
       
-
   # method indicates which test will be used
   # FIXME: add other methods; the higher the better
 

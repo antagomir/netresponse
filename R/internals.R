@@ -24,6 +24,11 @@ pick.model.parameters <- function (m, nodes) {
 
 get.subnet <- function (res, subnet.id) {
 
+  if (is.numeric(subnet.id)) {
+    subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+  }
+    
   # Nodes for a given subnet
   get.subnets(res)[[subnet.id]]
 
@@ -70,6 +75,12 @@ retrieve.model <- function (model, subnet.id) {
   #  Copyright (C) 2008-2011 Leo Lahti
   #  Licence: GPL >=2
 
+
+  if (is.numeric(subnet.id)) {
+    subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+  }
+  
   # Get subnet nodes
   nodes <- model@subnets[[subnet.id]]
 
@@ -935,7 +946,7 @@ P.r <- function (model, subnet.id, pars = NULL, log = TRUE) {
    # Pr(model, subnet.id)
    # output: a vector
 
-  if (is.null(pars)) {pars <- get.model.parameters(model, subnet.id)}
+  if (is.null(pars)) { pars <- get.model.parameters(model, subnet.id) }
 
   if (log) {
      log(pars$w)
@@ -1229,18 +1240,23 @@ fsort <- function (df, sortvar, decreasing = FALSE) {
 
 summarize.pwnets <- function (pwnets) {
 
-	# Summarize all networks into one
-	mat = array(0,dim=dim(pwnets[[which(!is.na(pwnets))[[1]]]]),dimnames=dimnames(pwnets[[which(!is.na(pwnets))[[1]]]]))
-	for (pwn in pwnets) {
-		if (!is.na(pwn)) {
-			mat = mat + pwn
-		}	
-	}
-	# make it symmetric i.e. ignore the causal order of regulation
-	mat2 = mat + t(mat)
-	mat2
-}
+  # Summarize all networks into one
+  mat <- array(0,dim=dim(pwnets[[which(!is.na(pwnets))[[1]]]]),dimnames=dimnames(pwnets[[which(!is.na(pwnets))[[1]]]]))
+  for (pwn in pwnets) {
+    if (!is.na(pwn)) {
+      mat <- mat + pwn
+    }	
+  }
+  
+  # make it symmetric i.e. ignore the causal order of regulation
+  mat2 <- mat + t(mat)
 
+  # Make it binary
+  mat2[ mat2 > 0 ] <- 1
+
+  mat2
+
+}
 
 
 pick.interactions <- function(gids,beta,pwa,direct){

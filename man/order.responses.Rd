@@ -33,7 +33,7 @@ indicates the enrichment calculation method. The sample field lists
 the samples et
 for which the enrichments were calculated.
 }
-\references{ See citation("netresponse") }
+\references{ See citation("netresponse") for citation details. }
 \author{ Leo Lahti \email{leo.lahti@iki.fi}}
 \note{ Tools for analyzing end results of the model. }
 %\seealso{\code{\link{order.samples}}}

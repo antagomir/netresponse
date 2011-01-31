@@ -16,7 +16,7 @@ model.stats <- function ( model ) {
 
   tab <- cbind(sapply(subnets, length), Ncomps)  
   colnames(tab) <- c("subnet.size", "subnet.responses")
-  rownames(tab) <- paste("Subnet", 1:nrow(tab), sep="-")
+  rownames(tab) <- names(subnets)
 
   as.data.frame(tab)
 
