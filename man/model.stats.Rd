@@ -24,10 +24,11 @@ model.stats( model )
 
 }
 
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010).  See
+citation("netresponse") for reference details.}
 
-\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-Maintainer: Leo Lahti <leo.lahti@iki.fi>}
+\author{Leo Lahti <leo.lahti@iki.fi>}
 
 \examples{
 

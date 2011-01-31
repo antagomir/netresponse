@@ -34,7 +34,9 @@ subnets <- get.subnets(model, get.names = TRUE, stat = NULL, min.size = NULL, ma
 }
 \value{ A list of subnetworks.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010).  See
+citation("netresponse") for details.}
 
 \author{Leo Lahti \email{leo.lahti@iki.fi}}
 

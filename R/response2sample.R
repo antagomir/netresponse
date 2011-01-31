@@ -1,6 +1,11 @@
 response2sample <-
 function (model, subnet.id, component.list = TRUE) {
 
+  if (is.numeric(subnet.id)) {
+    subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+  }
+  
   response.probabilities <- sample2response(model, subnet.id)
 
   # For each sample, list the most strongly associated response (highest P(r|s))

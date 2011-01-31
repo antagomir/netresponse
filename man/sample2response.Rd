@@ -18,10 +18,11 @@
 \value{A matrix of probabilities. Sample-response assignments for given
   subnet, listing the probability of each response, given a sample.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
+\references{Leo Lahti et al.: Global modeling of transcriptional
+responses in interaction networks. Bioinformatics (2010).  See
+citation("netresponse") for citation details.}
 
-\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-Maintainer: Leo Lahti <leo.lahti@iki.fi>}
+\author{Leo Lahti \email{leo.lahti@iki.fi}}
 
 \examples{
 # Load toy data

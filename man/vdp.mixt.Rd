@@ -82,8 +82,7 @@ vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.s
   J. Platt and T. Hoffman (eds.), Advances in Neural Information
   Processing Systems 19, 761--768. MIT Press, Cambridge, MA 2007.
 }
-\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-Maintainer: Leo Lahti <leo.lahti@iki.fi>}
+\author{Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
 
 \note{This implementation is based on the Variational Dirichlet Process
   Gaussian Mixture Model implementation, Copyright (C) 2007 Kenichi
