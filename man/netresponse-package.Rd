@@ -8,8 +8,8 @@
 \tabular{ll}{
 Package: \tab netresponse\cr
 Type: \tab Package\cr
-Version: \tab 1.1.20\cr
-Date: \tab 2011-01-31\cr
+Version: \tab See sessionInfo() or DESCRIPTION file\cr
+Date: \tab 2011-02-03\cr
 License: \tab GNU GPL >=2\cr
 LazyLoad: \tab yes\cr
 }
@@ -44,7 +44,7 @@ D <- array(rnorm(Ns*Nf), dim = c(Ns,Nf), dimnames = list(sample.names, feature.n
 D[1:100, 4:6]  <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 1:3)}))
 D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
 
-# Compute the model
+# Calculate the model
 model <- detect.responses(D, netw)
 
 # Subnets (each is a list of nodes)
