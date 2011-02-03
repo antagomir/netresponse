@@ -21,6 +21,7 @@ export(detect.responses,
        )
 
 exportClasses("NetResponseModel")
+#S4method(get.subnets, NetResponseModel)
 
 exportMethods(
 #"[",
@@ -33,7 +34,7 @@ get.subnets
 
 #exportMethods(get.model.parameters)
 
-S4method(get.subnets, NetResponseModel)
+
 
 #importFrom(graphics, plot)
 
