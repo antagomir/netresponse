@@ -128,7 +128,6 @@ function(dat,
   templist$hp.prior <- c(templist$hp.prior, list(qOFz = qOFz))
   qOFz <- matrix(templist$hp.posterior$qOFz, nrow(dat))
 
-
   ###############################################
   # Retrieve model parameters 
 

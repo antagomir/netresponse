@@ -1,3 +1,20 @@
+# Copyright (C) 2008-2011 Olli-Pekka Huovilainen and Leo Lahti
+# Contact: Leo Lahti <leo.lahti@iki.fi>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Acknowledgements: This program is based on the AIVGA Agglomerative
+# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
+# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
+# Seppa, Harri Valpola, and Paul Wagner.
 
 
 pick.model.parameters <- function (m, nodes) {
@@ -17,7 +34,8 @@ pick.model.parameters <- function (m, nodes) {
   colnames(mu) <- colnames(sds) <- nodes		       
 
   # For mu and std, rows correspond to the mixture components, in w the elements
-  list(mu = mu, sd = sds, w = w, K = length(w), prior = m$prior, posterior = m$posterior, opts = m$opts, free.energy = m$free.energy)
+  #list(mu = mu, sd = sds, w = w, K = length(w), prior = m$prior, posterior = m$posterior, opts = m$opts, free.energy = m$free.energy)
+  list(mu = mu, sd = sds, w = w)
 
 }
 
@@ -26,7 +44,7 @@ get.subnet <- function (res, subnet.id) {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+    warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
   }
     
   # Nodes for a given subnet
@@ -75,10 +93,9 @@ retrieve.model <- function (model, subnet.id) {
   #  Copyright (C) 2008-2011 Leo Lahti
   #  Licence: GPL >=2
 
-
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+    warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
   }
   
   # Get subnet nodes
@@ -257,7 +274,7 @@ join.subnets <- function (network, a, b) {
   network[a, a] <- 0
   
   # remove the merged group
-  matrix(network[-b, -b], nrow(network)-1)
+  Matrix(network[-b, -b])
     
 }
 
@@ -438,7 +455,6 @@ greedy <- function(data, hp.posterior, hp.prior, opts){
       stop("Free energy is not finite, please consider adding implicit noise or not updating the hyperparameters")
     } 
     
-
     # ALGORITHM STEP 6
   
     if( free.energy.improved(free.energy, new.free.energy, 0, opts$threshold) == 0 ) {
@@ -630,13 +646,9 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 }
 
 
-
-
-
-
 mk.hp.prior <- function(data, opts){
 
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2011 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -670,14 +682,6 @@ mk.hp.prior <- function(data, opts){
   hp.prior
 
 }
-
-
-
-
-
-
-
-
 
 
 ########################################################################################
@@ -941,271 +945,15 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
 ###############################################################################
 
 
-P.r <- function (model, subnet.id, pars = NULL, log = TRUE) {
-   # Prior probability for each response (mixture weights)
-   # Pr(model, subnet.id)
-   # output: a vector
+fsort <- function (df, sortvar, decreasing = FALSE) {
 
-  if (is.null(pars)) { pars <- get.model.parameters(model, subnet.id) }
-
-  if (log) {
-     log(pars$w)
-   } else {
-     pars$w
-   }
-}
-
-
-P.rs <- function (model, subnet.id, log = FALSE) {
-  # Probability of each response, given sample
-  # samples x responses matrix, each row sums to unity
-  prs <- t(sample2response(model, subnet.id))
-  
-  if (log) {
-     log(prs)
-  } else {
-    prs
-  }
+  o <- order(df[[sortvar]])
+  if (decreasing) {o <- rev(o)}
+  df[o,]
 
 }
 
-
-P.Sr <- function (sample, model, subnet.id, log = TRUE) {
-
-  pars <- get.model.parameters(model, subnet.id)
-
-  # Log density of a given sample group 
-  # P(S|r) for each response; length of output equals to number of responses
-  # i.e. logsum of the individual sample densities
-  
-  nodes <- model@subnets[[subnet.id]]
-
-  # pick sample data for the response and 
-  # ensure this is a matrix also when a single sample is given
-  dat <- matrix(model@datamatrix[sample, nodes], ncol = length(nodes))
-  rownames(dat) <- sample
-  colnames(dat) <- nodes
-  # dat is now samples x features matrix
-  
-  # this requires features x samples matrix
-  psr <- P.sr(t(dat), pars, log = TRUE)
-
-  # returns responses x samples matrix
-  # for each response, calculate logsum over samples
-  if (log) {
-     rowSums(psr)
-  } else {
-     exp(rowSums(psr))
-  } 
-  
-}
-
-
-P.sr <- function (dat, pars, log = TRUE) {
- 
-  # dat: features x samples matrix
- 
-  if (!nrow(dat) == ncol(pars$mu)) {stop("Dimensions in dat and pars do not match!")}
-
-  # Called by PSr which should work for both individual samples and sample
-  # groups
-  # FIXME: in many cases density needs to be calculated just within a
-  # single response, here calculated for all response. Speedup by having
-  # this for given response only
-
-  # Log probability density on each data point for each response
-  # P(s|r)
-    
-  # dat: features x samples!
-  # subnetid <- "Subnet-2"
-  # dat <- t(model@datamatrix[subnets[[subnetid]], ]) # all samples, given subnet
-  # Psr(dat, pars)
-
-  if (is.vector(dat)) { dat <- as.matrix(dat, nrow = length(dat)) }
-
-  # responses x samples matrix P(s|r)
-  psr <- matrix(NA, nrow = length(pars$w), ncol = ncol(dat)) 
-  if (!is.null(colnames(dat))) {
-    colnames(psr) <- colnames(dat)
-  }
-  
-  for (response in 1:length( pars$w )) {
-    # Given the diagonal covariances, the density is product (log-sum)
-    # over the densities for individual features (on each data point)
-    psr[response, ] <- colSums(dnorm(dat,
-                  mean = as.numeric(pars$mu[response, ]),
-		  sd = as.numeric(pars$sd[response, ]), 
-		  log = TRUE))
-  }
-
-  logp <- psr # responses x samples
-  rownames(logp) <- names(pars$w)
-  colnames(logp) <- colnames(dat)
-
-  if (log) {
-     logp
-  } else {
-    exp(logp)
-  }
-
-}
-
-
-P.rs.joint <- function (sample, model, pars, subnet.id, log = TRUE) {
-  
-  # Joint probability P(r,s) where s can be a single point or set of
-  # samples: P(r, s) = P(s | r) * P( r )
-  
-  pr.log <- P.r(model, subnet.id, pars, log = TRUE)
-  pSr.log <- P.Sr(sample, model, subnet.id, log = TRUE)
-  
-  logp.joint <- pSr.log + pr.log
-
-  # Alternative:
-  # logp.joint <- rowSums(P.rs.joint.individual(sample, model, pars, subnet.id, log = TRUE))
-
-  if (log) {
-    logp.joint
-  } else {
-    exp(logp.joint)
-  }
-
-}
-
-
-P.rS <- function (sample, model, pars, subnet.id, log = TRUE) {
-
-  # Probability of a response, given sample (group)
-  # P(r|S) = P(S|r)P(r)/P(S) = P(S, r)/(sum_r P(S, r))
-
-  psr <- P.rs.joint(sample, model, pars, subnet.id, log = FALSE)
-  
-  # log P(r|S) = logP(S, r) - log(sumr(P(S, r)))
-  logp <- log(psr) - log(sum(psr))
-  
-  if (log) {
-    logp
-  } else {
-    exp(logp)
-  }
-
-}
-
-
-P.s <- function (sample, model, pars, subnet.id, log = TRUE) {
-
-  if (is.null(pars)) { pars <- get.model.parameters(model, subnet.id) }
-
-  # FIXME: numerically does not hold tightly that P(S) = sumr P(S, r) = sumr P(S|r)P(r)
-  # the latter equality holds, P(S) is problematic. Differences are not big for examples
-  # I checked, but they are still notable. Check in more detail this one.
-  #sum(P.rs.joint(s, model, pars = NULL, subnet.id, log = FALSE))
-  #sum(P.Sr(s, model, pars = NULL, subnet.id, log = FALSE) * pars$w)
-
-
-  # P(s) separately for each individual sample
-  
-  # Overall probability of sample s, given the model
-  # P(s) = sum_r P(s, r)
-  #ps <- log(sum(P.rs.joint(sample, model, pars, subnet.id, log = FALSE)))
-
-  # product over individual sample densities (i.e. log sum)
-  ps <- sum(P.s.individual(sample, model, pars, subnet.id, log = TRUE))
-
-  if (log) {
-    ps
-  } else {
-    exp(ps)
-  }
-}
-
-
-P.s.individual <- function (sample, model, pars, subnet.id, log = TRUE) {
-
-  # Overall probability of sample s, given the model. 
-  # individually for each sample
-
-  # responses x samples
-  # for each sample (column), density mass is the sum over joint densities on individual responses
-  # P(s) = sum_r P(s, r) = sum_r P(s,r) = sum_r P(s|r)P(r)
-  ps <- colSums(P.rs.joint.individual(sample, model, pars, subnet.id, log = FALSE))
-  names(ps) <- sample
-
-  # two alternatives to calculate P(s)
-  # log(colSums(P.rs.joint.individual(rsample, model, pars, subnet.id, log = FALSE)))
-  # log(sum(P.Sr(rsample, model, pars, subnet.id, log = FALSE) * P.r(model, subnet.id, log = FALSE)))
-  # P.s(rsample, model, pars, subnet.id, log = TRUE) 
-
-  # log only after summation:
-  if (log) {
-    log(ps)
-  } else {
-    ps
-  }
-}
-
-P.rs.joint.individual <- function (sample, model, pars, subnet.id, log = TRUE) {
-
-  # Joint probability P(r,s) for individual samples
-  # samples: P(r, s) = P(s | r) * P( r )
-  nodes <- model@subnets[[subnet.id]]
-  dat <- t(matrix(model@datamatrix[sample, nodes], ncol = length(nodes)))
-  rownames(dat) <- nodes
-  colnames(dat) <- sample
-  # dat is now features x samples matrix
-  
-  psr.log <- P.sr(dat, pars, log = TRUE)
-  pr.log <- P.r(model, subnet.id, pars, log = TRUE)
-
-#print(dim(psr.log))
-#print(dim(pr.log))
-#print(dim(dat))
-
-  #prs.log <- P.rs(model, subnet.id, log = TRUE)
-  #ps <- sum_r P(s,r) = sum_r P(s|r)P(r) 
-  # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
-  #ps <- colSums(exp(psr.log)*exp(pr.log)) # for each sample, sum over responses
-  #ps.log <- log(ps)
-  # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
-  # P(r, s) for all samples and responses. Should hold sum_r P(r, s) = P(s) -> OK
-  #  Alternatively: logp.joint <- t(t(prs.log) + ps.log)
-  logp.joint <- psr.log + pr.log
-  colnames(logp.joint) <- sample
-
-  if (log) {
-    logp.joint
-  } else {
-    exp(logp.joint)
-  }
-
-}
-
-sample.densities <- function (sample, model, pars, subnet.id, log = TRUE, summarize = FALSE) {
-
-  # Calculate conditional density  P(s|r) for each sample
-  # in each response r and then in the complete model
-  # if summarize = TRUE then give overall density of the sample,
-  # otherwise densities for individual samples
-
-  psr <- P.sr(t(model@datamatrix[sample, colnames(pars$mu)]), pars, log = TRUE)
-
-  # Density for the sample given the overall model
-  dtot <- P.s.individual(sample, model, pars, subnet.id, log = TRUE)
-  # this is same as colSums(psr * pars$w)
-
-  rnam <- rownames(psr)
-  psr <- rbind(psr, dtot)
-  rownames(psr) <- c(rnam, "total.density")
-  
-  
-  # psr is a responses x samples matrix
-  if (summarize) { psr <- rowSums(psr) } 
-  
-  if (!log) {psr <- exp(psr)}
-
-  psr
-
-}
+##################################################################
 
 # Problem, calls x from GlobalEnv
 #esort <- function(x, sortvar, ...) {
@@ -1216,17 +964,7 @@ sample.densities <- function (sample, model, pars, subnet.id, log = TRUE, summar
 #  detach(x)
 #}
 	  
-fsort <- function (df, sortvar, decreasing = FALSE) {
-
-  o <- order(df[[sortvar]])
-  if (decreasing) {o <- rev(o)}
-  df[o,]
-
-}
-
-
-
-# should be useful in weight summations, check
+# should be useful trick in weight summations, check
 #  # to avoid floating errors, utilize the fact that 
 #  # exp(a+b)/(exp(a+b) + exp(a+c)) = exp(b)/(exp(b)+exp(c))
 #  # now: a = min(denses)
@@ -1236,8 +974,6 @@ fsort <- function (df, sortvar, decreasing = FALSE) {
 															      
 ##################################################################
 		
-
-
 summarize.pwnets <- function (pwnets) {
 
   # Summarize all networks into one
@@ -1257,7 +993,6 @@ summarize.pwnets <- function (pwnets) {
   mat2
 
 }
-
 
 pick.interactions <- function(gids,beta,pwa,direct){
 

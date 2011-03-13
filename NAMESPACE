@@ -33,8 +33,7 @@ get.subnets
 )
 
 #exportMethods(get.model.parameters)
-
-
-
-#importFrom(graphics, plot)
+#importFrom(Matrix, Diag)
+#export(Diag)
+#importFrom(graphics, plot)                                        
 

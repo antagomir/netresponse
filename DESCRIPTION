@@ -1,13 +1,13 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.1.21
-Date: 2011-01-31
+Version: 1.1.22
+Date: 2011-03-12
 Author: Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.
 License: GPL (>=2)
-Depends: methods
+Depends: methods, Matrix
 URL: http://netpro.r-forge.r-project.org/
 LazyLoad: yes
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, DifferentialExpression, Microarray, Transcription
