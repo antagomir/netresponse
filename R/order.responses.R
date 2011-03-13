@@ -1,16 +1,31 @@
+
+# Copyright (C) 2010-2011 Leo Lahti
+# Contact: Leo Lahti <leo.lahti@iki.fi>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+
+
 order.responses <- function (model, sample, method = "hypergeometric") {
   # Given sample (for instance set of samples associated with a given factor level)
   # order the responses across all subnetworks based on their association strength
 
   # For a given sample, calculate enrichment values in each response
-
   subnets <- responses <- scores <- pvals <- c()
   enrichment.info <- list()
   cnt <- 0
 
   for (subnet.id in names(model@subnets)) {
 
-    for (response in 1:model@models[[subnet.id]]$K) {
+    for (response in 1:length(model@models[[subnet.id]]$w)) {
   
       enr <- response.enrichment(subnet.id, model, sample, response, method)
 
@@ -33,14 +48,7 @@ order.responses <- function (model, sample, method = "hypergeometric") {
   ord <- order(scores, decreasing = TRUE)
   df <- df[ord,]
   enrichment.info <- enrichment.info[ord]
-  #df <- fsort(df, "enrichment.score", decreasing = TRUE) # order by decreasing score
   
-  # Store ordered scores, factor & level for which enrichment was calculated, and enrichment method
-  #list(ordered.responses = df,
-  #         factor = which.factor,
-  #   	   level = which.level,
-  # 	   method = method)
-	   
   list(ordered.responses = df,
   	   method = method, sample = sample, 
 	   info = enrichment.info)
@@ -49,10 +57,9 @@ order.responses <- function (model, sample, method = "hypergeometric") {
 			    
 response.enrichment <- function (subnet.id, model, investigated.sample, which.response, method = "hypergeometric") {
 
-
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+    warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
   }
 
   response.sample <- response2sample(model, subnet.id, component.list = TRUE)[[which.response]]
@@ -126,7 +133,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
 	  	    
     # now with actual sample density (not density mass as above)      
     # P(S) = sum_r P(S,r)
-    ps.log <- log(sum(P.rs.joint(s, model, pars, subnet.id, log = FALSE)))
+    ps.log <- log(sum(get.P.rs.joint(s, model, subnet.id, log = FALSE)))
 
     # this requires features x samples matrix
     psr.log <- P.sr(t(dat), pars, log = TRUE)
@@ -152,7 +159,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
     # P(s|r) / P(S|r)
 
     # density for each data point
-    dens <- sample.densities(s.ann, model, pars, subnet.id, log = FALSE, summarize = FALSE)[which.response, s.ann]
+    dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[which.response, s.ann]
 
     # P(s,r)/P(s)P(r) = P(s|r)/P(s) for factor level samples
     # Fraction of total density mass of factor level sample compared to all samples within the response

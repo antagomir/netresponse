@@ -86,7 +86,7 @@ netw <- toydata$netw
 Detect network responses across the conditions:
 
 <<detect>>=
-model <- detect.responses(D, netw, verbose = FALSE)
+model <- detect.responses(D, netw, verbose = TRUE)
 @
 
 \section{Analyzing the results}

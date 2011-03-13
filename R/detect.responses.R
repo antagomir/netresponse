@@ -1,3 +1,44 @@
+#
+# Copyright (C) 2008-2011 Olli-Pekka Huovilainen and Leo Lahti 
+# Contact: Leo Lahti <leo.lahti@iki.fi>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Acknowledgements: This program is based on the AIVGA Agglomerative
+# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
+# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
+# Seppa, Harri Valpola, and Paul Wagner.
+
+
+  ######################################################################
+
+  # Before I put a sketch on paper, the whole idea is worked out
+  # mentally. In my mind I change the construction, make improvements,
+  # and even operate the device. Without ever having drawn a sketch I
+  # can give the measurements of all parts to workmen, and when
+  # completed all these parts will fit, just as certainly as though I
+  # had made the actual drawings. It is immaterial to me whether I run
+  # my machine in my mind or test it in my shop. The inventions I have
+  # conceived in this way have always worked. In thirty years there
+  # has not been a single exception. My first electric motor, the
+  # vacuum wireless light, my turbine engine and many other devices
+  # have all been developed in exactly this way.
+  #
+  #                                                    - Nicola Tesla
+
+  ######################################################################
+
+
+
+
 detect.responses <-
 function(datamatrix,
          network,
@@ -35,43 +76,9 @@ function(datamatrix,
 #  res.moves has the indices of groups joined at each state in its columns
 #  res.groupings holds the groupings at each level of the hierarchy
 #  res.models has compressed representations of the models from each step
-#
-# Copyright (C) 2008-2010 Olli-Pekka Huovilainen and Leo Lahti
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# Acknowledgements: This program is based on the AIVGA Agglomerative
-# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
-# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
-# Seppa, Harri Valpola, and Paul Wagner.
-
-  ######################################################################
-
-  # Before I put a sketch on paper, the whole idea is worked out
-  # mentally. In my mind I change the construction, make improvements,
-  # and even operate the device. Without ever having drawn a sketch I
-  # can give the measurements of all parts to workmen, and when
-  # completed all these parts will fit, just as certainly as though I
-  # had made the actual drawings. It is immaterial to me whether I run
-  # my machine in my mind or test it in my shop. The inventions I have
-  # conceived in this way have always worked. In thirty years there
-  # has not been a single exception. My first electric motor, the
-  # vacuum wireless light, my turbine engine and many other devices
-  # have all been developed in exactly this way.
-  #
-  #                                                    - Nicola Tesla
-
-  ######################################################################
 
   set.seed(2341)
+  require(Matrix)
   
   # store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
@@ -88,13 +95,13 @@ function(datamatrix,
 		 )
 
   # FIXME: later add other forms of sparse matrices from Matrix package
-  accepted.formats <- c("matrix", "Matrix", "data.frame", "dgCMatrix")
+  accepted.formats <- c("matrix", "Matrix", "data.frame", "dgCMatrix", "dgeMatrix")
  
   # ensure datamatrix is a matrix
   if (!is.matrix(datamatrix)) {
     if (class(datamatrix) %in% accepted.formats) {
-      message("Converting the input data into matrix format.")
-      datamatrix <- as.matrix(datamatrix)
+      message("Converting the input data into (sparse) matrix format.")
+      datamatrix <- matrix(datamatrix)
     } else {
      stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
     }    
@@ -103,15 +110,20 @@ function(datamatrix,
   # ensure network is a matrix
   if (!is.matrix(network)) {
     if (class(network)[[1]] %in% accepted.formats) {
-      message("Converting the input network into matrix format.")
-      network <- as.matrix(network)
+      message("Converting the input network into (sparse) matrix format.")
+      network <- Matrix(network) 
+      # FIXME: dtpMatrix Triangular real matrices in packed storage (triangle only)
+      # would save even more space than using general sparse real matrix here. Change.
+      
     } else {
       stop(paste("network needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
     }
   }
-	      
-  # network diagonal has to be zero, i.e. self-links not taken into account
+
+  # remove self-links i.e. set network diagonal to zero
+  network <- as.matrix(network)
   diag( network ) <- 0
+  network <- Matrix(network)
 
   # match the features between network and datamatrix
   # the names need to match if names are given
@@ -119,7 +131,7 @@ function(datamatrix,
     # pick samples that are in both network and response matrix                                        
     common.feats <- intersect(rownames(network), colnames(datamatrix))
     network      <- network[common.feats, common.feats]
-    net.datamatrix   <- matrix(datamatrix[, common.feats], nrow = nrow(datamatrix))
+    net.datamatrix   <- matrix(datamatrix[, common.feats], nrow(datamatrix))
     rownames(net.datamatrix) <- rownames(datamatrix)
     colnames(net.datamatrix) <- common.feats
     datamatrix <- net.datamatrix
@@ -135,8 +147,8 @@ function(datamatrix,
   } else { warning("Warning: network and/or data features not named; matched by order.\n") }
 
   # store the original network (self-links removed, ordered to match the datamatrix)
+  network <- Matrix(network)
   network.orig <- network
-
 
 #################################################################################
 
@@ -150,12 +162,13 @@ function(datamatrix,
   # off-diagonal tells number of parameters for the joint model
   # initial costs for the independent and joint models
   #Nresponses <-  rep(NA, dim0)
-  H         <-   rep(Inf, dim0) #array(Inf, dim = c(3, 1))
-  costs     <- array(Inf, dim = c(dim, dim))
-  Nparams   <- array(Inf, dim = c(dim, dim))
-  bic.ind   <- array(Inf, dim = c(dim, dim))
-  bic.joint <- array(Inf, dim = c(dim, dim))
-  delta     <- array(Inf, dim = c(dim, dim))
+
+  H         <- rep(Inf, dim0) #array(Inf, dim = c(3, 1))
+  costs     <- Matrix(Inf, dim, dim)
+  Nparams   <- Matrix(Inf, dim, dim)
+  bic.ind   <- Matrix(Inf, dim, dim)
+  bic.joint <- Matrix(Inf, dim, dim)
+  delta     <- Matrix(Inf, dim, dim)
 
   # Storage list for calculated models
   model.list <- list()
@@ -224,21 +237,21 @@ for (a in 1:(dim - 1)){
       # Store the joint models
       model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
     
-      costs[a, b]     <- costs[b, a]   <- model$free.energy           # Store cost for joint model. 
-      Nparams[a, b]   <- Nparams[b, a] <- model$posterior$Nparams     # number of parameters in joint model
+      costs[a, b]   <- model$free.energy           # Store cost for joint model. 
+      Nparams[a, b] <- model$posterior$Nparams     # number of parameters in joint model
 
       # Compute BIC-value for two independent subnets vs. joint model 
       # Negative free energy (-cost) is (variational) lower bound for P(D|H)
       # Use it as an approximation for P(D|H)
       # Cost for the indpendent and joint models
       # -cost is sum of two independent models (H: appr. log-likelihoods)
-      bic.ind[a, b] <- bic.ind[b, a] <- (Nparams[a, a] + Nparams[b, b])*Nlog + 2*(H[[a]] + H[[b]])
-      bic.joint[a, b] <- bic.joint[b, a] <- Nparams[a, b]*Nlog + 2*(costs[a, b]) 
+        bic.ind[a, b] <- (Nparams[a, a] + Nparams[b, b])*Nlog + 2*(H[[a]] + H[[b]])
+      bic.joint[a, b] <- Nparams[a, b]*Nlog + 2*(costs[a, b]) 
       # = Nparams[a, b]*Nlog - 2*(-costs[a, b])
 
       # NOTE: BIC is additive so summing is ok
       # change (increase) of the total BIC / cost
-      delta[a, b] <- delta[b, a] <- bic.joint[a, b] - bic.ind[a, b]     
+      delta[a, b] <- bic.joint[a, b] - bic.ind[a, b]     
     }
   }
 }
@@ -265,16 +278,16 @@ for (j in 2:dim0){
     # the new merged pair would not exceed the max allowed subnetwork
     # size)
     tmp <- find.best.neighbor(delta, G, max.subnet.size, network)
-      a <- tmp$a
-      b <- tmp$b
-
+      a <- min(tmp$a, tmp$b)
+      b <- max(tmp$a, tmp$b)
+    
     # Store results
     C <- C + tmp$mindelta
-    move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), nrow = 3)) 
+    move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
 
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
-    H[[a]] <- costs[a, b]
+    H[[a]] <- costs[a, b] # FIXME: can we remove H completely from the code?
 
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
     network <- join.subnets(network, a, b)
@@ -345,22 +358,20 @@ for (j in 2:dim0){
 
           # Store the joint models (always a < i)
           minind <- min(c(a,i))
-	  maxind <- max(c(a,i))
-	  #print(c(minind,maxind, length(model.list)))
-	  
+	  maxind <- max(c(a,i))	  
           model.list[[minind]][[maxind]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
 
-          costs[a,i]   <- costs[i, a]   <- model$free.energy  # cost for joint model
-          Nparams[a,i] <- Nparams[i, a] <- model$posterior$Nparams  # number of parameters in joint model
+          costs[minind, maxind]   <- model$free.energy  # cost for joint model
+          Nparams[minind, maxind] <- model$posterior$Nparams  # number of parameters in joint model
 
           # BIC-cost for two independent vs. joint model
           # Negative free energy (-cost) is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
-          bic.ind[a, i]   <- bic.ind[i, a]   <- (Nparams[a, a] + Nparams[i, i])*Nlog + 2*(H[a] + H[i])
-          bic.joint[a, i] <- bic.joint[i, a] <- Nparams[a, i]*Nlog + 2*(costs[a, i])
+          bic.ind[minind, maxind]   <- (Nparams[a, a] + Nparams[i, i])*Nlog + 2*(H[a] + H[i])
+          bic.joint[minind, maxind] <- Nparams[minind, maxind]*Nlog + 2*(costs[minind, maxind])
 
           # change (increase) of the total BIC (cost)
-          delta[a, i] <- delta[i, a] <- bic.joint[a, i] - bic.ind[a, i]
+          delta[minind, maxind] <- bic.joint[minind, maxind] - bic.ind[minind, maxind]
         }
       }
     }
@@ -371,7 +382,7 @@ for (j in 2:dim0){
 }
 
   if ( length(bic.ind) > 1 ) {
-    costs <- diag(bic.ind)
+    costs <- diag(as.matrix(bic.ind))
   } else {
     costs <- bic.ind
   }
@@ -394,7 +405,7 @@ for (j in 2:dim0){
         
   model <- 
   new("NetResponseModel",
-      moves = matrix(move.cost.hist[1:2,], 2),
+      moves = Matrix(move.cost.hist[1:2,]),
       costs = costs,
       last.grouping = G, # network nodes given in indices
       subnets = subnet.list, # network nodes given in feature names

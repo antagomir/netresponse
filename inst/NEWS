@@ -1,4 +1,12 @@
 
+CHANGES IN VERSION 1.1.22 (2011-03-13)
+
+USER-VISIBLE CHANGES
+
+  o added support for sparse matrices with the Matrix package (from 
+    CRAN)
+
+
 CHANGES IN VERSION 1.1.19 (2011-01-25)
 
 BUG FIXES

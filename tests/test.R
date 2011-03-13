@@ -57,7 +57,6 @@ print("estimated and real mean matrices")
 print(m$mu[ord.obs,])
 print(mu.real[ord.real,])
 
-
 # Test these later: some problems occur during build
 
 # sample-response assignments for given subnet
