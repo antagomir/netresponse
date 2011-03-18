@@ -1,5 +1,4 @@
-setMethod("get.subnets", "NetResponseModel",
-  function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
+setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
 
   #  Copyright (C) 2008-2011 Leo Lahti
   #  Licence: GPL >=2
