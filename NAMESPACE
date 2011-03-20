@@ -27,7 +27,8 @@ exportMethods(
 #"[",
 "[[",
 show,
-get.subnets
+get.subnets,
+get.qofz
 #"[<-","$","$<-", 
 #"plot","print" 
 )

@@ -1,3 +1,16 @@
+setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALSE) {
+
+  # Retrieve P(r|s) from the model, given data and model parameters
+  pars <- get.model.parameters(model, subnet.id)
+  dat  <- get.dat(model, subnet.id)  # dat is now features x samples matrix
+  qofz <- P.r.s(dat, pars, log = log)
+  rownames(qofz) <- model@samples
+  colnames(qofz) <- paste("Response", 1:ncol(qofz), sep = "-")   
+
+  qofz
+  
+})
+
 setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
 
   #  Copyright (C) 2008-2011 Leo Lahti
@@ -56,7 +69,10 @@ setMethod(f = "[[", signature("NetResponseModel"),
 )
 
 
-      #new("rpa.list", list(d = x$d[i,], sigma2 = x$sigma2[[i]], cind = x$cind, set = x$sets[[i]]))
+
+	
+
+#new("rpa.list", list(d = x$d[i,], sigma2 = x$sigma2[[i]], cind = x$cind, set = x$sets[[i]]))
 #setReplaceMethod(f="[[",signature("ChromosomeArmModels"),
 #                                definition=(function(x,i,j,value) {
 #                                        x@models[[i]] <- value
