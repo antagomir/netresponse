@@ -77,8 +77,8 @@ conditions; the scalability depends on network connectivity.
 <<initial, results = hide>>=
 require(netresponse)
 data(toydata)
-D <- toydata$emat
-netw <- toydata$netw
+D <- as.matrix(toydata$emat)
+netw <- as.matrix(toydata$netw)
 @
 
 \section{Detecting network responses}
