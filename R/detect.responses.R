@@ -78,7 +78,7 @@ function(datamatrix,
 #  res.models has compressed representations of the models from each step
 
   set.seed(2341)
-  require(Matrix)
+#  require(Matrix)
   
   # store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
@@ -110,8 +110,9 @@ function(datamatrix,
   # ensure network is a matrix
   if (!is.matrix(network)) {
     if (class(network)[[1]] %in% accepted.formats) {
-      message("Converting the input network into (sparse) matrix format.")
-      network <- Matrix(network) 
+#      message("Converting the input network into (sparse) matrix format.")
+#      network <- Matrix(network)
+#       network <- as.matrix(network) 
       # FIXME: dtpMatrix Triangular real matrices in packed storage (triangle only)
       # would save even more space than using general sparse real matrix here. Change.
       
@@ -123,7 +124,7 @@ function(datamatrix,
   # remove self-links i.e. set network diagonal to zero
   network <- as.matrix(network)
   diag( network ) <- 0
-  network <- Matrix(network)
+  #network <- Matrix(network)
 
   # match the features between network and datamatrix
   # the names need to match if names are given
@@ -147,7 +148,7 @@ function(datamatrix,
   } else { warning("Warning: network and/or data features not named; matched by order.\n") }
 
   # store the original network (self-links removed, ordered to match the datamatrix)
-  network <- Matrix(network)
+#  network <- Matrix(network)
   network.orig <- network
 
 #################################################################################
@@ -164,11 +165,11 @@ function(datamatrix,
   #Nresponses <-  rep(NA, dim0)
 
   H         <- rep(Inf, dim0) #array(Inf, dim = c(3, 1))
-  costs     <- Matrix(Inf, dim, dim)
-  Nparams   <- Matrix(Inf, dim, dim)
-  bic.ind   <- Matrix(Inf, dim, dim)
-  bic.joint <- Matrix(Inf, dim, dim)
-  delta     <- Matrix(Inf, dim, dim)
+  costs     <- matrix(Inf, dim, dim)
+  Nparams   <- matrix(Inf, dim, dim)
+  bic.ind   <- matrix(Inf, dim, dim)
+  bic.joint <- matrix(Inf, dim, dim)
+  delta     <- matrix(Inf, dim, dim)
 
   # Storage list for calculated models
   model.list <- list()
@@ -236,7 +237,7 @@ for (a in 1:(dim - 1)){
 
       # Store the joint models
       model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
-    
+
       costs[a, b]   <- model$free.energy           # Store cost for joint model. 
       Nparams[a, b] <- model$posterior$Nparams     # number of parameters in joint model
 
@@ -245,7 +246,8 @@ for (a in 1:(dim - 1)){
       # Use it as an approximation for P(D|H)
       # Cost for the indpendent and joint models
       # -cost is sum of two independent models (H: appr. log-likelihoods)
-        bic.ind[a, b] <- (Nparams[a, a] + Nparams[b, b])*Nlog + 2*(H[[a]] + H[[b]])
+
+	bic.ind[a, b] <- (Nparams[a, a] + Nparams[b, b])*Nlog + 2*(H[[a]] + H[[b]])
       bic.joint[a, b] <- Nparams[a, b]*Nlog + 2*(costs[a, b]) 
       # = Nparams[a, b]*Nlog - 2*(-costs[a, b])
 
@@ -260,8 +262,7 @@ for (a in 1:(dim - 1)){
 #######################################################################################
 
 ### MERGE VARIABLES ###
-  
-  
+
 G <- lapply(1:dim, function( x ){ x }) # Place each node in a singleton subnet
 move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
 
@@ -280,10 +281,11 @@ for (j in 2:dim0){
     tmp <- find.best.neighbor(delta, G, max.subnet.size, network)
       a <- min(tmp$a, tmp$b)
       b <- max(tmp$a, tmp$b)
-    
+
     # Store results
     C <- C + tmp$mindelta
-    move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
+ #   move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
+    move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))     
 
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
@@ -329,7 +331,7 @@ for (j in 2:dim0){
       if ( verbose ) {cat("All nodes have been merged.\n")}
       delta > Inf #indicating that no merging can be be done any more
     } else {
-    
+
       # Infinite joint costs etc with a for groups not linked to a
       # Note that for Nparams we need also a-a information    
       Nparams[a, -a] <- Nparams[-a, a] <- Inf
@@ -340,10 +342,9 @@ for (j in 2:dim0){
 
       # Compute new joint models for a and its neighborghs
       for (i in 1:nrow(network)){
-      
+
         # compute combined model only if a and i are linked
         if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
-
           vars  <- sort(c(G[[a]], G[[i]]))
 
           model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
@@ -405,7 +406,8 @@ for (j in 2:dim0){
         
   model <- 
   new("NetResponseModel",
-      moves = Matrix(move.cost.hist[1:2,]),
+#      moves = Matrix(move.cost.hist[1:2,]),
+      moves = matrix(move.cost.hist[1:2,]),      
       costs = costs,
       last.grouping = G, # network nodes given in indices
       subnets = subnet.list, # network nodes given in feature names

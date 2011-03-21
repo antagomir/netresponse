@@ -269,12 +269,13 @@ find.best.neighbor <- function (delta, G, max.subnet.size, network) {
 join.subnets <- function (network, a, b) {
 
   # put merged a,b into a's place and remove b  
-  network[a, ] <- as.numeric(network[a, ] | network[b, ]) 
-  network[, a] <- network[a, ]
+  #network[a, ]  <- as.numeric(network[a, ] | network[b, ]) 
+  network[a, ]  <- (network[a, ] | network[b, ]) 
+  network[, a]  <- network[a, ]
   network[a, a] <- 0
-  
   # remove the merged group
-  Matrix(network[-b, -b])
+  #Matrix(network[-b, -b])
+  matrix(network[-b, -b], nrow(network) - 1)
     
 }
 
