@@ -1,4 +1,17 @@
 
+CHANGES IN VERSION 1.1.27 (2011-03-22)
+
+  o removed nodes and samples from NetResponseModel output
+
+CHANGES IN VERSION 1.1.26 (2011-03-22)
+
+  o moved NetResponseModel functions in AllGenerics.R
+  o removed intermediate matrices from detect.responses.R (costs,
+    Nparams, bic.ind, bic.joint)
+  o added two fields in pick.model.parameters: free.energy and Nparams
+  o added internal function bic for bic calculations
+  o removed costs from NetResponseModel output
+
 CHANGES IN VERSION 1.1.22 (2011-03-13)
 
 USER-VISIBLE CHANGES

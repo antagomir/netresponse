@@ -1,7 +1,8 @@
 setClass("NetResponseModel", representation(
-    moves = "matrix", #costs = "numeric",
+    moves = "matrix", 
     last.grouping = "list", subnets = "list", 
-    params = "list", nodes = "character", samples = "character",
-    datamatrix = "matrix", network = "matrix", models = "list"))
+    params = "list", 
+    datamatrix = "matrix", network = "matrix", models = "list")
+         )
              
                                             

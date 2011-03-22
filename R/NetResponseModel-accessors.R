@@ -179,20 +179,13 @@ setMethod("get.P.rs", "NetResponseModel", function (model, subnet.id, log = FALS
 })
 
 
-
-  
-################################################################
-
-
-
-
 setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALSE) {
 
   # Retrieve P(r|s) from the model, given data and model parameters
   pars <- get.model.parameters(model, subnet.id)
   dat  <- get.dat(model, subnet.id)  # dat is now features x samples matrix
   qofz <- P.r.s(dat, pars, log = log)
-  rownames(qofz) <- model@samples
+  rownames(qofz) <- rownames(model@datamatrix) #model@samples
   colnames(qofz) <- paste("Response", 1:ncol(qofz), sep = "-")   
 
   qofz
@@ -202,18 +195,12 @@ setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALS
 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
-  if (is.null(sample)) {
-    if (!is.null(rownames(model@datamatrix))) {
-      sample <- rownames(model@datamatrix)
-    } else {
-      sample <- 1:nrow(model@datamatrix)
-    }  
-  }
+  if (is.null(sample)) { sample <- rownames(model@datamatrix) }  
 
   nodes <- model@subnets[[subnet.id]]
-  dat <- t(matrix(model@datamatrix[sample, nodes], ncol = length(nodes)))
+  dat <- t(matrix(model@datamatrix[sample, nodes], length(sample)))
   rownames(dat) <- nodes
-  colnames(dat) <- sample
+  colnames(dat) <- as.character(sample)
 
   dat
 })
@@ -228,7 +215,8 @@ setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, 
   
   # Use feature names instead of indices
   if ( get.names ) {
-    grouping <- lapply(grouping, function(x) {model@nodes[unlist(x)]})
+    #grouping <- lapply(grouping, function(x) {model@nodes[unlist(x)]})
+    grouping <- lapply(grouping, function(x) {colnames(model@network)[unlist(x)]})    
   }
   
   # name the subnetworks
