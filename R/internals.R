@@ -17,6 +17,17 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
+bic <- function (nparams, nlog, logp) {
+
+  # Calculate BIC cost 
+  
+  # negative free energy is lower bound for log(P(D|H))
+  # logp = -cost
+  #Nparams*Nlog + 2*costs
+  nparams*nlog - 2*logp
+  
+}
+
 pick.model.parameters <- function (m, nodes) {
  
   # m is the outcome from vdp.mixt function 
@@ -35,7 +46,7 @@ pick.model.parameters <- function (m, nodes) {
 
   # For mu and std, rows correspond to the mixture components, in w the elements
   #list(mu = mu, sd = sds, w = w, K = length(w), prior = m$prior, posterior = m$posterior, opts = m$opts, free.energy = m$free.energy)
-  list(mu = mu, sd = sds, w = w)
+  list(mu = mu, sd = sds, w = w, free.energy = m$free.energy, Nparams = m$posterior$Nparams)
 
 }
 
@@ -673,15 +684,13 @@ mk.hp.prior <- function(data, opts){
                   #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 
 
   # priors for distribution of codebook vectors Mu ~ N(MuMu, S2.Mu)..
-  hp.prior <- list(Mumu = Mean, S2mu = Var, U.p = Inf)
-
+  #list(Mumu = Mean, S2mu = Var, U.p = Inf)
   # priors for data variance Ksi ~ invgam(AlphaKsi, BetaKsi)
   # variance is modeled with inverse Gamma distribution
-  hp.prior <- c(hp.prior, list(AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
-           BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha))
+  # FIXME: some of these are redundant, remove to save memory
+  list(Mumu = Mean, S2mu = Var, U.p = Inf, AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
+           BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha)
   
-  hp.prior
-
 }
 
 

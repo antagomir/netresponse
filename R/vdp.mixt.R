@@ -20,6 +20,7 @@ function(dat,
 			     # data to calculate PCA.
 ) {
 
+ 
   #
   #  This file is a part of the NetResponse R package.
   #
@@ -109,7 +110,7 @@ function(dat,
   implicitnoisevar = implicit.noise,
              c.max = c.max
   )
-
+  
                          data  <- list()
   data[["given.data"]]         <- list()
   data[["given.data"]][["X1"]] <- dat

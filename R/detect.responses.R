@@ -42,17 +42,18 @@
 detect.responses <-
 function(datamatrix,
          network,
-         initial.responses = 1,  # initial number of components. FIXME: is this used?
-         max.responses = 10,     # max. responses # FIXME: check if really used
-         max.subnet.size = 20,   # max. subnetwork size
-         verbose = TRUE,         # print proc. information
-         prior.alpha    = 1,     # Prior parameters
-         prior.alphaKsi = 0.01,  # for VDP mixture
-         prior.betaKsi  = 0.01,  # scale parameter for inverse Gamma
-         update.hyperparams = 0, # update hyperparameters. FIXME: check if this is applicable.
-         implicit.noise = 0, # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
-         threshold = 1.0e-5, # min. free energy improvement that stops VDP
-         ite = Inf          # max. iterations in updatePosterior
+         initial.responses = 1,   # initial number of components. FIXME: is this used?
+         max.responses = 10,      # max. responses # FIXME: check if really used
+         max.subnet.size = 10,    # max. subnetwork size
+         verbose = TRUE,          # print proc. information
+         prior.alpha    = 1,      # Prior parameters
+         prior.alphaKsi = 0.01,   # for VDP mixture
+         prior.betaKsi  = 0.01,   # scale parameter for inverse Gamma
+         update.hyperparams = 0,  # update hyperparameters. FIXME: check if this is applicable.
+         implicit.noise = 0,      # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
+         vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
+         merging.threshold = 0,   # min. cost improvement for merging
+         ite = Inf                # max. iterations in updatePosterior
          )
 
 {
@@ -90,7 +91,8 @@ function(datamatrix,
                  prior.betaKsi = prior.betaKsi, 
 		 update.hyperparams = update.hyperparams, 
 		 implicit.noise = implicit.noise,
-                 threshold = threshold, 
+                 vdp.threshold = vdp.threshold,
+                 merging.threshold = merging.threshold,
 		 ite = ite 
 		 )
 
@@ -136,7 +138,8 @@ function(datamatrix,
     rownames(net.datamatrix) <- rownames(datamatrix)
     colnames(net.datamatrix) <- common.feats
     datamatrix <- net.datamatrix
-
+    rm(net.datamatrix)
+    
   } else if ( !nrow(network) == ncol(network) ) {
 
     stop("Error: symmetric network required.\n")
@@ -148,7 +151,7 @@ function(datamatrix,
   } else { warning("Warning: network and/or data features not named; matched by order.\n") }
 
   # store the original network (self-links removed, ordered to match the datamatrix)
-#  network <- Matrix(network)
+  #  network <- Matrix(network)
   network.orig <- network
 
 #################################################################################
@@ -162,23 +165,20 @@ function(datamatrix,
   # print(" diagonal contains number of parameters for corresponding model")
   # off-diagonal tells number of parameters for the joint model
   # initial costs for the independent and joint models
-  #Nresponses <-  rep(NA, dim0)
 
-  H         <- rep(Inf, dim0) #array(Inf, dim = c(3, 1))
-  costs     <- matrix(Inf, dim, dim)
-  Nparams   <- matrix(Inf, dim, dim)
-  bic.ind   <- matrix(Inf, dim, dim)
-  bic.joint <- matrix(Inf, dim, dim)
+  # is sparse matrices are slow, use arrays; they are faster than matrices
   delta     <- matrix(Inf, dim, dim)
 
   # Storage list for calculated models
   model.list <- list()
   for (i in 1:nrow(network)) {  
-    model.list[[i]] <- vector(length = 1:i, "list")
+    model.list[[i]] <- vector(length = i, "list")
   }
   # nested lists; the first level corresponds to rows and second level to cols of the other matrices
   # just lower-diagonal used
 
+  gc()
+  
 ########################################################################
 
 ### INDEPENDENT MODEL FOR EACH VARIABLE ###
@@ -194,20 +194,20 @@ function(datamatrix,
                                 prior.alpha = prior.alpha,
                                 prior.alphaKsi = prior.alphaKsi,
                                 prior.betaKsi = prior.betaKsi,
-                                threshold = threshold,
+                                threshold = vdp.threshold,
                                 initial.K = initial.responses,
                                 ite = ite,
                                 c.max = max.responses - 1 )
-    
-    H[[k]]         <- cost  <- model$free.energy # -cost is lower bound for log(P(D|H))
-    Nparams[k, k]  <- model$posterior$Nparams # number of parameters for model
-    bic            <- Nparams[k, k]*Nlog + 2*H[[k]] # BIC for model
-    C              <- C + bic # Total cost, previously: C + H(k)
-
+    # Save memory; include these later if needed
+    model$prior <- model$opts <- NULL
+    bic.ind <- bic(model$posterior$Nparams, Nlog, -model$free.energy) # BIC for model
+    C              <- C + bic.ind # Total cost
     model.list[[k]][[k]] <- pick.model.parameters(model, colnames(datamatrix)[[k]])
 
 }
 
+gc()
+  
 if (verbose) { cat('done\n') }
 
 ##########################################################################################
@@ -230,35 +230,39 @@ for (a in 1:(dim - 1)){
                                   prior.alpha = prior.alpha,
                                   prior.alphaKsi = prior.alphaKsi,
                                   prior.betaKsi = prior.betaKsi,
-                                  threshold = threshold,
+                                  threshold = vdp.threshold,
                                   initial.K = initial.responses,
                                   ite = ite,
                                   c.max = max.responses - 1)
-
-      # Store the joint models
-      model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
-
-      costs[a, b]   <- model$free.energy           # Store cost for joint model. 
-      Nparams[a, b] <- model$posterior$Nparams     # number of parameters in joint model
+      # Save memory; include these later if needed
+      model$prior <- model$opts <- NULL
 
       # Compute BIC-value for two independent subnets vs. joint model 
       # Negative free energy (-cost) is (variational) lower bound for P(D|H)
       # Use it as an approximation for P(D|H)
       # Cost for the indpendent and joint models
-      # -cost is sum of two independent models (H: appr. log-likelihoods)
-
-	bic.ind[a, b] <- (Nparams[a, a] + Nparams[b, b])*Nlog + 2*(H[[a]] + H[[b]])
-      bic.joint[a, b] <- Nparams[a, b]*Nlog + 2*(costs[a, b]) 
-      # = Nparams[a, b]*Nlog - 2*(-costs[a, b])
-
+      # -cost is sum of two independent models (cost: appr. log-likelihoods)
+      bicind.ab     <-  bic(model.list[[a]][[a]]$Nparams + model.list[[b]][[b]]$Nparams, Nlog, -(model.list[[a]][[a]]$free.energy + model.list[[b]][[b]]$free.energy))
+      bicjoint.ab   <-  bic(model$posterior$Nparams, Nlog, -model$free.energy)
+      
       # NOTE: BIC is additive so summing is ok
       # change (increase) of the total BIC / cost
-      delta[a, b] <- bic.joint[a, b] - bic.ind[a, b]     
+      dab <- bicjoint.ab - bicind.ab
+
+      # Store these only if it would improve the cost; otherwise never needed
+      if (-dab > merging.threshold) {
+        #Nparams[a, b] <- model$posterior$Nparams # number of parameters in joint model
+        delta[a, b] <- dab
+        model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
+      } else {
+        model.list[[a]][[b]] <- NA
+      }      
     }
   }
 }
 
-
+gc()
+  
 #######################################################################################
 
 ### MERGE VARIABLES ###
@@ -271,10 +275,11 @@ for (j in 2:dim0){
   # if there are groups left sharing a link and improvement (there are
   # connected items that have delta<0) then continue merging
   # note that diag(network) has been set to 0
-  if (sum(network) > 0 && any( delta < 0 )){
+  if ( sum(network) > 0 && any( -delta > merging.threshold )){
 
     if ( verbose ) { cat(paste('Combining groups, ', nrow(network) - 1, ' group(s) left...\n'))} else{}
-
+    gc() # clean up memory
+    
     # Identify the best neighbor pair in the network (also check that
     # the new merged pair would not exceed the max allowed subnetwork
     # size)
@@ -284,60 +289,41 @@ for (j in 2:dim0){
 
     # Store results
     C <- C + tmp$mindelta
- #   move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
+    #   move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
     move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))     
 
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
-    H[[a]] <- costs[a, b] # FIXME: can we remove H completely from the code?
-
+    
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
     network <- join.subnets(network, a, b)
-
-    # number of parameters for the subnets
-    Nparams[a, a] <- Nparams[a, b]
-    bic.ind[a, a] <- bic.joint[a, b]
-
     model.list[[a]][[a]] <- model.list[[a]][[b]]
 
     # Merge groups G[[a]], G[[b]]
-    removed.group.vars <- G[[b]]
+    G[[a]] <- sort(c(G[[a]], G[[b]]))
     G      <- G[-b]
-    G[[a]] <- sort(c(as.numeric(G[[a]]), removed.group.vars))
-
+    
     # remove the merged group
     # network b already removed in join.subnets() above
-    #Nresponses <- Nresponses[-b]
-    H          <- H[-b]
-    bic.ind    <- bic.ind[-b, -b]
-    bic.joint  <- bic.joint[-b, -b]
-    costs      <- costs[-b, -b]
-    Nparams    <- Nparams[-b, -b]
-    delta      <- delta[-b, -b]
+    delta     <- delta[-b, -b]
 
     # remove bth elements in model list
     model.list[[b]] <- NULL
-    #if (length(model.list) >= 1) {
-      # if there are more rows available 
-      # then remove the b:th element from each..
+    # if there are more rows available 
+    # then remove the b:th element from each..
     for (b.idx in 1:length(model.list)) {    
       model.list[[b.idx]][[b]] <- NULL
     } 
-    #}
     
     # Skip the first b-1 elements as we only apply lower triangle here
-
     if ( nrow(network) == 1 ) {
-      if ( verbose ) {cat("All nodes have been merged.\n")}
-      delta > Inf #indicating that no merging can be be done any more
+      if ( verbose ) { cat("All nodes have been merged.\n") }
+      delta <- Inf #indicating that no merging can be be done any more
     } else {
 
       # Infinite joint costs etc with a for groups not linked to a
       # Note that for Nparams we need also a-a information    
-      Nparams[a, -a] <- Nparams[-a, a] <- Inf
-      bic.ind[a, -a] <- bic.ind[-a, a] <- Inf
-      costs[a, ]     <- costs[, a]     <- Inf
-      bic.joint[a, ] <- bic.joint[, a] <- Inf
+      # Therefore do not replace a, a
       delta[a, ]     <- delta[, a]     <- Inf
 
       # Compute new joint models for a and its neighborghs
@@ -352,27 +338,33 @@ for (j in 2:dim0){
                                 prior.alpha = prior.alpha,
                                 prior.alphaKsi = prior.alphaKsi,
                                 prior.betaKsi = prior.betaKsi,
-                                threshold = threshold,
+                                threshold = vdp.threshold,
                                 initial.K = initial.responses,
                                 ite = ite,
                                 c.max = max.responses - 1 )
+          # Save memory; include these later if needed
+          model$prior <- model$opts <- NULL
 
           # Store the joint models (always a < i)
           minind <- min(c(a,i))
-	  maxind <- max(c(a,i))	  
-          model.list[[minind]][[maxind]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
-
-          costs[minind, maxind]   <- model$free.energy  # cost for joint model
-          Nparams[minind, maxind] <- model$posterior$Nparams  # number of parameters in joint model
+	  maxind <- max(c(a,i))
 
           # BIC-cost for two independent vs. joint model
           # Negative free energy (-cost) is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
-          bic.ind[minind, maxind]   <- (Nparams[a, a] + Nparams[i, i])*Nlog + 2*(H[a] + H[i])
-          bic.joint[minind, maxind] <- Nparams[minind, maxind]*Nlog + 2*(costs[minind, maxind])
 
+          big.ind   <- bic((model.list[[a]][[a]]$Nparams + model.list[[i]][[i]]$Nparams), Nlog, -(model.list[[a]][[a]]$free.energy + model.list[[i]][[i]]$free.energy))
+          big.joint <- bic(model$posterior$Nparams, Nlog, -model$free.energy)
+          
           # change (increase) of the total BIC (cost)
-          delta[minind, maxind] <- bic.joint[minind, maxind] - bic.ind[minind, maxind]
+          delta[minind, maxind] <- big.joint - big.ind
+
+          if (-delta[minind, maxind] > merging.threshold) {  
+            # Store joint model only if it would improve the cost
+            model.list[[minind]][[maxind]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
+          } else {
+            model.list[[minind]][[maxind]] <- NA
+          }
         }
       }
     }
@@ -382,12 +374,8 @@ for (j in 2:dim0){
   }
 }
 
-  if ( length(bic.ind) > 1 ) {
-    costs <- diag(as.matrix(bic.ind))
-  } else {
-    costs <- bic.ind
-  }
-  
+  gc()
+
   if (is.null(colnames(datamatrix))) { nodes <- as.character(1:ncol(datamatrix)) } else {nodes <- colnames(datamatrix)}
   if (is.null(rownames(datamatrix))) { samples <- as.character(1:nrow(datamatrix)) } else {samples <- rownames(datamatrix)}
     
@@ -396,20 +384,21 @@ for (j in 2:dim0){
 
   # Pick the final subnetwork models from the model.list (the diagonal)
   diag.models <- list()
-  for (k in 1:length(model.list)) {
+  for (k in rev(1:length(model.list))) { # go through in reverse order to remove last k at each iter.
     diag.models[[k]] <- model.list[[k]][[k]]
+    model.list[[k]] <- NULL # saving memory
   }
   model.list <- diag.models
-
+    
   # name the subnetworks
-  names(model.list) <- names(subnet.list) <- names(G) <- names(costs) <- paste("Subnet-", 1:length(G), sep = "")  
-        
+  names(model.list) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
+
+  gc()
+  
   model <- 
   new("NetResponseModel",
-#      moves = Matrix(move.cost.hist[1:2,]),
-      moves = matrix(move.cost.hist[1:2,]),      
-      costs = costs,
-      last.grouping = G, # network nodes given in indices
+      moves = matrix(move.cost.hist, 3),
+      last.grouping = G,     # network nodes given in indices
       subnets = subnet.list, # network nodes given in feature names
       params = params,
       nodes = nodes,

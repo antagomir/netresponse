@@ -19,7 +19,7 @@
 \section{Slots}{
   \describe{
     \item{moves}{Subnetwork merging history.}
-    \item{costs}{Cost function values at the different steps.}
+    %\item{costs}{Cost function values at the different steps.}
     \item{last.grouping}{Subnetworks in the last agglomeration level: feature indices}
     \item{subnets}{Subnetworks in the last agglomeration level: feature names}
     \item{params}{Input parameters.}

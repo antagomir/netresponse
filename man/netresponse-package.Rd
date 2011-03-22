@@ -50,10 +50,10 @@ model <- detect.responses(D, netw)
 # Subnets (each is a list of nodes)
 get.subnets( model )
 
-# Retrieve model for the subnetwork with lowest cost function value
+# Retrieve model for one subnetwork
 # means, standard devations and weights for the components
 inds <- which(sapply(model@last.grouping, length) > 2)
-subnet.id <- names(which.min(model@costs[inds]))
+subnet.id <- names(model@subnets)[[1]]
 m <- get.model.parameters(model, subnet.id) 
 print(m)
 }
