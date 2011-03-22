@@ -376,11 +376,15 @@ for (j in 2:dim0){
 
   gc()
 
-  if (is.null(colnames(datamatrix))) { nodes <- as.character(1:ncol(datamatrix)) } else {nodes <- colnames(datamatrix)}
-  if (is.null(rownames(datamatrix))) { samples <- as.character(1:nrow(datamatrix)) } else {samples <- rownames(datamatrix)}
+  #if (is.null(colnames(datamatrix))) { nodes <- as.character(1:ncol(datamatrix)) } else {nodes <- colnames(datamatrix)}
+  #if (is.null(rownames(datamatrix))) { samples <- as.character(1:nrow(datamatrix)) } else {samples <- rownames(datamatrix)}
+
+  if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
+  if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
     
   # Form a list of subnetworks (no filters)
-  subnet.list <- lapply(G, function(x) { nodes[unlist(x)] })
+  #subnet.list <- lapply(G, function(x) { nodes[unlist(x)] })
+  subnet.list <- lapply(G, function(x) { rownames(network.orig)[unlist(x)] })  
 
   # Pick the final subnetwork models from the model.list (the diagonal)
   diag.models <- list()
@@ -388,24 +392,20 @@ for (j in 2:dim0){
     diag.models[[k]] <- model.list[[k]][[k]]
     model.list[[k]] <- NULL # saving memory
   }
-  model.list <- diag.models
     
   # name the subnetworks
-  names(model.list) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
+  names(diag.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
 
   gc()
   
-  model <- 
   new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
       last.grouping = G,     # network nodes given in indices
-      subnets = subnet.list, # network nodes given in feature names
+      subnets = subnet.list, # network nodes given in feature names; FIXME: remove available from models and G
       params = params,
-      nodes = nodes,
-      samples = samples,
       datamatrix = datamatrix,
       network = network.orig,
-      models = model.list
+      models = diag.models
       )      
-   
+
 }

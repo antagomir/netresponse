@@ -12,8 +12,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-
-
 sample2response <- function (model, subnet.id) {
 
   if (is.numeric(subnet.id)) {
@@ -23,9 +21,7 @@ sample2response <- function (model, subnet.id) {
   
   # P(response | sample)
   #assignment.matrix <- model@models[[subnet.id]]$posterior$qOFz
-  qofz <- get.qofz(model, subnet.id, log = FALSE)
-  
-  qofz
+  get.qofz(model, subnet.id, log = FALSE)
   
 }
 

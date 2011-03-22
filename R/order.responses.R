@@ -72,7 +72,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
   s <- investigated.sample
 
   # All samples
-  s.ann <- model@samples
+  s.ann <- rownames(model@datamatrix) # model@samples
 
   # Subnetwork feature names
   nodes <- pars@nodes
@@ -89,7 +89,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
 
   if (method == "hypergeometric") {
 
-      N <- length(model@samples)
+      N <- nrow(model@datamatrix)
 
       # number of white balls in the urn
       m <- length(s) 

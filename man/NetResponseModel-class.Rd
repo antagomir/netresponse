@@ -23,8 +23,8 @@
     \item{last.grouping}{Subnetworks in the last agglomeration level: feature indices}
     \item{subnets}{Subnetworks in the last agglomeration level: feature names}
     \item{params}{Input parameters.}
-    \item{nodes}{Node ids from the original modelled data matrix.}
-    \item{samples}{Sample ids from the original modelled data matrix. }
+    %\item{nodes}{Node ids from the original modelled data matrix.}
+    %\item{samples}{Sample ids from the original modelled data matrix. }
     \item{datamatrix}{Original input datamatrix that was used to learn the model.}
     \item{network}{Original input network that was used to learn the model.}
     \item{models}{Parameters for the learned subnetwork models.}

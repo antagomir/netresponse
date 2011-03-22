@@ -113,7 +113,7 @@ retrieve.model <- function (model, subnet.id) {
   nodes <- model@subnets[[subnet.id]]
 
   # Compute the model
-  vdp.mixt(matrix(model@datamatrix[, nodes], nrow = length(model@samples)))
+  vdp.mixt(matrix(model@datamatrix[, nodes], nrow(model@datamatrix)))
 
 }
 

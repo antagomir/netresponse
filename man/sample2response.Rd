@@ -34,7 +34,7 @@ netw <- toydata$netw   # Network
 model <- detect.responses(D, netw, verbose = FALSE)
 
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
-response.probabilities <- sample2response(model, subnet.id = 1)
+response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
 
 }
 \keyword{utilities}
