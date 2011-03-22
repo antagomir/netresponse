@@ -53,7 +53,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
 		  prior.alpha = model@params$prior.alpha,
                   prior.alphaKsi = model@params$prior.alphaKsi,
 		  prior.betaKsi = model@params$prior.betaKsi,
-		  threshold = model@params$threshold, initial.K =
+		  threshold = model@params$vdp.threshold, initial.K =
 		  model@params$initial.responses,
                   ite = model@params$ite, 
 		  c.max = model@params$max.responses - 1 )
@@ -76,7 +76,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
      m.node <- vdp.mixt( matrix(datamatrix[, fi], nrow( datamatrix )),
                   implicit.noise = model@params$implicit.noise, prior.alpha = model@params$prior.alpha,
                   prior.alphaKsi = model@params$prior.alphaKsi, prior.betaKsi = model@params$prior.betaKsi,
-                  threshold = model@params$threshold, initial.K = model@params$initial.responses,
+                  threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                   ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
      bic.node <- m.node$posterior$Nparams*Nlog + 2*m.node$free.energy 
@@ -92,7 +92,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
     m.joint <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
                     implicit.noise = model@params$implicit.noise, prior.alpha = model@params$prior.alpha,
                     prior.alphaKsi = model@params$prior.alphaKsi, prior.betaKsi = model@params$prior.betaKsi,
-                    threshold = model@params$threshold, initial.K = model@params$initial.responses,
+                    threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                     ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
     bic.joint  <- m.joint$posterior$Nparams*Nlog + 2*m.joint$free.energy

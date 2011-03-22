@@ -3,10 +3,10 @@
 \title{detect.responses}
 \description{ Main function of the NetResponse algorithm. Detecting network responses across the conditions. }
 \usage{detect.responses(datamatrix, network, initial.responses = 1,
-        max.responses = 10, max.subnet.size = 20, verbose =
+        max.responses = 10, max.subnet.size = 10, verbose =
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
-        0.01, update.hyperparams = 0, implicit.noise = 0, threshold =
-        1.0e-5, ite = Inf)}
+        0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
+        1.0e-5, merging.threshold = 0, ite = Inf)}
 
 \value{NetResponseModel object.}
 
@@ -54,8 +54,11 @@ citation("netresponse") for details.}
       alphaKsi and betaKsi are the shape and scale parameters of the
       inverse Gamma function, respectively.}
 
-  \item{threshold}{Minimal free energy improvement after which the
-  algorithm is deemed converged. Used to define convergence limit.}
+  \item{vdp.threshold}{Minimal free energy improvement after which the
+    variational Gaussian mixture algorithm is deemed converged.}
+
+  \item{merging.threshold}{Minimal cost value improvement required for
+  merging two subnetworks.}  
 
   \item{ite}{Defines maximum number of iterations on posterior
     update (updatePosterior). Increasing this can potentially lead to
