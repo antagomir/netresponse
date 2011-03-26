@@ -2,12 +2,10 @@
 %\Rdversion{1.1}
 \docType{class}
 \alias{NetResponseModel-class}
-
 \alias{[[,NetResponseModel-method}
 \alias{show,NetResponseModel-method}
 %\alias{get.subnets}
 %\alias{get.subnets,NetResponseModel-method} % NOTE: no space after comma!!
-
 %\alias{get.model.parameters}
 %\alias{get.model.parameters, NetResponseModel-method}
 
@@ -27,7 +25,7 @@
     %\item{samples}{Sample ids from the original modelled data matrix. }
     \item{datamatrix}{Original input datamatrix that was used to learn the model.}
     \item{network}{Original network that was used to learn the model
-      (after netresponse preprocessing).}
+      (after netresponse preprocessing), given in graphNEL format.}
     \item{models}{Parameters for the learned subnetwork models.}
   }
 }

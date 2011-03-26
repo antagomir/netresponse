@@ -198,9 +198,8 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
   if (is.null(sample)) { sample <- rownames(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
 
-    print("HOI")
-  print(subnet.id)
-  print(names(model@subnets))
+  #print(subnet.id)
+  #print(names(model@subnets))
   
   dat <- t(matrix(model@datamatrix[sample, nodes], length(sample)))
   rownames(dat) <- nodes
@@ -220,7 +219,7 @@ setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, 
   # Use feature names instead of indices
   if ( get.names ) {
     #grouping <- lapply(grouping, function(x) {model@nodes[unlist(x)]})
-    grouping <- lapply(grouping, function(x) {colnames(model@network)[unlist(x)]})    
+    grouping <- lapply(grouping, function(x) {colnames(model@datamatrix)[unlist(x)]})    
   }
   
   # name the subnetworks

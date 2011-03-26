@@ -1,4 +1,8 @@
 
+CHANGES IN VERSION 1.1.30 (2011-03-26)
+
+  o polished vignette
+
 CHANGES IN VERSION 1.1.29 (2011-03-23)
 
 SIGNIFICANT USER-VISIBLE CHANGES
@@ -14,6 +18,7 @@ OTHER CHANGES
   o within detect.responses now handling the network through edge
     list; this is considerably more memory-efficient than previous
     implementation
+  o added dependencies to graph and igraph packages
 
 CHANGES IN VERSION 1.1.28 (2011-03-23)
 
