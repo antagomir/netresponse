@@ -26,7 +26,8 @@
     %\item{nodes}{Node ids from the original modelled data matrix.}
     %\item{samples}{Sample ids from the original modelled data matrix. }
     \item{datamatrix}{Original input datamatrix that was used to learn the model.}
-    \item{network}{Original input network that was used to learn the model.}
+    \item{network}{Original network that was used to learn the model
+      (after netresponse preprocessing).}
     \item{models}{Parameters for the learned subnetwork models.}
   }
 }

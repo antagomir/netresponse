@@ -1,4 +1,20 @@
 
+CHANGES IN VERSION 1.1.29 (2011-03-23)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o package: xadded support for reading in SIF network files through read.sif function
+  o detect.responses: added support for igraph and graphNEL network
+  formats; in detect.responses output the network is now also
+  outputted in graphNEL format. This is more memory-efficient than
+  previous implementation.
+
+OTHER CHANGES
+
+  o within detect.responses now handling the network through edge
+    list; this is considerably more memory-efficient than previous
+    implementation
+
 CHANGES IN VERSION 1.1.28 (2011-03-23)
 
   o made mixture density functions visible in NAMESPACE as this seems

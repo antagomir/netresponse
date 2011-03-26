@@ -126,23 +126,23 @@ get.subnets(model, min.size = 2, min.responses = 2)
 
 Each subnetwork response has a probabilistic association to each
 condition. Get the list of samples corresponding to each response
-(each sample is assigned to the response of the highest probability)
+(each sample is assigned to the response of the highest probability) with response2sample function.
 
-<<resp, results = hide>>=
+<<resp, results = hide, eval = FALSE>>=
 subnet.id <- 'Subnet-2'
 response2sample(model, subnet.id)
 @
 
 Retrieve model parameters of a given subnetwork (Gaussian mixture
 means, covariance diagonal, and component weights):
-<<pars>>=
+<<pars, eval = FALSE>>=
 pars <- get.model.parameters(model, subnet.id) # model parameters
 pars
 @ 
 
 
 Probabilistic sample-response assignments for a given subnet is retrieved with:
-<<probs>>=
+<<probs, eval = FALSE>>=
 response.probabilities <- sample2response(model, subnet.id)
 @
 
@@ -153,7 +153,7 @@ search for features (genes) that are similar to a given subnetwork but
 not directly interacting with it. To order the remaining features
 in the input data based on similarity with the subnetwork, type
 
-<<findsimilar>>=
+<<findsimilar, eval = FALSE>>=
 g <- find.similar.features(model, subnet.id = "Subnet-1")
 subset(g, delta < 0)
 @
