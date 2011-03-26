@@ -27,8 +27,10 @@ citation("netresponse") for details.}
 
   }
 
-  \item{network}{Binary matrix that describes pairwise interactions
-    between the features of 'datamatrix'. This defines a network.}
+  \item{network}{Network describing undirected pairwise interactions
+    between features of 'datamatrix'. The following formats are
+    supported: binary matrix, graphNEL, igraph, graphAM, Matrix,
+    dgCMatrix, dgeMatrix}
 
   \item{initial.responses}{Initial number of components for each
   subnetwork model. Used to initialize calculations.}

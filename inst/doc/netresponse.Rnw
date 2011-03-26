@@ -83,7 +83,9 @@ netw <- as.matrix(toydata$netw)
 
 \section{Detecting network responses}
 
-Detect network responses across the conditions:
+Detect network responses across the different measurement conditions
+in the data matrix D. Various network formats are supported, see
+help(detect.responses) for details:
 
 <<detect>>=
 model <- detect.responses(D, netw, verbose = TRUE)
@@ -98,15 +100,13 @@ stat <- model.stats(model)
 stat
 @
 
-List the detected subnetworks (each is a list of nodes)
-<<getsubnets>>=
-get.subnets(model)
-@ 
-
-Subnetworks can be filtered by size and number of
-responses. Subnetworks that have only one response are not informative
-of the differences between conditions, and typically ignored in
-subsequent analysis.
+List the detected subnetworks (each is a list of nodes). By default,
+singleton subnetworks (with only one gene) and subnetworks with only a
+single response (no differences between conditions) are excluded. To
+change the defaults, see help(get.subnets). Subnetworks can be
+filtered by size and number of responses. Subnetworks that have only
+one response are not informative of the differences between
+conditions, and typically ignored in subsequent analysis.
 
 <<getsubnets2>>=
 get.subnets(model, min.size = 2, min.responses = 2)
@@ -128,21 +128,21 @@ Each subnetwork response has a probabilistic association to each
 condition. Get the list of samples corresponding to each response
 (each sample is assigned to the response of the highest probability) with response2sample function.
 
-<<resp, results = hide, eval = FALSE>>=
+<<resp, results = hide>>=
 subnet.id <- 'Subnet-2'
 response2sample(model, subnet.id)
 @
 
 Retrieve model parameters of a given subnetwork (Gaussian mixture
 means, covariance diagonal, and component weights):
-<<pars, eval = FALSE>>=
+<<pars>>=
 pars <- get.model.parameters(model, subnet.id) # model parameters
 pars
 @ 
 
 
 Probabilistic sample-response assignments for a given subnet is retrieved with:
-<<probs, eval = FALSE>>=
+<<probs>>=
 response.probabilities <- sample2response(model, subnet.id)
 @
 
@@ -153,7 +153,7 @@ search for features (genes) that are similar to a given subnetwork but
 not directly interacting with it. To order the remaining features
 in the input data based on similarity with the subnetwork, type
 
-<<findsimilar, eval = FALSE>>=
+<<findsimilar>>=
 g <- find.similar.features(model, subnet.id = "Subnet-1")
 subset(g, delta < 0)
 @
@@ -164,7 +164,6 @@ values of delta indicate the presence of coordinated responses,
 positive values of delta indicate independent responses. The data
 frame is ordered such that the features are listed by decreasing
 similarity.
-
 
 \section{Variational Dirichlet process Gaussian mixture model}
 

@@ -107,7 +107,7 @@ function(datamatrix,
   if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
   
   # FIXME: later add other forms of sparse matrices from Matrix package                                        
-  accepted.formats.net <- c("matrix", "Matrix", "data.frame", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
+  accepted.formats.net <- c("matrix", "Matrix", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
   if (!class(network)[[1]] %in% accepted.formats.net) {  
     stop(paste("network needs to be in one of the following formats:", paste(accepted.formats.net, collapse = "; ")))
   }
@@ -377,7 +377,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
       }
     }
   } else{
-    if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold\n'))}
+    if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.\n'))}
     break
   }
 }
