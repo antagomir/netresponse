@@ -45,7 +45,6 @@ pick.model.parameters <- function (m, nodes) {
   colnames(mu) <- colnames(sds) <- nodes		       
 
   # For mu and std, rows correspond to the mixture components, in w the elements
-  #list(mu = mu, sd = sds, w = w, K = length(w), prior = m$prior, posterior = m$posterior, opts = m$opts, free.energy = m$free.energy)
   list(mu = mu, sd = sds, w = w, free.energy = m$free.energy, Nparams = m$posterior$Nparams)
 
 }
@@ -275,10 +274,78 @@ find.best.neighbor <- function (delta, G, max.subnet.size, network) {
 
 }
 
+find.best.neighbor2 <- function (delta, G, max.subnet.size, network) {
+
+  # for graphNEL networks
+  
+  dimi <- length(nodes(network)) - 1
+  a <- b <- 0
+  mindelta <- Inf
+  for (i in 1:dimi){
+    #Check neighborgs
+    neighInds <- which(nodes(network) %in% adj(network, nodes(network)[[i]])[[1]])
+    if (!is.null(neighInds)) {
+      #Identify best neighbor
+      x <- min(delta[i, neighInds])
+      # present things in original indices
+      z <- neighInds[which.min(delta[i, neighInds])]
+      # require also x < 0 since otherwise combining groups is
+      # worse than keeping them separate
+      if (x < 0 && length(c(G[[z]], G[[i]])) <= max.subnet.size){
+        # Store the so far best neighborghs
+        mindelta <- x  # NOTE: here x from delta refers to BIC change
+        b <- z         # we search for the indices (a,b) of the groups
+        a <- i         # that are joined next ..
+      }
+    } else {}
+  }
+
+  # Order a, b
+  temp <- sort( c(a, b) )
+  a    <- temp[[1]]
+  b    <- temp[[2]]
+
+  list(a = a, b = b, mindelta = mindelta)
+
+}
+
+find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
+
+  # Order edges by delta values. The two subnets with the smallest delta are
+  # joined unless the merged subnet exceeds max size.
+  o <- order(delta)
+
+  # Check size of the resulting merged subnet one-by-one, starting from the smallest
+  best.found <- FALSE
+  cnt <- 0
+  a <- b <- NULL
+  while (!best.found) {
+    cnt <- cnt + 1
+    ind <- o[[cnt]]
+    z <- network[1, ind]
+    i <- network[2, ind]    
+
+    # Finish when new merged subnetwork that does not exceed max size is found
+    if (length(c(G[[z]], G[[i]])) <= max.subnet.size){
+      # Sort a and b
+      a <- min(c(z, i))
+      b <- max(c(z, i))
+      best.edge <- ind
+      best.found <- TRUE
+    }
+  }
+
+  mindelta <- delta[[best.edge]]
+  if (!best.found) { mindelta <- Inf }
+  
+  list(a = a, b = b, mindelta = mindelta, best.edge = best.edge)
+
+}
 
 
 join.subnets <- function (network, a, b) {
-
+  # for binary matrices
+  
   # put merged a,b into a's place and remove b  
   #network[a, ]  <- as.numeric(network[a, ] | network[b, ]) 
   network[a, ]  <- (network[a, ] | network[b, ]) 
@@ -288,6 +355,40 @@ join.subnets <- function (network, a, b) {
   #Matrix(network[-b, -b])
   matrix(network[-b, -b], nrow(network) - 1)
     
+}
+
+join.subnets2 <- function (network, delta, best.edge) {
+  # for edge matrices
+  a <- network[1, best.edge]
+  b <- network[2, best.edge]  
+  
+  # replace b nodes by a: this in effect transfers b edges to a edges
+  # and removes b completely
+  inds <- (network[2, ] == b)
+  if (any(inds)) {
+    network[2, inds] <- a
+    delta[inds] <- NA # remove merge costs; need to be recalculated for the merged subnet
+  }
+  
+  inds <- (network[1, ] == b)
+  if (any(inds)) {  
+    network[1, inds] <- a  
+    delta[inds] <- NA # remove merge costs; need to be recalculated for the merged subnet
+  }
+
+  # Also remove delta values for nodes associated with a node
+  # since this node now has different (merged) set of features
+  # and model needs to be recalculated
+  inds <- apply(network == a, 2, any)
+  delta[inds] <- NA
+  
+  # remove self-links
+  network <- network[, -best.edge]
+  delta <- delta[-best.edge]
+  # sort entries (row1 < row2)
+  network <- apply(network, 2, sort)
+  
+  list(network = matrix(network, 2), delta = delta)
 }
 
 

@@ -93,86 +93,123 @@ function(datamatrix,
 		 ite = ite 
 		 )
 
-  # FIXME: later add other forms of sparse matrices from Matrix package
-  accepted.formats <- c("matrix", "Matrix", "data.frame", "dgCMatrix", "dgeMatrix")
- 
+  accepted.formats.emat <- c("matrix", "Matrix", "data.frame")  
   # ensure datamatrix is a matrix
   if (!is.matrix(datamatrix)) {
-    if (class(datamatrix) %in% accepted.formats) {
+    if (class(datamatrix) %in% accepted.formats.emat) {
       message("Converting the input data into (sparse) matrix format.")
       datamatrix <- matrix(datamatrix)
     } else {
-     stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
+     stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats.emat, collapse = "; ")))
     }    
   }
+  if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
+  if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
+  
+  # FIXME: later add other forms of sparse matrices from Matrix package                                        
+  accepted.formats.net <- c("matrix", "Matrix", "data.frame", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
+  if (!class(network)[[1]] %in% accepted.formats.net) {  
+    stop(paste("network needs to be in one of the following formats:", paste(accepted.formats.net, collapse = "; ")))
+  }
+  
+  # Convert matrix into graphNEL if it is not already
+  if (!class(network) == "graphNEL") {
+    if (class(network) %in% c("dgeMatrix", "dfCMatrix", "Matrix", "data.frame")) {
+      # Sparse matrix or data.frame needs to be converted first into matrix 
+      network <- as.matrix(network)
+    }
+    
+    if (is.matrix(network)) {
 
-  # ensure network is a matrix
-  if (!is.matrix(network)) {
-    if (class(network)[[1]] %in% accepted.formats) {
-#      message("Converting the input network into (sparse) matrix format.")
-#      network <- Matrix(network)
-#       network <- as.matrix(network) 
-      # FIXME: dtpMatrix Triangular real matrices in packed storage (triangle only)
-      # would save even more space than using general sparse real matrix here. Change.
+      if ( !nrow(network) == ncol(network) ) { stop("Error: network nrow = ncol required.\n") }
+
+      # Ensuring symmetric network
+      if (any(!network == t(network))) {
+        warning("Network is not symmetric. Removing link directions to force symmetric network.")
+        network <- ((network + t(network)) > 0) - 0
+      }
       
-    } else {
-      stop(paste("network needs to be in one of the following formats:", paste(accepted.formats, collapse = "; ")))
+      # check that node names given in the data and correspond
+      if ( is.null(rownames( network )) || is.null(colnames( datamatrix )) ) {        
+        if ( !nrow(network) == ncol(datamatrix) ) {
+          stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
+        } else {
+          warning("Warning: network and/or data features are not named; matched by order.\n")
+          if (is.null(rownames( network )) && is.null(colnames( datamatrix ))) {
+            rownames(network) <- colnames(network) <- as.character(1:nrow(network))
+            colnames(datamatrix) <- rownames(network)
+          } else if (is.null(rownames( network )) && !is.null(colnames( datamatrix ))) {
+            rownames(network) <- colnames(network) <- colnames( datamatrix )
+          } else if (!is.null(rownames( network )) && is.null(colnames( datamatrix ))) {
+            colnames( datamatrix ) <- rownames(network)
+          }            
+        }
+      }
+      network <- as(new("graphAM", adjMat = network), "graphNEL")
+    } else if (class(network) == "igraph") {
+      network <- igraph.to.graphNEL(network)
     }
   }
 
-  # remove self-links i.e. set network diagonal to zero
-  network <- as.matrix(network)
-  diag( network ) <- 0
-  #network <- Matrix(network)
+  # FIXME: adjust such that igraph does not need to be converted in graphNEL (which is larger
+  # FIXME: add option to give this as input; seems to consume much less memory than graphNEL  
+  
+  # Now network is in graphNEL format. Further manipulations:  
+  # store original network node list
+  # remove nodes that are not in datamatrix                                        
+  common.feats <- intersect(nodes(network), colnames(datamatrix))
+  # list network nodes that are not in datamatrix
+  other.feats <- setdiff(nodes(network), common.feats)
+  if (length(other.feats) > 0) {
+    if (verbose) { message("removing network nodes that are not in datamatrix") }
+    network <- removeNode(other.feats, network)
+  }
+  # convert the network into edge matrix
+  network.nodes <- nodes(network)
+  network <- edgeMatrix(network, duplicates = FALSE) # indices correspond to node list in network.nodes
+  # order such that row1 < row2
+  network <- apply(network, 2, sort)
+  if (verbose) message("removing self-links")  
+  network <- network[, !network[1,] == network[2,]]
+  # Store the network in igraph format
+  df <- as.data.frame(t(network)) 
+  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
+  # FIXME: igraph is more memory-efficient but could not be used as network class in NetResponseModel definition
+  # for some reason. If possible, convert from graphNEL to igraph later on.
 
-  # match the features between network and datamatrix
-  # the names need to match if names are given
-  if ( !is.null(rownames( network )) && !is.null(rownames( datamatrix )) ) {
-    # pick samples that are in both network and response matrix                                        
-    common.feats <- intersect(rownames(network), colnames(datamatrix))
-    network      <- network[common.feats, common.feats]
-    net.datamatrix   <- matrix(datamatrix[, common.feats], nrow(datamatrix))
-    rownames(net.datamatrix) <- rownames(datamatrix)
-    colnames(net.datamatrix) <- common.feats
-    datamatrix <- net.datamatrix
-    rm(net.datamatrix)
-    
-  } else if ( !nrow(network) == ncol(network) ) {
-
-    stop("Error: symmetric network required.\n")
-
-  } else if ( !nrow(network) == ncol(datamatrix) ) {
-
-    stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
-
-  } else { warning("Warning: network and/or data features not named; matched by order.\n") }
-
-  # store the original network (self-links removed, ordered to match the datamatrix)
-  #  network <- Matrix(network)
-  network.orig <- network
-
+  if (verbose) message("matching the features between network and datamatrix")  
+  samples <- rownames(datamatrix)
+  datamatrix   <- matrix(datamatrix[, network.nodes], nrow(datamatrix))
+  colnames(datamatrix) <- network.nodes
+  rownames(datamatrix) <- samples
+  rm(samples)
+  
 #################################################################################
 
 ### INITIALIZE ###
   
   Nlog <- log( nrow( datamatrix ) )
-  dim0 <- dim <- ncol( datamatrix )
+  dim0 <- ncol( datamatrix )
   C    <- 0
 
   # print(" diagonal contains number of parameters for corresponding model")
   # off-diagonal tells number of parameters for the joint model
   # initial costs for the independent and joint models
 
+  # Each variable pair has cost function value; add this as network edge property
   # is sparse matrices are slow, use arrays; they are faster than matrices
-  delta     <- matrix(Inf, dim, dim)
+  #delta     <- matrix(Inf, dim, dim)
+  #delta.nodes <- vector(Inf, network.nodes)
 
+  # Network rows:                                        
+  # 1) nodes 2) nodes 3) merging cost function delta
+  rownames(network) <- c("node1", "node2")
+  delta <- rep(NA, ncol(network))
+  # FIXME: add individual models separately                                        
+    
   # Storage list for calculated models
-  model.list <- list()
-  for (i in 1:nrow(network)) {  
-    model.list[[i]] <- vector(length = i, "list")
-  }
-  # nested lists; the first level corresponds to rows and second level to cols of the other matrices
-  # just lower-diagonal used
+  model.nodes <- vector(length = length(network.nodes), mode = "list" ) # individual nodes
+  model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
 
   gc()
   
@@ -182,11 +219,13 @@ function(datamatrix,
   
   if (verbose) { cat("Compute cost for each variable\n") }
 
-  for (k in 1:dim){
+  for (k in 1:length(network.nodes)){
 
-    if ( verbose ) {cat(paste('Computing model for variable', k, "/", dim, '\n'))}    
+    node <- network.nodes[[k]]
+    
+    if ( verbose ) {cat(paste('Computing model for node', k, "/", ncol( datamatrix ), '\n'))}    
 
-    model           <- vdp.mixt( matrix(datamatrix[, k], nrow( datamatrix )),
+    model           <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
                                 implicit.noise = implicit.noise,
                                 prior.alpha = prior.alpha,
                                 prior.alphaKsi = prior.alphaKsi,
@@ -195,11 +234,10 @@ function(datamatrix,
                                 initial.K = initial.responses,
                                 ite = ite,
                                 c.max = max.responses - 1 )
-    # Save memory; include these later if needed
-    model$prior <- model$opts <- NULL
+
     bic.ind <- bic(model$posterior$Nparams, Nlog, -model$free.energy) # BIC for model
     C              <- C + bic.ind # Total cost
-    model.list[[k]][[k]] <- pick.model.parameters(model, colnames(datamatrix)[[k]])
+    model.nodes[[k]] <- pick.model.parameters(model, node)
 
 }
 
@@ -207,191 +245,153 @@ gc()
   
 if (verbose) { cat('done\n') }
 
+  
 ##########################################################################################
 
 ###   compute costs for combined variable pairs  ###
 
-for (a in 1:(dim - 1)){
+for (edge in 1:ncol(network)){
 
-  if (verbose) { cat(paste('Computing delta values for variable ', a, '/', dim, '\n')) }
+  if (verbose) { cat(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
 
-  for (b in (a + 1):dim){
+  a <- network[1, edge]
+  b <- network[2, edge]  
+  vars            <- network.nodes[c(a, b)]
+  model           <- vdp.mixt(
+                              matrix(datamatrix[, vars], nrow( datamatrix )),
+                              implicit.noise = implicit.noise,
+                              prior.alpha = prior.alpha,
+                              prior.alphaKsi = prior.alphaKsi,
+                              prior.betaKsi = prior.betaKsi,
+                              threshold = vdp.threshold,
+                              initial.K = initial.responses,
+                              ite = ite,
+                              c.max = max.responses - 1)
 
-    # Require that the combined groups are connected in the network
-    if (network[a, b]){ 
-
-      vars            <- c(a, b)
-      model           <- vdp.mixt(
-                                  matrix(datamatrix[, vars], nrow( datamatrix )),
-                                  implicit.noise = implicit.noise,
-                                  prior.alpha = prior.alpha,
-                                  prior.alphaKsi = prior.alphaKsi,
-                                  prior.betaKsi = prior.betaKsi,
-                                  threshold = vdp.threshold,
-                                  initial.K = initial.responses,
-                                  ite = ite,
-                                  c.max = max.responses - 1)
-      # Save memory; include these later if needed
-      model$prior <- model$opts <- NULL
-
-      # Compute BIC-value for two independent subnets vs. joint model 
-      # Negative free energy (-cost) is (variational) lower bound for P(D|H)
-      # Use it as an approximation for P(D|H)
-      # Cost for the indpendent and joint models
-      # -cost is sum of two independent models (cost: appr. log-likelihoods)
-      bicind.ab     <-  bic(model.list[[a]][[a]]$Nparams + model.list[[b]][[b]]$Nparams, Nlog, -(model.list[[a]][[a]]$free.energy + model.list[[b]][[b]]$free.energy))
-      bicjoint.ab   <-  bic(model$posterior$Nparams, Nlog, -model$free.energy)
+  # Compute BIC-value for two independent subnets vs. joint model 
+  # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+  # Use it as an approximation for P(D|H)
+  # Cost for the indpendent and joint models
+  # -cost is sum of two independent models (cost: appr. log-likelihoods)
+  bicind.ab     <-  bic(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy))
+  bicjoint.ab   <-  bic(model$posterior$Nparams, Nlog, -model$free.energy)
       
       # NOTE: BIC is additive so summing is ok
       # change (increase) of the total BIC / cost
-      dab <- bicjoint.ab - bicind.ab
-
+  delta[[edge]] <- as.numeric(bicjoint.ab - bicind.ab)
       # Store these only if it would improve the cost; otherwise never needed
-      if (-dab > merging.threshold) {
-        #Nparams[a, b] <- model$posterior$Nparams # number of parameters in joint model
-        delta[a, b] <- dab
-        model.list[[a]][[b]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
-      } else {
-        model.list[[a]][[b]] <- NA
-      }      
-    }
-  }
+  if (-delta[[edge]] > merging.threshold) {    
+    model.pairs[[edge]] <- pick.model.parameters(model, vars)
+  } else {
+    model.pairs[[edge]] <- 0
+  }      
 }
 
 gc()
-  
+
 #######################################################################################
 
 ### MERGE VARIABLES ###
 
-G <- lapply(1:dim, function( x ){ x }) # Place each node in a singleton subnet
+G <- lapply(1:ncol( datamatrix ), function( x ){ x }) # Place each node in a singleton subnet
 move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
 
-for (j in 2:dim0){
+# if there are groups left sharing a link and improvement (there are
+# connected items that have delta<0) then continue merging
+# note that diag(network) has been set to 0
+while ( !is.null(network) && any( -delta > merging.threshold )){
 
-  # if there are groups left sharing a link and improvement (there are
-  # connected items that have delta<0) then continue merging
-  # note that diag(network) has been set to 0
-  if ( sum(network) > 0 && any( -delta > merging.threshold )){
-
-    if ( verbose ) { cat(paste('Combining groups, ', nrow(network) - 1, ' group(s) left...\n'))} else{}
-    gc() # clean up memory
+  if ( verbose ) { cat(paste('Combining groups, ', sum(!is.na(G)), ' group(s) left...\n'))} else{}
     
     # Identify the best neighbor pair in the network (also check that
     # the new merged pair would not exceed the max allowed subnetwork
     # size)
-    tmp <- find.best.neighbor(delta, G, max.subnet.size, network)
-      a <- min(tmp$a, tmp$b)
-      b <- max(tmp$a, tmp$b)
 
-    # Store results
+  tmp <- find.best.neighbor3(G, max.subnet.size, network, delta)
+
+  # If merging still possible
+  if (-tmp$mindelta > merging.threshold) {
+    a <- tmp$a 
+    b <- tmp$b
+    best.edge <- tmp$best.edge
+    # Store results                                        
     C <- C + tmp$mindelta
-    #   move.cost.hist <- cBind(move.cost.hist, Matrix(c(a, b, C), 3)) 
-    move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))     
+    move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))
 
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
     
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
-    network <- join.subnets(network, a, b)
-    model.list[[a]][[a]] <- model.list[[a]][[b]]
+    tmp.join <- join.subnets2(network, delta, best.edge)
+    network <- tmp.join$network
+      delta <- tmp.join$delta    
+
+    model.nodes[[a]] <- model.pairs[[best.edge]]
+         model.pairs <- model.pairs[-best.edge]
+    model.nodes[[b]] <- NA  
 
     # Merge groups G[[a]], G[[b]]
     G[[a]] <- sort(c(G[[a]], G[[b]]))
-    G      <- G[-b]
-    
-    # remove the merged group
-    # network b already removed in join.subnets() above
-    delta     <- delta[-b, -b]
-
-    # remove bth elements in model list
-    model.list[[b]] <- NULL
-    # if there are more rows available 
-    # then remove the b:th element from each..
-    for (b.idx in 1:length(model.list)) {    
-      model.list[[b.idx]][[b]] <- NULL
-    } 
-    
+    G[[b]] <- NA
+ 
     # Skip the first b-1 elements as we only apply lower triangle here
-    if ( nrow(network) == 1 ) {
+    if ( ncol(network) == 1 ) {
       if ( verbose ) { cat("All nodes have been merged.\n") }
       delta <- Inf #indicating that no merging can be be done any more
     } else {
+      # Compute new joint models for a (new merged subnet) and its neighborghs
+      for (edge in which(is.na(delta))){
 
-      # Infinite joint costs etc with a for groups not linked to a
-      # Note that for Nparams we need also a-a information    
-      # Therefore do not replace a, a
-      delta[a, ]     <- delta[, a]     <- Inf
+        # Pick node indices
+        a <- network[1, edge]
+        i <- network[2, edge]
+        vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]
 
-      # Compute new joint models for a and its neighborghs
-      for (i in 1:nrow(network)){
-
-        # compute combined model only if a and i are linked
-        if (network[a, i] & length(c(G[[a]], G[[i]])) <= max.subnet.size){
-          vars  <- sort(c(G[[a]], G[[i]]))
-
-          model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
-                                implicit.noise = implicit.noise,
-                                prior.alpha = prior.alpha,
-                                prior.alphaKsi = prior.alphaKsi,
-                                prior.betaKsi = prior.betaKsi,
-                                threshold = vdp.threshold,
-                                initial.K = initial.responses,
-                                ite = ite,
-                                c.max = max.responses - 1 )
-          # Save memory; include these later if needed
-          model$prior <- model$opts <- NULL
-
-          # Store the joint models (always a < i)
-          minind <- min(c(a,i))
-	  maxind <- max(c(a,i))
-
+        model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
+                          implicit.noise = implicit.noise,
+                          prior.alpha = prior.alpha,
+                          prior.alphaKsi = prior.alphaKsi,
+                          prior.betaKsi = prior.betaKsi,
+                          threshold = vdp.threshold,
+                          initial.K = initial.responses,
+                          ite = ite,
+                          c.max = max.responses - 1 )
+        
+          # Store the joint models
           # BIC-cost for two independent vs. joint model
           # Negative free energy (-cost) is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
 
-          big.ind   <- bic((model.list[[a]][[a]]$Nparams + model.list[[i]][[i]]$Nparams), Nlog, -(model.list[[a]][[a]]$free.energy + model.list[[i]][[i]]$free.energy))
+          big.ind   <- bic((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy))
           big.joint <- bic(model$posterior$Nparams, Nlog, -model$free.energy)
           
           # change (increase) of the total BIC (cost)
-          delta[minind, maxind] <- big.joint - big.ind
+          delta[[edge]] <- big.joint - big.ind
 
-          if (-delta[minind, maxind] > merging.threshold) {  
+          if (-delta[[edge]] > merging.threshold) {  
             # Store joint model only if it would improve the cost
-            model.list[[minind]][[maxind]] <- pick.model.parameters(model, colnames(datamatrix)[vars])
+            model.pairs[[edge]] <- pick.model.parameters(model, vars)
           } else {
-            model.list[[minind]][[maxind]] <- NA
+            model.pairs[[edge]] <- 0
           }
-        }
       }
     }
   } else{
-    if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or no improvement possible on level', j, '\n'))}
+    if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold\n'))}
     break
   }
 }
+  
+  # Remove left-out nodes (from the merges)
+  nainds <- is.na(model.nodes)
+  model.nodes <- model.nodes[!nainds]
+  G <- G[!nainds]
 
-  gc()
-
-  #if (is.null(colnames(datamatrix))) { nodes <- as.character(1:ncol(datamatrix)) } else {nodes <- colnames(datamatrix)}
-  #if (is.null(rownames(datamatrix))) { samples <- as.character(1:nrow(datamatrix)) } else {samples <- rownames(datamatrix)}
-
-  if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
-  if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
-    
   # Form a list of subnetworks (no filters)
-  #subnet.list <- lapply(G, function(x) { nodes[unlist(x)] })
-  subnet.list <- lapply(G, function(x) { rownames(network.orig)[unlist(x)] })  
+  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] })
 
-  # Pick the final subnetwork models from the model.list (the diagonal)
-  diag.models <- list()
-  for (k in rev(1:length(model.list))) { # go through in reverse order to remove last k at each iter.
-    diag.models[[k]] <- model.list[[k]][[k]]
-    model.list[[k]] <- NULL # saving memory
-  }
-    
   # name the subnetworks
-  names(diag.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
+  names(model.nodes) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
 
   gc()
   
@@ -402,7 +402,6 @@ for (j in 2:dim0){
       params = params,
       datamatrix = datamatrix,
       network = network.orig,
-      models = diag.models
-      )      
-
+      models = model.nodes
+      )
 }

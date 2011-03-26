@@ -22,8 +22,8 @@ get.model.parameters <- function (model, subnet.id) {
   #  Licence: GPL >=2
 
   if (is.numeric(subnet.id)) {
+    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")    
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
   }
   
   pars <- model@models[[subnet.id]]

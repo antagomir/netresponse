@@ -25,16 +25,17 @@ citation("netresponse") for citation details.}
 \author{Leo Lahti \email{leo.lahti@iki.fi}}
 
 \examples{
-# Load toy data
-data( toydata )        # Load toy data set
-D    <- toydata$emat   # Response matrix (for example, gene expression)
-netw <- toydata$netw   # Network
+
+#library(netresponse)
+#data( toydata )        # Load toy data set
+#D    <- toydata$emat   # Response matrix (for example, gene expression)
+#netw <- toydata$netw   # Network
 
 # Detect network responses
-model <- detect.responses(D, netw, verbose = FALSE)
+#model <- detect.responses(D, netw, verbose = FALSE)
 
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
-response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
+#response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
 
 }
 \keyword{utilities}

@@ -10,21 +10,20 @@ netw <- toydata$netw
 
 # The toy data is random data with 10 features (genes). 
 # The features 
-rf <- c(4,5,6)
+rf <- c(4, 5, 6)
 #form a subnetwork with coherent responses
 # with means 
-r1 <- c(0,3,0)
-r2 <- c(-5,0,2)
-r3 <- c(5,-3,-3)
-mu.real <- rbind(r1,r2,r3)
+r1 <- c(0, 3, 0)
+r2 <- c(-5, 0, 2)
+r3 <- c(5, -3, -3)
+mu.real <- rbind(r1, r2, r3)
 # real weights
-w.real <- c(70,70,60)/200
+w.real <- c(70, 70, 60)/200
 # and unit variances
 rv <- 1
 
-
 # Compute the model
-res <- detect.responses(D, netw, verbose = FALSE)
+res <- detect.responses(D, netw, verbose = TRUE)
 
 # Subnets (each is a list of nodes)
 subnet <- get.subnets(res)
@@ -36,7 +35,7 @@ subnet <- get.subnets(res)
 # how about responses
 # Retrieve model for the subnetwork with lowest cost function value
 # means, standard devations and weights for the components
-m <- get.model.parameters(res, subnet.id = 2)  
+m <- get.model.parameters(res, subnet.id = "Subnet-2")  
 
 # order retrieved and real response means by the first feature 
 # (to ensure responses are listed in the same order)

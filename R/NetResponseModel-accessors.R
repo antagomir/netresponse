@@ -195,9 +195,13 @@ setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALS
 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
-  if (is.null(sample)) { sample <- rownames(model@datamatrix) }  
-
+  if (is.null(sample)) { sample <- rownames(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
+
+    print("HOI")
+  print(subnet.id)
+  print(names(model@subnets))
+  
   dat <- t(matrix(model@datamatrix[sample, nodes], length(sample)))
   rownames(dat) <- nodes
   colnames(dat) <- as.character(sample)
