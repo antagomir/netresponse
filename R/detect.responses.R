@@ -171,9 +171,8 @@ function(datamatrix,
   network <- apply(network, 2, sort)
   if (verbose) message("removing self-links")  
   network <- network[, !network[1,] == network[2,]]
-  # Store the network in igraph format
-  df <- as.data.frame(t(network)) 
-  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
+  # Store the network in igraph format  
+  network.orig <- network # store network used for modeling (preprocessed)
   # FIXME: igraph is more memory-efficient but could not be used as network class in NetResponseModel definition
   # for some reason. If possible, convert from graphNEL to igraph later on.
 
@@ -394,6 +393,9 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
   names(model.nodes) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
 
   gc()
+
+  # Convert original network to graphNEL (not before, to save more memory for computation stage)
+  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
   
   new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
