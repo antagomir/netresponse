@@ -6,7 +6,7 @@
         max.responses = 10, max.subnet.size = 10, verbose =
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
         0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
-        1.0e-5, merging.threshold = 0, ite = Inf)}
+        1.0e-5, merging.threshold = 0, ite = Inf, information.criterion = "BIC")}
 
 \value{NetResponseModel object.}
 
@@ -65,6 +65,10 @@ citation("netresponse") for details.}
   \item{ite}{Defines maximum number of iterations on posterior
     update (updatePosterior). Increasing this can potentially lead to
     more accurate results, but computation may take longer.}
+
+  \item{information.criterion}{Information criterion for model
+  selection. Default is BIC (Bayesian Information Criterion); other
+  options include AIC and AICc.}
 
 }
 

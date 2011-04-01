@@ -6,7 +6,7 @@ in the input data based on similarity with the subnetwork. Allows the
 identification of similar features that are not directly connected in
 the input network.}
 \usage{
-find.similar.features(model, subnet.id, datamatrix = NULL, verbose = FALSE)
+find.similar.features(model, subnet.id, datamatrix = NULL, verbose = FALSE, information.criterion = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +16,9 @@ find.similar.features(model, subnet.id, datamatrix = NULL, verbose = FALSE)
 similarity with new data which was not used for learning the
 subnetworks.}
   \item{verbose}{Logical indicating whether progress of the algorithm
-should be indicated on the screen.}
+    should be indicated on the screen.}
+  \item{information.criterion}{Information criterion for model
+  selection. By default uses the same than in the 'model' object.}  
 }
 \details{
 The same similarity measure is used as when agglomerating the

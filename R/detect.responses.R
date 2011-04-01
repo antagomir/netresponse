@@ -17,7 +17,6 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
-
   ######################################################################
 
   # Before I put a sketch on paper, the whole idea is worked out
@@ -50,7 +49,8 @@ function(datamatrix,
          implicit.noise = 0,      # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
          vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
          merging.threshold = 0,   # min. cost improvement for merging
-         ite = Inf                # max. iterations in updatePosterior
+         ite = Inf,                # max. iterations in updatePosterior
+         information.criterion = "BIC" # information criterion for model selection
          )
 
 {
@@ -90,7 +90,7 @@ function(datamatrix,
 		 implicit.noise = implicit.noise,
                  vdp.threshold = vdp.threshold,
                  merging.threshold = merging.threshold,
-		 ite = ite 
+		 ite = ite, information.criterion = information.criterion
 		 )
 
   accepted.formats.emat <- c("matrix", "Matrix", "data.frame")  
@@ -234,8 +234,8 @@ function(datamatrix,
                                 ite = ite,
                                 c.max = max.responses - 1 )
 
-    bic.ind <- bic(model$posterior$Nparams, Nlog, -model$free.energy) # BIC for model
-    C              <- C + bic.ind # Total cost
+    cost.ind <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
+    C              <- C + cost.ind # Total cost
     model.nodes[[k]] <- pick.model.parameters(model, node)
 
 }
@@ -267,17 +267,17 @@ for (edge in 1:ncol(network)){
                               ite = ite,
                               c.max = max.responses - 1)
 
-  # Compute BIC-value for two independent subnets vs. joint model 
+  # Compute COST-value for two independent subnets vs. joint model 
   # Negative free energy (-cost) is (variational) lower bound for P(D|H)
   # Use it as an approximation for P(D|H)
   # Cost for the indpendent and joint models
   # -cost is sum of two independent models (cost: appr. log-likelihoods)
-  bicind.ab     <-  bic(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy))
-  bicjoint.ab   <-  bic(model$posterior$Nparams, Nlog, -model$free.energy)
-      
-      # NOTE: BIC is additive so summing is ok
-      # change (increase) of the total BIC / cost
-  delta[[edge]] <- as.numeric(bicjoint.ab - bicind.ab)
+  costind.ab     <-  information.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = information.criterion)
+  costjoint.ab   <-  information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+ 
+      # NOTE: COST is additive so summing is ok
+      # change (increase) of the total COST / cost
+  delta[[edge]] <- as.numeric(costjoint.ab - costind.ab)
       # Store these only if it would improve the cost; otherwise never needed
   if (-delta[[edge]] > merging.threshold) {    
     model.pairs[[edge]] <- pick.model.parameters(model, vars)
@@ -357,15 +357,15 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
                           c.max = max.responses - 1 )
         
           # Store the joint models
-          # BIC-cost for two independent vs. joint model
+          # COST-cost for two independent vs. joint model
           # Negative free energy (-cost) is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
 
-          big.ind   <- bic((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy))
-          big.joint <- bic(model$posterior$Nparams, Nlog, -model$free.energy)
+          cost.ind <- information.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
+          cost.joint <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
           
-          # change (increase) of the total BIC (cost)
-          delta[[edge]] <- big.joint - big.ind
+          # change (increase) of the total COST (cost)
+          delta[[edge]] <- cost.joint - cost.ind
 
           if (-delta[[edge]] > merging.threshold) {  
             # Store joint model only if it would improve the cost
