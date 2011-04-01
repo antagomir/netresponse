@@ -14,7 +14,7 @@
 #
 
 
-find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose = FALSE) {
+find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose = FALSE, information.criterion = NULL) {
 
   # Given subnetwork, order the remaining genes in the data by
   # similarity with this subnetwork (coordinated transcritional response)
@@ -22,6 +22,9 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
 
   # By default, investigate the same data matrix which was used for modelling
   # NOTE: default parameters of the model are always used (model@params)
+
+  if (is.null(information.criterion)) { information.criterion <- model@params$information.criterion }
+
   if (is.null(datamatrix)) {
      datamatrix <- model@datamatrix
   }
@@ -58,8 +61,8 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                   ite = model@params$ite, 
 		  c.max = model@params$max.responses - 1 )
                   
-  bic.subnet  <- m.subnet$posterior$Nparams*Nlog + 2*m.subnet$free.energy # BIC for this model
-     
+  cost.subnet  <- information.criterion(m.subnet$posterior$Nparams, Nlog, -m.subnet$free.energy, criterion = information.criterion)
+       
   ############################################################
 
   # Go through data points (features i.e. nodes) and measure similarity for each
@@ -79,8 +82,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                   threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                   ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
-     bic.node <- m.node$posterior$Nparams*Nlog + 2*m.node$free.energy 
-     # FIXME: make a function to readily give BIC (or other objective function for a particular model?)
+     cost.node  <- information.criterion(m.subnet$posterior$Nparams, Nlog, -m.node$free.energy, criterion = information.criterion)
 
     ##########################################################################################
 
@@ -95,23 +97,23 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                     threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                     ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
-    bic.joint  <- m.joint$posterior$Nparams*Nlog + 2*m.joint$free.energy
+    cost.joint  <- information.criterion(m.joint$posterior$Nparams, Nlog, -m.joint$free.energy, criterion = information.criterion)
     # = combined: subnet + the new node
 
     #####################################################################################################
 
     #print(" TWO INDEPENDENT MODELS")
-    bic.ind   <- bic.subnet + bic.node
+    cost.ind   <- cost.subnet + cost.node
 
     #####################################################################################
 
-    #print(" BIC-cost for two independent vs. joint model")
-    # change (increase) of the total BIC (cost)
-    delta[[fname]] <- bic.joint - bic.ind
+    #print("COST-cost for two independent vs. joint model")
+    # change (increase) of the total COST (cost)
+    delta[[fname]] <- cost.joint - cost.ind
 
   }
 
-  # Return the BIC delta values. The smaller this is, the more similar 
+  # Return the COST delta values. The smaller this is, the more similar 
   # the feature is in regard to the subnetwork
   # negative values mean that the subnetwork model would be improved by merging the gene (= feature)
   df <- as.data.frame(delta)

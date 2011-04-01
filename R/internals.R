@@ -17,16 +17,7 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-bic <- function (nparams, nlog, logp) {
 
-  # Calculate BIC cost 
-  
-  # negative free energy is lower bound for log(P(D|H))
-  # logp = -cost
-  #Nparams*Nlog + 2*costs
-  nparams*nlog - 2*logp
-  
-}
 
 pick.model.parameters <- function (m, nodes) {
  
