@@ -17,7 +17,7 @@ information.criterion <- function (nparams, nlog, logp, criterion = "BIC") {
   # Calculate various information criteria
 
   if (criterion == "BIC") {     # Bayesian IC   
-    return(bic(nparams, nlog, logp))
+    return(BIC(nparams, nlog, logp))
   } else if (criterion == "AIC") { # Akaike IC
     return(AIC(nparams, nlog, logp))
   } else if (criterion == "AICc") { # Akaike for linear models, finite sample
@@ -27,9 +27,16 @@ information.criterion <- function (nparams, nlog, logp, criterion = "BIC") {
 }
 
 
-bic <- function (nparams, nlog, logp) {
+BIC <- function (nparams, nlog, logp) {
 
   # Calculate Bayesian Information Criterion (BIC)
+
+  # NOTE:
+  # Original formulation (Schwartz) assumed that data is iid and likelihood is in exponential family.
+  # However, BIC is later derived with considerably loosened assumptions, see e.g.
+  # Cavanaugh et al.: Generalizing the Derivation of the Schwarz Information Criterion
+  # it seems that the assumptions listed in Section 3 will quarantee the validity of BIC
+  # for mixtures of exponential family distributions; confirm.
   
   # negative free energy is lower bound for log(P(D|H))
   # logp = -cost

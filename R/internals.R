@@ -16,9 +16,6 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
-
-
-
 pick.model.parameters <- function (m, nodes) {
  
   # m is the outcome from vdp.mixt function 
@@ -309,7 +306,8 @@ find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
   # Check size of the resulting merged subnet one-by-one, starting from the smallest
   best.found <- FALSE
   cnt <- 0
-  a <- b <- NULL
+  best.edge <- a <- b <- NULL
+  mindelta <- Inf
   while (!best.found) {
     cnt <- cnt + 1
     ind <- o[[cnt]]
@@ -322,13 +320,11 @@ find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
       a <- min(c(z, i))
       b <- max(c(z, i))
       best.edge <- ind
+      mindelta <- delta[[best.edge]]
       best.found <- TRUE
     }
   }
 
-  mindelta <- delta[[best.edge]]
-  if (!best.found) { mindelta <- Inf }
-  
   list(a = a, b = b, mindelta = mindelta, best.edge = best.edge)
 
 }
@@ -355,30 +351,17 @@ join.subnets2 <- function (network, delta, best.edge) {
   
   # replace b nodes by a: this in effect transfers b edges to a edges
   # and removes b completely
-  inds <- (network[2, ] == b)
-  if (any(inds)) {
-    network[2, inds] <- a
-    delta[inds] <- NA # remove merge costs; need to be recalculated for the merged subnet
-  }
+  network[network == b] <- a
   
-  inds <- (network[1, ] == b)
-  if (any(inds)) {  
-    network[1, inds] <- a  
-    delta[inds] <- NA # remove merge costs; need to be recalculated for the merged subnet
-  }
-
-  # Also remove delta values for nodes associated with a node
+  # remove delta values for nodes associated with a node
   # since this node now has different (merged) set of features
   # and model needs to be recalculated
   inds <- apply(network == a, 2, any)
   delta[inds] <- NA
-  
-  # remove self-links
-  network <- network[, -best.edge]
-  delta <- delta[-best.edge]
+
   # sort entries (row1 < row2)
   network <- apply(network, 2, sort)
-  
+      
   list(network = matrix(network, 2), delta = delta)
 }
 
@@ -545,22 +528,15 @@ greedy <- function(data, hp.posterior, hp.prior, opts){
     new.free.energy  <- templist$free.energy
     new.hp.posterior <- templist$hp.posterior
     c                <- templist$c
-    if ( c == (-1) ) { break } # infinite free energy
+    if ( c == (-1) ) { break } # infinite free energy -> break splitting
 
-
-   # ALGORITHM STEP 5
-
+    # ALGORITHM STEP 5
     dummylist <- updatePosterior(data, new.hp.posterior, hp.prior,
                                   opts, ite = opts$ite, do.sort = 1)
     new.free.energy  <- dummylist$free.energy
     new.hp.posterior <- dummylist$hp.posterior
-
-    if(is.infinite(new.free.energy)) {
-      stop("Free energy is not finite, please consider adding implicit noise or not updating the hyperparameters")
-    } 
     
     # ALGORITHM STEP 6
-  
     if( free.energy.improved(free.energy, new.free.energy, 0, opts$threshold) == 0 ) {
       break #free.energy didn't improve, greedy search is over
     } 
@@ -599,56 +575,59 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
   #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
   #  Paul Wagner
 
-  do.sort = TRUE
   epsilon <- 1e-10
   free.energy <- Inf
   i <- last.Nc <- start.sort <- 0
-
+  opts.internal <- opts
+  break.loop <- FALSE
+  
   while( 1 ){ 
     i <- i + 1
 
-    templist <- mk.free.energy(data, hp.posterior, hp.prior, opts)
-    new.free.energy <- templist$free.energy
-    log.lambda <- templist$log.lambda
-
-    if( is.infinite( new.free.energy ) ) {
-      stop("Free energy is not finite, please consider adding implicit noise or not updating the hyperparameters")
+    new.free.energy <- Inf
+    cnt <- 0
+    while (is.infinite(new.free.energy) && cnt <= 10) {
+      
+      templist <- mk.free.energy(data, hp.posterior, hp.prior, opts.internal)
+      new.free.energy <- templist$free.energy
+      log.lambda <- templist$log.lambda
+      if( is.infinite(new.free.energy) ) {
+        warning("Free energy not finite: adding implicit noise.")
+        opts.internal$implicitnoisevar <- opts.internal$implicitnoisevar + 0.1
+      }
+      cnt <- cnt + 1
     }
+
     if ( (is.finite(ite) && i>= ite) ||
          (is.infinite(ite) && 
-          free.energy.improved(free.energy, new.free.energy, 0, opts$threshold) == 0)){
+          free.energy.improved(free.energy, new.free.energy, 0, opts.internal$threshold) == 0)){
+        free.energy <- new.free.energy
+        if( do.sort && opts.internal$do.sort && (!start.sort) && is.finite(free.energy)){
+          start.sort <- 1
+        } else break # this will break the while loop
+      }
+
+      last.Nc <- hp.posterior$Nc
       free.energy <- new.free.energy
-      if( do.sort && opts$do.sort && (!start.sort) ){
-        start.sort <- 1
-      } else break
-    }
+      qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts.internal, log.lambda)
 
-    last.Nc <- hp.posterior$Nc
+      # if the last component is not 'empty',
+      # add a new empty component
+      if(sum(qOFz[, ncol(qOFz)]) >= epsilon){ qOFz <- cbind(qOFz, 0) }
 
-    free.energy <- new.free.energy
+      # Sort components by size (note: last component kept in its place)
+      if( start.sort ){ qOFz <- sortqofz(qOFz) }
 
-    qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts, log.lambda)
-    
-    # if the last component is not 'empty',
-    # add a new empty component
-    if(sum(qOFz[, ncol(qOFz)]) >= epsilon){
-      qOFz <- cbind(qOFz, 0)
-    }
-    
-    # Sort components by size (note: last component kept in its place)
-    if( start.sort ){ qOFz <- sortqofz(qOFz) }
-    
-    # If the smallest of the previous components
-    # (excluding the one added in this interation)
-    # is empty then remove it
-    # (if new component was not added this is ok to have as well)
-    if(sum(qOFz[, ncol(qOFz) - 1 ]) < epsilon){
-      # also ensure qOFz remains a matrix
-      qOFz <- array(qOFz[, -(ncol(qOFz) - 1)], dim = c(nrow(qOFz), ncol(qOFz) - 1))
-    }
-    
-    hp.posterior <- mk.hp.posterior(data, qOFz, hp.prior, opts)
-    
+      # If the smallest of the previous components
+      # (excluding the one added in this interation)
+      # is empty then remove it
+      # (if new component was not added this is ok to have as well)
+      if(sum(qOFz[, ncol(qOFz) - 1 ]) < epsilon){
+        qOFz <- matrix(qOFz[, -(ncol(qOFz) - 1)], nrow(qOFz))
+      }
+
+      hp.posterior <- mk.hp.posterior(data, qOFz, hp.prior, opts.internal)    
+
   }
 
   list( free.energy = free.energy,
