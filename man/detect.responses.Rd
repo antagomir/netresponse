@@ -6,7 +6,8 @@
         max.responses = 10, max.subnet.size = 10, verbose =
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
         0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
-        1.0e-5, merging.threshold = 0, ite = Inf, information.criterion = "BIC")}
+        1.0e-5, merging.threshold = 0, ite = Inf,
+        information.criterion = "BIC", speedup = TRUE)}
 
 \value{NetResponseModel object.}
 
@@ -70,6 +71,10 @@ citation("netresponse") for details.}
   selection. Default is BIC (Bayesian Information Criterion); other
   options include AIC and AICc.}
 
+  \item{speedup}{Takes advantage of approximations to PCA, mutual
+    information etc in various places to speed up
+    calculations. Particularly useful with large and densely connected
+    networks and/or large sample size.}
 }
 
 \examples{

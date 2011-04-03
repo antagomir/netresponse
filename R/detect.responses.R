@@ -50,7 +50,8 @@ function(datamatrix,
          vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
          merging.threshold = 0,   # min. cost improvement for merging
          ite = Inf,                # max. iterations in updatePosterior
-         information.criterion = "BIC" # information criterion for model selection
+         information.criterion = "BIC", # information criterion for model selection
+         speedup = TRUE           # speed up calculations by approximations
          )
 
 {
@@ -232,7 +233,8 @@ function(datamatrix,
                                 threshold = vdp.threshold,
                                 initial.K = initial.responses,
                                 ite = ite,
-                                c.max = max.responses - 1 )
+                                c.max = max.responses - 1,
+                                speedup = speedup )
 
     cost.ind <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
     C              <- C + cost.ind # Total cost
@@ -265,7 +267,8 @@ for (edge in 1:ncol(network)){
                               threshold = vdp.threshold,
                               initial.K = initial.responses,
                               ite = ite,
-                              c.max = max.responses - 1)
+                              c.max = max.responses - 1,
+                              speedup = speedup)
 
   # Compute COST-value for two independent subnets vs. joint model 
   # Negative free energy (-cost) is (variational) lower bound for P(D|H)
@@ -289,6 +292,7 @@ for (edge in 1:ncol(network)){
 gc()
 
 #######################################################################################
+
 
 ### MERGE VARIABLES ###
 
@@ -319,15 +323,20 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
 
     # put the new group to a's place only for those variables for
     # which this is needed.  For others, put Inf on the a neighborgs,
-    
+
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
     tmp.join <- join.subnets2(network, delta, best.edge)
     network <- tmp.join$network
-      delta <- tmp.join$delta    
-
+      delta <- tmp.join$delta
     model.nodes[[a]] <- model.pairs[[best.edge]]
-         model.pairs <- model.pairs[-best.edge]
-    model.nodes[[b]] <- NA  
+    model.nodes[[b]] <- NA
+    
+    # remove self-links
+    #keep <- (!network[1,] == network[2,])
+    keep <- !(network[1,] == network[2,])
+    network <- network[, keep]
+    delta <- delta[keep]
+    model.pairs <- model.pairs[keep]    
 
     # Merge groups G[[a]], G[[b]]
     G[[a]] <- sort(c(G[[a]], G[[b]]))
@@ -338,8 +347,38 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
       if ( verbose ) { cat("All nodes have been merged.\n") }
       delta <- Inf #indicating that no merging can be be done any more
     } else {
-      # Compute new joint models for a (new merged subnet) and its neighborghs
-      for (edge in which(is.na(delta))){
+      # Compute new joint models for the new merged subnet and its neighborghs
+      merge.edges <- which(is.na(delta))
+
+#      if (speedup) {
+#        # To speed up computation, pre-filter the edge set for which
+#        # new models are calculated.  Calculate empirical mutual
+#        # information between the first principal components of each
+#        # subnetwork pair. If number of new subnetwork pairs exceeds
+#        # the threshold, then calculate new model only for the
+#        # subnetwork pairs that have the highest mutual information.
+#        # It is expected that the subnetwork pair that will benefit
+#        # most from joint modeling will also be among the top mutual
+#        # infomation candidates. This way we can avoid calculating
+#        # exhaustive many models on large network hubs at each
+#        # update.
+#        require(minet)
+#        mis <- c()
+#        mi.cnt <- 0
+#        for (edge in which(is.na(delta))){
+#          mi.cnt <- mi.cnt + 1
+#          # Pick node indices
+#          a <- network[1, edge]
+#          i <- network[2, edge]
+#          vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]
+#          dat <- cbind(prcomp(matrix(datamatrix[, G[[a]]], nrow(datamatrix)), center = TRUE)$x,
+#                       prcomp(matrix(datamatrix[, G[[i]]], nrow(datamatrix)), center = TRUE)$x)
+#          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth")[1,2]
+#        }
+#        mi.top <- which(is.na(delta))[order(mis, decreasing = TRUE)[1:10]]
+#      }
+      
+      for (edge in merge.edges){
 
         # Pick node indices
         a <- network[1, edge]
@@ -347,26 +386,31 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
         vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]
 
         model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
-                          implicit.noise = implicit.noise,
+                          implicit.noise = 0,
                           prior.alpha = prior.alpha,
                           prior.alphaKsi = prior.alphaKsi,
                           prior.betaKsi = prior.betaKsi,
                           threshold = vdp.threshold,
                           initial.K = initial.responses,
                           ite = ite,
-                          c.max = max.responses - 1 )
-        
-          # Store the joint models
-          # COST-cost for two independent vs. joint model
-          # Negative free energy (-cost) is (variational) lower bound for P(D|H)
-          # Use this to approximate P(D|H)
+                          c.max = max.responses - 1,
+                          speedup = speedup)
 
+          # Store the joint models
+          # cost for two independent vs. joint model
+          # Negative free energy is (variational) lower bound for P(D|H)
+          # Use this to approximate P(D|H)
+        if (is.finite(model$free.energy)) {
           cost.ind <- information.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
           cost.joint <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
           
-          # change (increase) of the total COST (cost)
+          # change (increase) of the total cost
           delta[[edge]] <- cost.joint - cost.ind
-
+        } else  {
+          warning("No free energy obtained.")
+          delta[[edge]] <- Inf
+        }
+            
           if (-delta[[edge]] > merging.threshold) {  
             # Store joint model only if it would improve the cost
             model.pairs[[edge]] <- pick.model.parameters(model, vars)

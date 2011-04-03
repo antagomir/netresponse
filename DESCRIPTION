@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.1.33
-Date: 2011-03-30
+Version: 1.1.34
+Date: 2011-04-03
 Author: Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.
