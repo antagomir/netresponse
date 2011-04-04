@@ -3,7 +3,8 @@
 \documentclass[a4paper]{article}
 
 \title{netresponse}
-\author{Leo Lahti, Olli-Pekka Huovilainen and Ant{\'o}nio Gusm{\~a}o}
+\author{Leo Lahti, Olli-Pekka Huovilainen, Ant{\'o}nio Gusm{\~a}o
+and Juuso Parkkinen}
 
 \usepackage{amsmath,amssymb,amsfonts}
 %\usepackage[authoryear,round]{natbib}
@@ -171,6 +172,12 @@ The package provides additional tools for nonparametric Gaussian
 mixture modeling based on previous work and implementations by
 \citep{Kurihara07nips, Honkela08}. See the example in help(vdp.mixt).
 
+\section{Interaction Component Model for Gene Modules}
+
+From version 1.3.35, the package contains a method called Interaction
+Component Model for finding functional gene modules \cite{Parkkinen10bmcsysbio}
+from either protein interaction data or from combinations of protein 
+interaction and gene expression data.
 
 \section{Citing NetResponse}
 
@@ -220,6 +227,10 @@ Kenichi Kurihara {\em et~al.} (2007).
   in Neural Information Processing Systems 19\/}, 761--768. MIT Press,
   Cambridge, MA.
 
+\bibitem{Parkkinen10bmcsysbio}
+Parkkinen, J., and Kaski, S.
+\newblock Searching for functional gene modules with interaction component models.
+\newblock {\em BMC Systems Biology 4\/} (2010), 4.
 
 \end{thebibliography}
 
