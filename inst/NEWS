@@ -1,6 +1,12 @@
+CHANGES IN VERSION 1.3.36 (2011-04-04)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o added default speedups (speedup, speedup.max.edges options in
+    detect.responses)
+           
 CHANGES IN VERSION 1.3.35 (2011-04-04)
 
-<<<<<<< .mine
   o added functions for the ICMg (Interaction Component Model for finding
   Gene modules) package by Juuso Parkkinen
 
@@ -18,22 +24,6 @@ CHANGES IN VERSION 1.1.33 (2011-03-30)
     detect.responses and find.similar.features (AIC, AICc, BIC)
   o added vignette PDF windows buildcheck seems to require it
 
-=======
-CHANGES IN VERSION 1.1.34 (2011-04-03)
-
-  o fixed a bug in updatePosterior which caused halt; now trying to
-     increase implicit noise for calculating free energy, if this does
-     not help, merging of the investigated subnetwork pair is
-     prevented (previously all calculations were stopped at this
-     point, which is not practical)
-
-CHANGES IN VERSION 1.1.33 (2011-03-30)
-
-  o added various information criteria for model selection to
-    detect.responses and find.similar.features (AIC, AICc, BIC)
-  o added vignette PDF windows buildcheck seems to require it
-
->>>>>>> .r54412
 CHANGES IN VERSION 1.1.31 (2011-03-26)
 
   o polished vignette

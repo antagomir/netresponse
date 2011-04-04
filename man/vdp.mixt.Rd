@@ -3,7 +3,9 @@
 \title{vdp.mixt}
 \description{Accelerated variational Dirichlet process Gaussian mixture.}
 \usage{
-vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.sort = TRUE, threshold = 1e-05, initial.K = 1, ite = Inf, implicit.noise = 0, c.max = 10, speedup = TRUE)
+vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
+0.01, do.sort = TRUE, threshold = 1e-05, initial.K = 1, ite = Inf,
+implicit.noise = 0, c.max = 10, speedup = TRUE, min.size = 5)
 }
 \arguments{
     \item{dat}{Data matrix (samples x features).}
@@ -43,6 +45,9 @@ vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, do.s
 	          component is splitted based on its first PCA
 	          component. To speed up, approximate by using only
 	          subset of data to calculate PCA.}
+
+   \item{min.size}{Minimum size for a component required for potential
+   splitting during mixture estimation.}
 
   }
 

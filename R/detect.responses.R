@@ -51,7 +51,8 @@ function(datamatrix,
          merging.threshold = 0,   # min. cost improvement for merging
          ite = Inf,                # max. iterations in updatePosterior
          information.criterion = "BIC", # information criterion for model selection
-         speedup = TRUE           # speed up calculations by approximations
+         speedup = TRUE,                 # speed up calculations by approximations
+         speedup.max.edges = 10  # max. new joint models to be calculated; MI-based prefiltering applied
          )
 
 {
@@ -78,6 +79,7 @@ function(datamatrix,
 
   set.seed(2341)
 #  require(Matrix)
+
   
   # store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
@@ -223,18 +225,18 @@ function(datamatrix,
 
     node <- network.nodes[[k]]
     
-    if ( verbose ) {cat(paste('Computing model for node', k, "/", ncol( datamatrix ), '\n'))}    
+    if ( verbose ) { cat(paste('Computing model for node', k, "/", ncol( datamatrix ), '\n')) }
 
-    model           <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
-                                implicit.noise = implicit.noise,
-                                prior.alpha = prior.alpha,
-                                prior.alphaKsi = prior.alphaKsi,
-                                prior.betaKsi = prior.betaKsi,
-                                threshold = vdp.threshold,
-                                initial.K = initial.responses,
-                                ite = ite,
-                                c.max = max.responses - 1,
-                                speedup = speedup )
+    model <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
+                      implicit.noise = implicit.noise,
+                      prior.alpha = prior.alpha,
+                      prior.alphaKsi = prior.alphaKsi,
+                      prior.betaKsi = prior.betaKsi,
+                      threshold = vdp.threshold,
+                      initial.K = initial.responses,
+                      ite = ite,
+                      c.max = max.responses - 1,
+                      speedup = speedup )
 
     cost.ind <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
     C              <- C + cost.ind # Total cost
@@ -311,6 +313,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
     # size)
 
   tmp <- find.best.neighbor3(G, max.subnet.size, network, delta)
+  delta <- tmp$delta
 
   # If merging still possible
   if (-tmp$mindelta > merging.threshold) {
@@ -350,33 +353,34 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
       # Compute new joint models for the new merged subnet and its neighborghs
       merge.edges <- which(is.na(delta))
 
-#      if (speedup) {
-#        # To speed up computation, pre-filter the edge set for which
-#        # new models are calculated.  Calculate empirical mutual
-#        # information between the first principal components of each
-#        # subnetwork pair. If number of new subnetwork pairs exceeds
-#        # the threshold, then calculate new model only for the
-#        # subnetwork pairs that have the highest mutual information.
-#        # It is expected that the subnetwork pair that will benefit
-#        # most from joint modeling will also be among the top mutual
-#        # infomation candidates. This way we can avoid calculating
-#        # exhaustive many models on large network hubs at each
-#        # update.
-#        require(minet)
-#        mis <- c()
-#        mi.cnt <- 0
-#        for (edge in which(is.na(delta))){
-#          mi.cnt <- mi.cnt + 1
-#          # Pick node indices
-#          a <- network[1, edge]
-#          i <- network[2, edge]
-#          vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]
-#          dat <- cbind(prcomp(matrix(datamatrix[, G[[a]]], nrow(datamatrix)), center = TRUE)$x,
-#                       prcomp(matrix(datamatrix[, G[[i]]], nrow(datamatrix)), center = TRUE)$x)
-#          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth")[1,2]
-#        }
-#        mi.top <- which(is.na(delta))[order(mis, decreasing = TRUE)[1:10]]
-#      }
+      if (speedup && length(merge.edges) > speedup.max.edges) {
+        # To speed up computation, pre-filter the edge set for which
+        # new models are calculated.  Calculate empirical mutual
+        # information between the first principal components of each
+        # subnetwork pair. If number of new subnetwork pairs exceeds
+        # the threshold, then calculate new model only for the
+        # subnetwork pairs that have the highest mutual information.
+        # It is expected that the subnetwork pair that will benefit
+        # most from joint modeling will also be among the top mutual
+        # infomation candidates. This way we can avoid calculating
+        # exhaustive many models on large network hubs at each
+        # update.
+        #require(minet)
+        mis <- c()
+        mi.cnt <- 0  
+        for (edge in which(is.na(delta))){
+          mi.cnt <- mi.cnt + 1
+          # Pick node indices
+          a <- network[1, edge]
+          i <- network[2, edge]
+          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x,
+                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x)
+          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth")[1,2]
+        }
+        merge.edges <- which(is.na(delta))[order(mis, decreasing = TRUE)[1:speedup.max.edges]]
+        other.edges <- setdiff(which(is.na(delta)), merge.edges)
+        delta[other.edges] <- Inf # needs Inf although not calculated; NAs would be confused with other merges later; models to be calculated are taken from is.na(delta) at each step so we cannot leave NAs there
+      }
       
       for (edge in merge.edges){
 
