@@ -118,8 +118,10 @@ retrieve.model <- function (model, subnet.id) {
 
 
 
-find.best.splitting <- function(data, hp.posterior, hp.prior, opts){
+find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5){
 
+  # min.size: minimum size of a component required for splitting
+  
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
@@ -161,7 +163,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts){
     # Split cluster c in qOFz into two smaller ones
 
     new.c     <- ncol(qOFz)
-    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, opts$speedup)
+    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, opts$speedup, min.size)
 
     new.K     <- ncol( new.qOFz )
     sub.qOFz  <- new.qOFz[relating.n, unique(c(c, new.c, new.K))]
@@ -322,10 +324,13 @@ find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
       best.edge <- ind
       mindelta <- delta[[best.edge]]
       best.found <- TRUE
+    }  else {
+      # Put infinite cost for merges that would exceed maximum size
+      delta[[ind]] <- Inf 
     }
   }
 
-  list(a = a, b = b, mindelta = mindelta, best.edge = best.edge)
+  list(a = a, b = b, mindelta = mindelta, best.edge = best.edge, delta = delta)
 
 }
 
@@ -507,7 +512,7 @@ free.energy.improved <- function(free.energy, new.free.energy,
 # DESCRIPTION: Read the main description on the beginning of the file.
 
 
-greedy <- function(data, hp.posterior, hp.prior, opts){
+greedy <- function(data, hp.posterior, hp.prior, opts, min.size){
 
   #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
@@ -524,7 +529,7 @@ greedy <- function(data, hp.posterior, hp.prior, opts){
 
     # ALGORITHM STEP 2-4
 
-    templist <- find.best.splitting(data, hp.posterior, hp.prior, opts)
+    templist <- find.best.splitting(data, hp.posterior, hp.prior, opts, min.size)
     new.free.energy  <- templist$free.energy
     new.hp.posterior <- templist$hp.posterior
     c                <- templist$c

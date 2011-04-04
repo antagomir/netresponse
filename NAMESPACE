@@ -35,6 +35,8 @@ export(detect.responses,
 exportClasses("NetResponseModel")
 #S4method(get.subnets, NetResponseModel)
 
+
+
 exportMethods(
 #"[",
 "[[",
@@ -45,6 +47,7 @@ get.qofz
 #"plot","print" 
 )
 
+#import(minet)
 #exportMethods(get.model.parameters)
 #importFrom(Matrix, Diag)
 #export(Diag)

@@ -13,12 +13,13 @@ function(dat,
 	                     # i.e. truncation parameter
                              # Candidates are chosen based on their Nc value 
                              # (larger = better). Nc = colSums(qOFz)
-           speedup = TRUE        
+           speedup = TRUE,        
 	   	             # speedup: during DP, components are splitted
 			     # based on their first PCA component.
                              # To speed up, approximate by using only subset 
 			     # data to calculate PCA.
-) {
+         min.size = 5 # min size for a component to be splitted
+         ) {
 
  
   #
@@ -125,11 +126,12 @@ function(dat,
   hp.posterior <- mk.hp.posterior(data, qOFz, hp.prior, opts)
 
   # Note: greedy gives components in decreasing order by size
-  templist     <- greedy(data, hp.posterior, hp.prior, opts)
+  templist     <- greedy(data, hp.posterior, hp.prior, opts, min.size)
   templist$hp.prior <- c(templist$hp.prior, list(qOFz = qOFz))
   qOFz <- matrix(templist$hp.posterior$qOFz, nrow(dat))
 
   ###############################################
+
   # Retrieve model parameters 
 
   # number of mixture components (nonempty components only!)

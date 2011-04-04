@@ -7,7 +7,8 @@
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
         0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
         1.0e-5, merging.threshold = 0, ite = Inf,
-        information.criterion = "BIC", speedup = TRUE)}
+        information.criterion = "BIC", speedup = TRUE,
+        speedup.max.edges = 10)}
 
 \value{NetResponseModel object.}
 
@@ -75,8 +76,21 @@ citation("netresponse") for details.}
     information etc in various places to speed up
     calculations. Particularly useful with large and densely connected
     networks and/or large sample size.}
-}
 
+  \item{speedup.max.edges}{Used if speedup = TRUE. Applies prefiltering
+  of edges for calculating new joint models between subnetwork pairs
+  when potential cost changes (delta) are updated for a newly merged
+  subnetwork and its neighborghs. Empirical mutual information between
+  each such subnetwork pair is calculated based on their first principal
+  components, and joint models will be calculated only for the top
+  candidates up to the number specified by speedup.max.edges. It is
+  expected that the subnetwork pair that will benefit most from joint
+  modeling will be among the top mutual infomation candidates. This way
+  it is possible to avoid calculating exhaustive many models on the
+  network hubs.}
+
+}
+  
 \examples{
 
 library(netresponse)
