@@ -20,7 +20,10 @@ export(detect.responses,
        P.Sr,
        P.S,
        P.sr,
-       P.s.individual       
+       P.s.individual,
+       ICMg.combined.sampler,
+       ICMg.links.sampler,
+       ICMg.get.comp.memberships
        #set.breaks,
        #plot.subnet,
        #plot.scale,
