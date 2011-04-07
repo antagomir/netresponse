@@ -176,13 +176,18 @@ function(dat,
   # estimate weights using data and other parameters
   # take average to get more robust estimate over data points
 
-  ws  <- array(NA, dim = c(nrow(dat), Kreal))
-  for (datapoint in 1:nrow(dat)) {
-    ws[datapoint,] <- compute.weight(qOFz, centroids, variances, dat, datapoint)             
-  }
+  # FIXME: can be sped up with apply. Need to modify compute.weight also
+  #ws  <- array(NA, dim = c(nrow(dat), Kreal))
+  #for (datapoint in 1:nrow(dat)) {
+  #  ws[datapoint,] <- compute.weight(qOFz, centroids, variances, dat, datapoint)             
+  #}
+  # Calculate weights on at most 20 points
+  # (weights are almost identical in all points, calculate on many points to increase robustness)
+  rsample <- sample(nrow(dat), min(nrow(dat), 20))
+  ws <- matrix(sapply(rsample, function (i) {compute.weight(qOFz[i,], centroids, variances, dat[i,])}), length(rsample))
 
   # Remove those with NAs (zero densities in some components mess the weights)
-  w <- apply(ws, 2, function (wcol) { mean(na.omit(wcol)) })
+  w <- apply(ws, 2, function (wcol) { mean(wcol, rm.na = TRUE) })
 
   posterior <- list(
                   weights = w, 
@@ -204,3 +209,6 @@ function(dat,
        opts         = opts,  
        free.energy  = templist$free.energy)
 }
+
+
+
