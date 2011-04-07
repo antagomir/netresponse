@@ -51,7 +51,37 @@ get.subnet <- function (res, subnet.id) {
 }
 
 
-compute.weight <- function (qOFz, mu, vars, dat, t) {
+compute.weight <- function (pt, mu, vars, xt) {
+
+  # pt <- qOFz[t,] # P(c|t) for all c
+  # xt  <- dat[t, ] # data point
+  
+  # Initial weights are zero
+  w <- rep.int(0, nrow(mu))  
+  sds <- sqrt(vars)
+
+  # set arbitrary weigh for the first cluster
+  # (only relations between weights matter)
+  # normalize later
+  #w[[1]] <- 1 # added below
+  dens <- prod(dnorm(xt, mu[1, ], sds[1, ]))
+  if (nrow(mu) > 1) {
+    w <- sapply(2:nrow(mu), function (i) { dens*pt[[i]]/(pt[[1]]*prod(dnorm(xt, mu[i, ], sds[i, ]))) })
+    w <- c(1, w)
+    # normalize to unity and return
+    return(w/sum(w))
+  } else {
+    return(1) #w <- 1
+  }
+
+  #for (i in 2:nrow(mu)) {
+  #  w[[i]] <- w[[1]]/((pt[[1]]/pt[[i]])*prod(dnorm(xt, mu[i, ], sds[i, ]))/dens)
+  #}
+    
+}
+
+
+compute.weight.bu <- function (qOFz, mu, vars, dat, t) {
 
   # Initial weights are zero
   w <- rep.int(0, nrow(mu))
@@ -663,6 +693,7 @@ softmax <- function( A ){
   # asap. As this is part of iteration, simply replace the defected sample with
   # equal probability in all groups.
   if (sum(!is.na(qOFz)) > 0) {
+    # FIXME: could be optimized with apply!
     # Detect  empty components and ignore
     inds <- c()
     for (i in 1:ncol(qOFz)) {
@@ -1082,23 +1113,23 @@ summarize.pwnets <- function (pwnets) {
 
 pick.interactions <- function(gids,beta,pwa,direct){
 
-	all.interactions = matrix(0,nrow=length(gids),ncol=length(gids))
-	rownames(all.interactions) = gids
-	colnames(all.interactions) = gids
-
-	if (length(direct)==1) {
-		inds = which(beta==direct)
-	} else {inds = seq(length(beta))}
-
-	for (pwi in 1:dim(pwa)[[1]]) {
-		for (betai in inds) {
-			ints = pwa[pwi,betai,,]
-			ints[is.na(ints)] = 0
-			all.interactions = all.interactions + ints
-		}
-	}
-
-	all.interactions
+  all.interactions = matrix(0,nrow=length(gids),ncol=length(gids))
+  rownames(all.interactions) = gids
+  colnames(all.interactions) = gids
+  
+  if (length(direct)==1) {
+    inds = which(beta==direct)
+  } else {inds = seq(length(beta))}
+  
+  for (pwi in 1:dim(pwa)[[1]]) {
+    for (betai in inds) {
+      ints = pwa[pwi,betai,,]
+      ints[is.na(ints)] = 0
+      all.interactions = all.interactions + ints
+    }
+  }
+  
+  all.interactions
 }
 
 
