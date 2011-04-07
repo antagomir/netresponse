@@ -100,8 +100,7 @@ function(datamatrix,
   # ensure datamatrix is a matrix
   if (!is.matrix(datamatrix)) {
     if (class(datamatrix) %in% accepted.formats.emat) {
-      message("Converting the input data into (sparse) matrix format.")
-      datamatrix <- matrix(datamatrix)
+      datamatrix <- as.matrix(datamatrix)
     } else {
      stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats.emat, collapse = "; ")))
     }    
@@ -153,21 +152,29 @@ function(datamatrix,
       network <- igraph.to.graphNEL(network)
     }
   }
+  # Now the network is in graphNEL format
 
   # FIXME: adjust such that igraph does not need to be converted in graphNEL (which is larger
   # FIXME: add option to give this as input; seems to consume much less memory than graphNEL  
-  
-  # Now network is in graphNEL format. Further manipulations:  
-  # store original network node list
-  # remove nodes that are not in datamatrix                                        
+
+  # list network nodes that are not in datamatrix  
   common.feats <- intersect(nodes(network), colnames(datamatrix))
-  # list network nodes that are not in datamatrix
   other.feats <- setdiff(nodes(network), common.feats)
+
+  # remove features with no functional data
   if (length(other.feats) > 0) {
-    if (verbose) { message("removing network nodes that are not in datamatrix") }
-    network <- removeNode(other.feats, network)
+    if (verbose) { message(paste("removing network nodes that are not in datamatrix: ", length(other.feats), " nodes removed;", length(common.feats), " nodes used for modeling.")) }
+    #message("converting to igraph")
+    network <- igraph.from.graphNEL(network)
+    #message("selecting nodes that have functional data")
+    network <- subgraph(network, common.feats)
+    #message("converting to graphNEL")
+    network <- igraph.to.graphNEL(network)
+    #network <- removeNode(other.feats, network)    
   }
-  # convert the network into edge matrix
+
+  message("convert the network into edge matrix")
+  # store original network node list
   network.nodes <- nodes(network)
   network <- edgeMatrix(network, duplicates = FALSE) # indices correspond to node list in network.nodes
   # order such that row1 < row2
