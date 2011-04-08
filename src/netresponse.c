@@ -2,8 +2,9 @@
 
   This file is a part of the NetResponse R package.
 
-  Copyright (C) 2008-2010 Leo Lahti, Olli-Pekka Huovilainen and
-  Ant�nio Gusm�o. Contact: Leo Lahti <leo.lahti@iki.fi>
+  Copyright (C) 2008-2011 Leo Lahti, Olli-Pekka Huovilainen,
+  Ant�nio Gusm�o and Juuso Parkkinen. 
+  Contact: Leo Lahti <leo.lahti@iki.fi>
 
   This file is based on the Agglomerative Independent Variable Group
   Analysis package, Copyright (C) 2001-2007 Esa Alhoniemi, Antti
@@ -838,7 +839,8 @@ vdpSumlogsumexp(SEXP matrix_M) {
  
 /************************************************************/
 
-/**** FUNCTIONS ADDED BY JUUSO 1.4.2011 ****/
+/**** FUNCTIONS FOR ICMg methods ****/
+/**** ADDED BY JUUSO PARKKINEN 1.4.2011 ****/
 
 void ICMgRandominit() {
 

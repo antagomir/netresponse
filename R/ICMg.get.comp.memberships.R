@@ -1,3 +1,17 @@
+#
+# Copyright (C) 2008-2011 Juuso Parkkinen
+# Contact: Juuso Parkkinen <juuso.parkkinen@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
 ICMg.get.comp.memberships <- function(links, samples) {
 
   Nnodes <- max(links)
@@ -29,7 +43,7 @@ ICMg.get.comp.memberships <- function(links, samples) {
       }
     }
     
-    ## Compute component-wise average from the sample s
+    ## Compute component-wise average from the samples
     proportions <- proportions + t(t(counts)/apply(counts, 2, sum))
   }
   return(proportions/Nsamples)
