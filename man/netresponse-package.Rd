@@ -14,7 +14,7 @@ License: \tab GNU GPL >=2\cr
 LazyLoad: \tab yes\cr
 }
 }
-\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
+\author{Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen.
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
 \references{Leo Lahti et al.: Global modeling of transcriptional
 responses in interaction networks. Bioinformatics (2010). See
