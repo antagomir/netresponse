@@ -3,8 +3,8 @@
 \documentclass[a4paper]{article}
 
 \title{netresponse\\probabilistic tools for functional network analysis}
-\author{Leo Lahti$1,2$\footnote{leo.lahti@iki.fi}, Olli-Pekka Huovilainen$1$, Ant{\'o}nio
-Gusm{\~a}o$1$ and Juuso Parkkinen$1$\\
+\author{Leo Lahti$^{1,2}$\footnote{leo.lahti@iki.fi}, Olli-Pekka
+Huovilainen$^1$, Ant{\'o}nio Gusm{\~a}o$^1$ and Juuso Parkkinen$^1$\\
 \\(1) Dpt. Information and Computer Science, Aalto University,
 Finland\\(2) Dpt. Veterinary Bioscience, University of Helsinki,
 Finland}
@@ -49,21 +49,21 @@ The methods are based on nonparametric probabilistic modeling and
 variational learning, and provide general exploratory tools to
 investigate the structure (ICMg; \cite{Parkkinen10bmcsysbio}) and
 context-specific behavior (NetResponse; \cite{Lahti10bioinf}) of
-interaction networks.  
+interaction networks.  ICMg is used to identify community structure in
+interaction networks; NetResponse detects and characterizes
+subnetworks that exhibit context-specific activation patterns across
+versatile collections of functional measurements, such as gene
+expression data. The implementations are partially based on the
+agglomerative independent variable group analysis \citep{Honkela08}
+and variational Dirichlet process Gaussian mixture models
+\cite{Kurihara07nips}. The tools are particularly useful for global
+exploratory analysis of genome-wide interaction networks and versatile
+collections of gene expression data.
 
-ICMg is used to identify community structure in interaction networks; 
-NetResponse is used to detect and characterize subnetworks that
-exhibit context-specific activation patterns across versatile
-collections of functional measurements, such as gene expression data.
-The implementations are partially based on the agglomerative
-independent variable group analysis \citep{Honkela08} and variational
-Dirichlet process Gaussian mixture models \cite{Kurihara07nips}. 
-
-%The package provides also implementations for aivga and vdp.
-%Further tools %for visualization and analysis will be provided in the
-%later %versions. 
-%The R package depends on \Rpackage{igraph} and \Rpackage{Rgraphviz}
-%packages. 
+%The package provides also implementations for aivga and vdp. %Further
+%tools %for visualization and analysis will be provided in the %later
+%versions.  %The R package depends on \Rpackage{igraph} and
+%\Rpackage{Rgraphviz} %packages. 
 
 
 \section{Loading the package and example data}
@@ -77,7 +77,7 @@ potentially applicable to networks with thousands of nodes and
 conditions; the scalability depends on network connectivity.
 
 <<initial, results = hide>>=
-require(netresponse)
+library(netresponse)
 data(toydata)
 D <- as.matrix(toydata$emat)
 netw <- as.matrix(toydata$netw)
@@ -221,10 +221,9 @@ Finland, 2010.
 \newblock http://lib.tkk.fi/Diss/2010/isbn9789526033686/        
                     
 		       
-\bibitem{Honkela08}
-Antti Honkela {\em et~al.} (2008).
-\newblock Agglomerative independent variable group analysis.
-\newblock {\em Neurocomputing\/}, {\bf 71}, 1311--1320.
+\bibitem{Honkela08} Antti Honkela {\em et~al.} (2008). \newblock
+Agglomerative independent variable group analysis. \newblock {\em
+Neurocomputing\/} 71, 1311--1320.
 
 \bibitem{Kurihara07nips}
 Kenichi Kurihara {\em et~al.} (2007).
