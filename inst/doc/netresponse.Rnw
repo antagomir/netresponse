@@ -184,6 +184,16 @@ modules \cite{Parkkinen10bmcsysbio} from either protein interaction
 data or from combinations of protein interaction and gene expression
 data.
 
+A short example of how to run ICMg and obtain clustering for the nodes:
+
+<<icmg, results = hide>>=
+library(netresponse)
+data(osmo)
+res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
+res$clustering <- apply(res$comp.memb, 2, which.max)
+@
+
 \section{Citing NetResponse}
 
 Please cite \cite{Lahti10bioinf} when using the package. When using
