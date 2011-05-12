@@ -144,7 +144,7 @@ function(datamatrix,
             rownames(network) <- colnames(network) <- colnames( datamatrix )
           } else if (!is.null(rownames( network )) && is.null(colnames( datamatrix ))) {
             colnames( datamatrix ) <- rownames(network)
-          }            
+          }
         }
       }
       network <- as(new("graphAM", adjMat = network), "graphNEL")
@@ -152,6 +152,7 @@ function(datamatrix,
       network <- igraph.to.graphNEL(network)
     }
   }
+
   # Now the network is in graphNEL format
 
   # FIXME: adjust such that igraph does not need to be converted in graphNEL (which is larger
@@ -181,6 +182,7 @@ function(datamatrix,
   network <- apply(network, 2, sort)
   if (verbose) message("removing self-links")  
   network <- network[, !network[1,] == network[2,]]
+
   # Store the network in igraph format  
   network.orig <- network # store network used for modeling (preprocessed)
   # FIXME: igraph is more memory-efficient but could not be used as network class in NetResponseModel definition
@@ -192,6 +194,8 @@ function(datamatrix,
   colnames(datamatrix) <- network.nodes
   rownames(datamatrix) <- samples
   rm(samples)
+
+
   
 #################################################################################
 
@@ -451,6 +455,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
 
   # Convert original network to graphNEL (not before, to save more memory for computation stage)
   network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
+  nodes(network.orig) <- network.nodes
   
   new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
