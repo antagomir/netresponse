@@ -28,54 +28,42 @@ order.responses <- function (model, sample, method = "hypergeometric") {
     for (response in 1:length(model@models[[subnet.id]]$w)) {
   
       enr <- response.enrichment(subnet.id, model, sample, response, method)
-
-      subnets   <- c(subnets, subnet.id)
-      responses <- c(responses, response)
-      scores    <- c(scores, enr$score)
-      pvals     <- c(pvals, 1-enr$score)
-
       cnt <- cnt + 1
-      enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enr$info) # other info about enrichments
+      enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enrichment.score = enr$score, enr$info) # Other info about enrichments
 
     }
   }
 			
-  df <- as.data.frame(list(subnet = subnets, 
-                           response = responses,
-                           enrichment.score = scores, 
-			   enrichment.pvalue = pvals))
+  enr <- as.data.frame(t(sapply(enrichment.info, identity)))
+  enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
+  ord <- order(enr$enrichment.score, decreasing = TRUE)
+  enr <- enr[ord,]
+  enr[["subnet"]] <- as.character(enr[["subnet"]])
 
-  ord <- order(scores, decreasing = TRUE)
-  df <- df[ord,]
-  enrichment.info <- enrichment.info[ord]
-  
-  list(ordered.responses = df,
-  	   method = method, sample = sample, 
-	   info = enrichment.info)
+  list(ordered.responses = enr, method = method, sample = sample)
 		
 }
 			    
-response.enrichment <- function (subnet.id, model, investigated.sample, which.response, method = "hypergeometric") {
+response.enrichment <- function (subnet.id, model, s, response, method = "hypergeometric") {
+
+  # s:   # samples associated with this factor level (ensure they are in the data)
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
     warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
   }
 
-  response.sample <- response2sample(model, subnet.id, component.list = TRUE)[[which.response]]
+  response.sample <- response2sample(model, subnet.id, component.list = TRUE)[[response]]
 
-  # FIXME: there is some minor stochasticity here, perhaps due to numerical limitations?
+  # Fixme: there is some minor stochasticity here, perhaps due to numerical limitations?
  
   pars <- get.model.parameters(model, subnet.id)
-
-  # samples associated with this factor level (ensure they are in the data)
-  s <- investigated.sample
 
   # All samples
   s.ann <- rownames(model@datamatrix) # model@samples
 
   # Subnetwork feature names
-  nodes <- pars@nodes
+  nodes <- pars$nodes
 
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
@@ -84,7 +72,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
   colnames(dat) <- nodes
   # dat is now samples x features matrix
       
-  # method indicates which test will be used
+  # Method indicates which test will be used
   # FIXME: add other methods; the higher the better
 
   if (method == "hypergeometric") {
@@ -159,7 +147,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
     # P(s|r) / P(S|r)
 
     # density for each data point
-    dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[which.response, s.ann]
+    dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[response, s.ann]
 
     # P(s,r)/P(s)P(r) = P(s|r)/P(s) for factor level samples
     # Fraction of total density mass of factor level sample compared to all samples within the response
@@ -179,7 +167,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
 }
 
 # FIXME: finish this later
-#order.samples <- function (subnet.id, model, phenodata, which.factor, which.response, method = "hypergeometric") {
+#order.samples <- function (subnet.id, model, phenodata, which.factor, response, method = "hypergeometric") {
 #    
 #  # - for given response, order factor levels by association strength (enrichment score)
 #  #   P(s|r) = P(s,r)/P(r) total sample density and/or average sample density (both for individuals and groups s/S)
@@ -188,7 +176,7 @@ response.enrichment <- function (subnet.id, model, investigated.sample, which.re
 #  #   P(s|r)/P(s) -> OK: method = "dependency"
 #  #   P(s|r) = P(s,r)/P(r)  -> OK, normalized version P(s|r)/P(S|r) available: method = "precision"
 #
-#  enr <- response.enrichments(subnet.id, model, phenodata, which.factor, which.response, method)
+#  enr <- response.enrichments(subnet.id, model, phenodata, which.factor, response, method)
 # 
 #  # For the given response, return levels of the given factor (decreasing ordering by enrichement score)
 #  sort(enr, decreasing = TRUE)

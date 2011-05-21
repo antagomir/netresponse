@@ -7,7 +7,7 @@
         TRUE, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi =
         0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
         1.0e-5, merging.threshold = 0, ite = Inf,
-        information.criterion = "BIC", speedup = TRUE,
+        information.criterion = "AIC", speedup = TRUE,
         speedup.max.edges = 10)}
 
 \value{NetResponseModel object.}

@@ -4,8 +4,11 @@
  order.responses
 }
 \description{
- Orders the responses by association strength (enrichment score) to a
-given factor level.
+Orders the responses by association strength (enrichment score) to a
+given sample set. For instance, if the samples correspond to a
+particular experimental factor, this function can be used to
+prioritize the responses according to their association strength to
+this factor.
 }
 \usage{
 %order.responses(model, phenodata, which.factor, which.level, method = "hypergeometric")
@@ -31,7 +34,7 @@ sample. The subnetwork, response id and enrichment score are
 shown. The method field
 indicates the enrichment calculation method. The sample field lists
 the samples et
-for which the enrichments were calculated.
+for which the enrichments were calculated. The info field lists additional information on enrichment statistics.
 }
 \references{ See citation("netresponse") for citation details. }
 \author{ Leo Lahti \email{leo.lahti@iki.fi}}
