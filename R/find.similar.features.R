@@ -61,7 +61,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                   ite = model@params$ite, 
 		  c.max = model@params$max.responses - 1 )
                   
-  cost.subnet  <- information.criterion(m.subnet$posterior$Nparams, Nlog, -m.subnet$free.energy, criterion = information.criterion)
+  cost.subnet  <- info.criterion(m.subnet$posterior$Nparams, Nlog, -m.subnet$free.energy, criterion = information.criterion)
        
   ############################################################
 
@@ -82,7 +82,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                   threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                   ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
-     cost.node  <- information.criterion(m.subnet$posterior$Nparams, Nlog, -m.node$free.energy, criterion = information.criterion)
+     cost.node  <- info.criterion(m.subnet$posterior$Nparams, Nlog, -m.node$free.energy, criterion = information.criterion)
 
     ##########################################################################################
 
@@ -97,7 +97,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
                     threshold = model@params$vdp.threshold, initial.K = model@params$initial.responses,
                     ite = model@params$ite, c.max = model@params$max.responses - 1 )
 
-    cost.joint  <- information.criterion(m.joint$posterior$Nparams, Nlog, -m.joint$free.energy, criterion = information.criterion)
+    cost.joint  <- info.criterion(m.joint$posterior$Nparams, Nlog, -m.joint$free.energy, criterion = information.criterion)
     # = combined: subnet + the new node
 
     #####################################################################################################

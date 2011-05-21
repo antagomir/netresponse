@@ -12,7 +12,7 @@
 # GNU General Public License for more details.
 
 
-information.criterion <- function (nparams, nlog, logp, criterion = "BIC") {
+info.criterion <- function (nparams, nlog, logp, criterion = "BIC") {
 
   # Calculate various information criteria
 

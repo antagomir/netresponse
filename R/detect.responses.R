@@ -50,7 +50,7 @@ function(datamatrix,
          vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
          merging.threshold = 0,   # min. cost improvement for merging
          ite = Inf,                # max. iterations in updatePosterior
-         information.criterion = "BIC", # information criterion for model selection
+         information.criterion = "AIC", # information criterion for model selection
          speedup = TRUE,                 # speed up calculations by approximations
          speedup.max.edges = 10  # max. new joint models to be calculated; MI-based prefiltering applied
          )
@@ -249,7 +249,7 @@ function(datamatrix,
                       c.max = max.responses - 1,
                       speedup = speedup )
 
-    cost.ind <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
+    cost.ind <- info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
     C              <- C + cost.ind # Total cost
     model.nodes[[k]] <- pick.model.parameters(model, node)
 
@@ -288,8 +288,8 @@ for (edge in 1:ncol(network)){
   # Use it as an approximation for P(D|H)
   # Cost for the indpendent and joint models
   # -cost is sum of two independent models (cost: appr. log-likelihoods)
-  costind.ab     <-  information.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = information.criterion)
-  costjoint.ab   <-  information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+  costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = information.criterion)
+  costjoint.ab   <-  info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
  
       # NOTE: COST is additive so summing is ok
       # change (increase) of the total COST / cost
@@ -376,17 +376,19 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
         # infomation candidates. This way we can avoid calculating
         # exhaustive many models on large network hubs at each
         # update.
-        #require(minet)
+        if (exists("discretize")) {rm(discretize)} # In MacOSX for some reason requiring minet does not remove previous version of 'discretize' function
+        require(minet)
         mis <- c()
         mi.cnt <- 0  
+        nbins <- floor(sqrt(nrow(datamatrix)))
         for (edge in which(is.na(delta))){
           mi.cnt <- mi.cnt + 1
           # Pick node indices
           a <- network[1, edge]
           i <- network[2, edge]
-          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x,
-                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x)
-          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth")[1,2]
+          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[,1],
+                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[,1])
+          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1,2]
         }
         merge.edges <- which(is.na(delta))[order(mis, decreasing = TRUE)[1:speedup.max.edges]]
         other.edges <- setdiff(which(is.na(delta)), merge.edges)
@@ -416,8 +418,8 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
           # Negative free energy is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
         if (is.finite(model$free.energy)) {
-          cost.ind <- information.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
-          cost.joint <- information.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+          cost.ind <- info.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
+          cost.joint <- info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
           
           # change (increase) of the total cost
           delta[[edge]] <- cost.joint - cost.ind
