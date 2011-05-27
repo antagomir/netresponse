@@ -4,9 +4,10 @@ import(methods)
 
 useDynLib("netresponse")
 
-export(build.mim,
+export(
+#build.mim,
        detect.responses,
-       discretize,
+#       discretize,
        find.similar.features,
        get.model.parameters,
        order.responses,
