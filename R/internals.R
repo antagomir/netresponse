@@ -16,6 +16,69 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
+
+build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = sqrt(NROW(dataset))) 
+{
+    # This function is licensed under cc-by-sa 3.0
+    # Modified from minet 3.6.0 to use discretize correctly (not exported in build.mim which may cause occasional function name conflicts)
+
+    if (disc == "equalfreq" || disc == "equalwidth" || disc == 
+        "globalequalwidth") 
+        dataset <- discretize(dataset, disc, nbins)
+    if (estimator == "pearson" || estimator == "spearman" || 
+        estimator == "kendall") {
+        mim <- cor(dataset, method = estimator, use = "complete.obs")^2
+        diag(mim) <- 0
+        maxi <- 0.999999
+        mim[which(mim > maxi)] <- maxi
+        mim <- -0.5 * log(1 - mim)
+    }
+    else if (estimator == "mi.mm") 
+        estimator = "mm"
+    else if (estimator == "mi.empirical") 
+        estimator = "emp"
+    else if (estimator == "mi.sg") 
+        estimator = "sg"
+    else if (estimator == "mi.shrink") 
+        estimator = "shrink"
+    else stop("unknown estimator")
+    if (estimator == "mm" || estimator == "emp" || estimator == 
+        "sg" || estimator == "shrink") {
+        mim <- mutinformation(dataset, method = estimator)
+        diag(mim) <- 0
+    }
+    mim[mim < 0] <- 0
+    mim
+}
+
+
+discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X))) 
+{
+    # This function is licensed under cc-by-sa 3.0
+    # Modified from minet 3.6.0 internal function
+
+    X <- as.data.frame(X)
+    varnames <- names(X)
+    dimensions <- dim(X)
+    X <- data.matrix(X)
+    dim(X) <- dimensions
+    res <- NULL
+    if (disc == "equalfreq") 
+        res <- .Call("discEF", X, NROW(X), NCOL(X), as.integer(nbins), 
+            DUP = FALSE, PACKAGE = "infotheo")
+    else if (disc == "equalwidth") 
+        res <- .Call("discEW", X, NROW(X), NCOL(X), as.integer(nbins), 
+            DUP = FALSE, PACKAGE = "infotheo")
+    else if (disc == "globalequalwidth") 
+        res <- as.vector(cut(X, nbins, labels = FALSE))
+    else stop("unknown discretization method")
+    dim(res) <- dimensions
+    res <- as.data.frame(res)
+    names(res) <- varnames
+    res
+}
+
+
 pick.model.parameters <- function (m, nodes) {
  
   # m is the outcome from vdp.mixt function 

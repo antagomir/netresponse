@@ -1,9 +1,12 @@
 #exportPattern("^[^0]*$")
+import(minet)
 import(methods)
 
 useDynLib("netresponse")
 
-export(detect.responses,
+export(build.mim,
+       detect.responses,
+       discretize,
        find.similar.features,
        get.model.parameters,
        order.responses,
@@ -47,7 +50,6 @@ get.qofz
 #"plot","print" 
 )
 
-#import(minet)
 #exportMethods(get.model.parameters)
 #importFrom(Matrix, Diag)
 #export(Diag)

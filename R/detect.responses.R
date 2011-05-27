@@ -57,6 +57,7 @@ function(datamatrix,
 
 {
 
+
 #  NetResponse: Detect condition-specific network responses, given
 #  network and a set of measurements of node activity in a set of
 #  conditions.
@@ -78,10 +79,11 @@ function(datamatrix,
 #  res.models has compressed representations of the models from each step
 
   set.seed(2341)
-#  require(Matrix)
+  #  require(Matrix)
 
+  #if (exists("discretize")) {rm(discretize)}
   
-  # store here all params used in the model (defined in function call)
+  # Store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
   	    	 max.responses = max.responses,
 		 max.subnet.size = max.subnet.size,
@@ -195,8 +197,6 @@ function(datamatrix,
   rownames(datamatrix) <- samples
   rm(samples)
 
-
-  
 #################################################################################
 
 ### INITIALIZE ###
@@ -204,6 +204,7 @@ function(datamatrix,
   Nlog <- log( nrow( datamatrix ) )
   dim0 <- ncol( datamatrix )
   C    <- 0
+  nbins <- floor(sqrt(nrow(datamatrix)))
 
   # print(" diagonal contains number of parameters for corresponding model")
   # off-diagonal tells number of parameters for the joint model
@@ -225,6 +226,7 @@ function(datamatrix,
   model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
 
   gc()
+
   
 ########################################################################
 
@@ -259,7 +261,7 @@ gc()
   
 if (verbose) { cat('done\n') }
 
-  
+
 ##########################################################################################
 
 ###   compute costs for combined variable pairs  ###
@@ -305,7 +307,6 @@ for (edge in 1:ncol(network)){
 gc()
 
 #######################################################################################
-
 
 ### MERGE VARIABLES ###
 
@@ -376,20 +377,23 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
         # infomation candidates. This way we can avoid calculating
         # exhaustive many models on large network hubs at each
         # update.
-        if (exists("discretize")) {rm(discretize)} # In MacOSX for some reason requiring minet does not remove previous version of 'discretize' function
+
         require(minet)
         mis <- c()
         mi.cnt <- 0  
-        nbins <- floor(sqrt(nrow(datamatrix)))
         for (edge in which(is.na(delta))){
           mi.cnt <- mi.cnt + 1
           # Pick node indices
           a <- network[1, edge]
           i <- network[2, edge]
-          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[,1],
-                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[,1])
-          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1,2]
+          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
+                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
+
+          #mis[[mi.cnt]] <- minet:::build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
+          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
+
         }
+
         merge.edges <- which(is.na(delta))[order(mis, decreasing = TRUE)[1:speedup.max.edges]]
         other.edges <- setdiff(which(is.na(delta)), merge.edges)
         delta[other.edges] <- Inf # needs Inf although not calculated; NAs would be confused with other merges later; models to be calculated are taken from is.na(delta) at each step so we cannot leave NAs there
