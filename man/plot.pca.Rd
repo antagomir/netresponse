@@ -1,0 +1,19 @@
+\name{plot.pca}
+\alias{plot.pca}
+\title{plot.pca}
+\description{Visualize data, centroids and response confidence intervals for a given subnetwork with PCA. Optionally, color the samples according to annotations labels.}
+\usage{plot.pca(x, subnet.id, labels = NULL, confidence = 0.95, ...)}
+\arguments{
+  \item{x }{ NetResponseModel object. Output from the detect.responses function. }
+  \item{subnet.id }{ Subnetwork id. Either character as 'Subnetwork-2' or numeric as 2, which is then converted to character.}
+  \item{labels}{Optional: sample class labels to be indicated in colors.}
+  \item{confidence}{Confidence interval for the responses based on the covariances of each response. If NULL, no plotting.}
+  \item{...}{Further arguments for plot function.}
+}
+\value{ Used for its side-effects. }
+\references{See citation("netresponse") for citation details.}
+\author{Leo Lahti \email{leo.lahti@iki.fi}}
+\examples{
+#plot.pca(x, subnet.id)
+}
+\keyword{utilities}
