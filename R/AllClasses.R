@@ -3,6 +3,6 @@ setClass("NetResponseModel", representation(
     last.grouping = "list", subnets = "list", 
     params = "list", 
     datamatrix = "matrix", network = "graphNEL", models = "list")
-         )
+)
              
                                             

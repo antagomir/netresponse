@@ -11,6 +11,9 @@ setGeneric("sample.densities", function( sample, model, subnet.id, log = TRUE, s
 setGeneric("get.P.s", function( sample, model, subnet.id, log = TRUE){ standardGeneric ("get.P.s") })
 setGeneric("get.P.rs", function(model, subnet.id, log = FALSE ){ standardGeneric ("get.P.rs") })
 
+#setGeneric("response.enrichment", function(model, subnet.id, log = FALSE ){ standardGeneric ("response.enrichment") })
+#setGeneric("plot.associations", function( x, subnet.id, labels, method = "hypergeometric", ...){ standardGeneric ("plot.associations") })
+#setGeneric("plot.pca", function( x, subnet.id, labels = NULL, confidence = 0.95, ...){ standardGeneric ("plot.pca") })
 #setGeneric("get.model.parameters", function( model, ... ){ standardGeneric ("get.model.parameters") })                                        
 
 
