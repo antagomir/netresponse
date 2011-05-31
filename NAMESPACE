@@ -5,11 +5,12 @@ import(methods)
 useDynLib("netresponse")
 
 export(
-#build.mim,
+       add.ellipse,
        detect.responses,
-#       discretize,
        find.similar.features,
+       get.dat,
        get.model.parameters,
+       list.significant.responses,
        order.responses,
        #order.samples,
        read.sif,
@@ -17,6 +18,7 @@ export(
        sample2response,
        model.stats,
        vdp.mixt,
+       plot.associations,
        P.rS,
        P.r.s,
        P.rs.joint.individual,
@@ -25,15 +27,17 @@ export(
        P.S,
        P.sr,
        P.s.individual,
+       response.enrichment,
        ICMg.combined.sampler,
        ICMg.links.sampler,
-       ICMg.get.comp.memberships
+       ICMg.get.comp.memberships,
        #set.breaks,
        #plot.subnet,
        #plot.scale,
        #plot.responses,
        #plot.response,
-       #plot.pca
+       plot.pca,
+       write.netresponse.results
        )
 
 exportClasses("NetResponseModel")

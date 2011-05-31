@@ -11,46 +11,10 @@
 #######################################################################
 
 library(netresponse)
-
 #dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
 
 
-###################################################################
-
-
-
-ellipse <-
-  function (x, scale = c(1, 1), centre = c(0, 0), level = 0.95, 
-            t = sqrt(qchisq(level, 2)), which = c(1, 2), npoints = 100, ...) 
-{
-
-  # Modified from the 'ellipse.default' function of ellipse package (version 0.3-5) in CRAN
-
-  names <- c("x", "y")
-  if (is.matrix(x)) {
-    xind <- which[1]
-    yind <- which[2]
-    r <- x[xind, yind]
-    if (missing(scale)) {
-      scale <- sqrt(c(x[xind, xind], x[yind, yind]))
-      if (scale[1] > 0) r <- r/scale[1]
-      if (scale[2] > 0) r <- r/scale[2]
-    }
-    if (!is.null(dimnames(x)[[1]])) 
-      names <- dimnames(x)[[1]][c(xind, yind)]
-  }
-  else r <- x
-  r <- min(max(r,-1),1)  # clamp to -1..1, in case of rounding errors
-  d <- acos(r)
-  a <- seq(0, 2 * pi, len = npoints)
-  matrix(c(t * scale[1] * cos(a + d/2) + centre[1], t * scale[2] * 
-           cos(a - d/2) + centre[2]), npoints, 2, dimnames = list(NULL, 
-                                                    names))
-}
-
-
-
-#########  GENERATE DATA #############################################
+#########  Generate DATA #############################################
 
 # Generate Nc components from normal-inverseGamma prior
 
@@ -120,18 +84,22 @@ ran <- range(c(as.vector(means.in - 2*vars.in),
 	       as.vector(means.out - 2*vars.out)))
 
 plot(D, pch = 20, main = paste("Cor.means:", round(cm,3), "/ Cor.sds:", round(csd,3)), xlim = ran, ylim = ran) 
+for (ci in 1:nrow(means.out))  { add.ellipse(centroid = means.out[ci,], covmat = diag(vars.out[ci,]), col = "red") }
+for (ci in 1:nrow(means.in))  { add.ellipse(centroid = means.in[ci,], covmat = diag(vars.in[ci,]), col = "blue") }
 
-for (ci in 1:nrow(means.out))  {
-    points(means.out[ci,1], means.out[ci,2], col = "red", pch = 19)
-    el <- ellipse(matrix(c(vars.out[ci,1],0,0,vars.out[ci,2]),2), centre = means.out[ci,])
-    lines(el, col = "red") 						  
-}
 
-for (ci in 1:nrow(means.in))  {
-    points(means.in[ci,1], means.in[ci,2], col = "blue", pch = 19)
-    el <- ellipse(matrix(c(vars.in[ci,1],0,0,vars.in[ci,2]),2), centre = means.in[ci,])
-    lines(el, col = "blue") 						  
-}
+
+#for (ci in 1:nrow(means.out))  {
+#    points(means.out[ci,1], means.out[ci,2], col = "red", pch = 19)
+#    el <- ellipse(matrix(c(vars.out[ci,1],0,0,vars.out[ci,2]),2), centre = means.out[ci,])
+#    lines(el, col = "red") 						  
+#}
+
+#for (ci in 1:nrow(means.in))  {
+#    points(means.in[ci,1], means.in[ci,2], col = "blue", pch = 19)
+#    el <- ellipse(matrix(c(vars.in[ci,1],0,0,vars.in[ci,2]),2), centre = means.in[ci,])
+#    lines(el, col = "blue") 						  
+#}
 
 
 

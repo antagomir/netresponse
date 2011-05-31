@@ -197,9 +197,6 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 
   if (is.null(sample)) { sample <- rownames(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
-
-  #print(subnet.id)
-  #print(names(model@subnets))
   
   dat <- t(matrix(model@datamatrix[sample, nodes], length(sample)))
   rownames(dat) <- nodes

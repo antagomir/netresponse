@@ -12,9 +12,25 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+# Fixme: finish this later
+#order.samples <- function (subnet.id, model, phenodata, which.factor, response, method = "hypergeometric") {
+#    
+#  # - for given response, order factor levels by association strength (enrichment score)
+#  #   P(s|r) = P(s,r)/P(r) total sample density and/or average sample density (both for individuals and groups s/S)
+#  #   P(s|r)/P(s) = P(s,r)/P(r)P(s) 
+#
+#  #   P(s|r)/P(s) -> OK: method = "dependency"
+#  #   P(s|r) = P(s,r)/P(r)  -> OK, normalized version P(s|r)/P(S|r) available: method = "precision"
+#
+#  enr <- response.enrichments(subnet.id, model, phenodata, which.factor, response, method)
+# 
+#  # For the given response, return levels of the given factor (decreasing ordering by enrichement score)
+#  sort(enr, decreasing = TRUE)
+#}
 
 
-order.responses <- function (model, sample, method = "hypergeometric") {
+
+order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2) {
   # Given sample (for instance set of samples associated with a given factor level)
   # order the responses across all subnetworks based on their association strength
 
@@ -23,22 +39,42 @@ order.responses <- function (model, sample, method = "hypergeometric") {
   enrichment.info <- list()
   cnt <- 0
 
-  for (subnet.id in names(model@subnets)) {
+  # Get model statistics
+  stat <- model.stats(model)
+
+  # Filter the results
+  sn <- get.subnets(model, get.names = TRUE, min.size, max.size, min.responses)
+  stat <- stat[names(sn),]
+
+  # Check enrichment in the selected responses  
+  for (subnet.id in rownames(stat)) {
 
     for (response in 1:length(model@models[[subnet.id]]$w)) {
   
       enr <- response.enrichment(subnet.id, model, sample, response, method)
+
+      # add further info about enrichments
       cnt <- cnt + 1
-      enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enrichment.score = enr$score, enr$info) # Other info about enrichments
+      enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enrichment.score = enr$score, enr$info) 
 
     }
   }
 			
   enr <- as.data.frame(t(sapply(enrichment.info, identity)))
+
+  if ("pvalue" %in% colnames(enr)) {
+    # calculate q-values
+    library(qvalue)
+    enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+  }
+
   enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
   ord <- order(enr$enrichment.score, decreasing = TRUE)
   enr <- enr[ord,]
   enr[["subnet"]] <- as.character(enr[["subnet"]])
+
+  # Add subnet info in the result table
+  enr <- cbind(enr, stat[enr$subnet,])
 
   list(ordered.responses = enr, method = method, sample = sample)
 		
@@ -97,14 +133,12 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
       #enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
       pval <- phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
 
-
-      temp <- c(p.value = pval,
-      	     			   sample.size.total = N,
+      temp <- c(sample.size.total = N,
       	     			   sample.size.response = k, 
 	     			   sample.size.mysample = m,
 	     			   mysamples.in.response = q, 
 				   fraction.in.data = m/N,
-				   fraction.in.response = q/k)
+				   fraction.in.response = q/k, pvalue = pval)
 
       enr <- list(score = 1 - pval, info = temp)
 
@@ -166,19 +200,13 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
   enr
 }
 
-# FIXME: finish this later
-#order.samples <- function (subnet.id, model, phenodata, which.factor, response, method = "hypergeometric") {
-#    
-#  # - for given response, order factor levels by association strength (enrichment score)
-#  #   P(s|r) = P(s,r)/P(r) total sample density and/or average sample density (both for individuals and groups s/S)
-#  #   P(s|r)/P(s) = P(s,r)/P(r)P(s) 
-#
-#  #   P(s|r)/P(s) -> OK: method = "dependency"
-#  #   P(s|r) = P(s,r)/P(r)  -> OK, normalized version P(s|r)/P(S|r) available: method = "precision"
-#
-#  enr <- response.enrichments(subnet.id, model, phenodata, which.factor, response, method)
-# 
-#  # For the given response, return levels of the given factor (decreasing ordering by enrichement score)
-#  sort(enr, decreasing = TRUE)
-#}
+
+list.significant.responses <- function (model, sample, qth = 1, method = "hypergeometric") {
+
+  # Order responses according to their association with the given sample group
+  o <- order.responses(model, sample = sample, method = "hypergeometric")$ordered.responses
+  o[which(o$qvalue < qth),]
+
+}
+
 
