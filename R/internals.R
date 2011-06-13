@@ -123,23 +123,72 @@ compute.weight <- function (pt, mu, vars, xt) {
   w <- rep.int(0, nrow(mu))  
   sds <- sqrt(vars)
 
+
   # set arbitrary weigh for the first cluster
   # (only relations between weights matter)
   # normalize later
   #w[[1]] <- 1 # added below
-  dens <- prod(dnorm(xt, mu[1, ], sds[1, ]))
+  # operate on log domain to avoid floating errors
+
+  logdens <- sum(dnorm(xt, mu[1, ], sds[1, ], log = TRUE))
+
   if (nrow(mu) > 1) {
-    w <- sapply(2:nrow(mu), function (i) { dens*pt[[i]]/(pt[[1]]*prod(dnorm(xt, mu[i, ], sds[i, ]))) })
+    logw <- sapply(2:nrow(mu), function (i) { 
+      #print(prod(dnorm(xt, mu[i, ], sds[i, ])))
+  
+      #dens * pt[[i]]/(pt[[1]] * prod(dnorm(xt, mu[i, ], sds[i, ]))) 
+
+      logdens + log(pt[[i]]) - log(pt[[1]]) - prod(dnorm(xt, mu[i, ], sds[i, ]), log = TRUE)
+
+    })
+    w <- exp(logw)
+
+    # densities in original domain, standardized s.t. first weight is 1
     w <- c(1, w)
+
     # normalize to unity and return
     return(w/sum(w))
   } else {
     return(1) #w <- 1
   }
+    
+}
 
-  #for (i in 2:nrow(mu)) {
-  #  w[[i]] <- w[[1]]/((pt[[1]]/pt[[i]])*prod(dnorm(xt, mu[i, ], sds[i, ]))/dens)
-  #}
+
+compute.weight.bu2 <- function (pt, mu, vars, xt) {
+
+  # pt <- qOFz[t,] # P(c|t) for all c
+  # xt  <- dat[t, ] # data point
+  
+  # Initial weights are zero
+  w <- rep.int(0, nrow(mu))  
+  sds <- sqrt(vars)
+
+
+
+  # set arbitrary weigh for the first cluster
+  # (only relations between weights matter)
+  # normalize later
+  #w[[1]] <- 1 # added below
+  dens <- prod(dnorm(xt, mu[1, ], sds[1, ]))
+
+
+  if (nrow(mu) > 1) {
+
+    w <- sapply(2:nrow(mu), function (i) { 
+      print(prod(dnorm(xt, mu[i, ], sds[i, ])))
+  
+      dens * pt[[i]]/(pt[[1]] * prod(dnorm(xt, mu[i, ], sds[i, ]))) 
+
+    })
+
+    w <- c(1, w)
+
+    # normalize to unity and return
+    return(w/sum(w))
+  } else {
+    return(1) #w <- 1
+  }
     
 }
 

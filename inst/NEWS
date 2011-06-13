@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.5.09 (2011-06-13)
+
+  o updated toydata
+  o compute.weights: now operating in log-domain to avoid occasional
+  floating point errors
+
+
 CHANGES IN VERSION 1.5.08 (2011-05-27)
 
   o added plot.pca function to visualize subnets in 2D with ellipsoid

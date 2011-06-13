@@ -176,11 +176,6 @@ function(dat,
   # estimate weights using data and other parameters
   # take average to get more robust estimate over data points
 
-  # FIXME: can be sped up with apply. Need to modify compute.weight also
-  #ws  <- array(NA, dim = c(nrow(dat), Kreal))
-  #for (datapoint in 1:nrow(dat)) {
-  #  ws[datapoint,] <- compute.weight(qOFz, centroids, variances, dat, datapoint)             
-  #}
   # Calculate weights on at most 20 points
   # (weights are almost identical in all points, calculate on many points to increase robustness)
   rsample <- sample(nrow(dat), min(nrow(dat), 20))
