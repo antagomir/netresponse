@@ -183,7 +183,7 @@ setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALS
 
   # Retrieve P(r|s) from the model, given data and model parameters
   pars <- get.model.parameters(model, subnet.id)
-  dat  <- get.dat(model, subnet.id)  # dat is now features x samples matrix
+  dat  <- get.dat(model, subnet.id)  # Dat is now features x samples matrix
   qofz <- P.r.s(dat, pars, log = log)
   rownames(qofz) <- rownames(model@datamatrix) #model@samples
   colnames(qofz) <- paste("Response", 1:ncol(qofz), sep = "-")   

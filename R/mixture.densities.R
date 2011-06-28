@@ -35,7 +35,7 @@ P.rS <- function (dat, pars, log = TRUE) {
   # joint density P(S, r) for each component r
   psr <- P.rs.joint(dat, pars, log = FALSE)
   
-  # log P(r|S) = logP(S, r) - log(sumr(P(S, r)))
+  # Log P(r|S) = logP(S, r) - log(sumr(P(S, r)))
   logp <- log(psr) - log(sum(psr))
   
   if (log) {
@@ -69,7 +69,7 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
   psr.log <- P.sr(dat, pars, log = TRUE)
   pr.log <- log(pars$w)
 
-  #prs.log <- get.P.rs(model, subnet.id, log = TRUE)
+  #Prs.log <- get.P.rs(model, subnet.id, log = TRUE)
   #ps <- sum_r P(s,r) = sum_r P(s|r)P(r) 
   # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
   #ps <- colSums(exp(psr.log)*exp(pr.log)) # for each sample, sum over responses
@@ -97,7 +97,7 @@ P.rs.joint <- function (dat, pars, log = TRUE) {
   # P(S|r) for each response; length of output equals to number of responses
   # i.e. logsum of the individual sample densities
   pSr.log <- P.Sr(dat, pars, log = TRUE) #get.P.Sr(sample, model, subnet.id, log = TRUE)  
-  # density for each mixture component
+  # Density for each mixture component
   pr.log <- log(pars$w)
 
   logp.joint <- pSr.log + pr.log
@@ -122,7 +122,7 @@ P.Sr <- function (dat, pars, log = TRUE) {
   # dat is features x samples matrix
   psr <- P.sr(dat, pars, log = TRUE)
 
-  # returns responses x samples matrix
+  # Returns responses x samples matrix
   # for each response, calculate logsum over samples
   if (log) {
      rowSums(psr)
@@ -158,10 +158,7 @@ P.sr <- function (dat, pars, log = TRUE) {
   for ( response in 1:length( pars$w ) ) {
     # Given the diagonal covariances, the density is product (log-sum)
     # over the densities for individual features (on each data point)
-    psr[response, ] <- colSums(dnorm(dat,
-                  mean = as.numeric(pars$mu[response, ]),
-		  sd = as.numeric(pars$sd[response, ]), 
-		  log = TRUE))
+    psr[response, ] <- colSums(dnorm(dat, mean = as.numeric(pars$mu[response, ]), sd = as.numeric(pars$sd[response, ]), log = TRUE))		  
   }
 
   logp <- psr # responses x samples
