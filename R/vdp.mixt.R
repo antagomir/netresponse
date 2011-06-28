@@ -117,7 +117,7 @@ function(dat,
   data[["given.data"]][["X1"]] <- dat
 
   # sample-component assignments
-  qOFz         <- rand.qOFz(nrow(dat), initial.K)
+  qOFz         <- rand.qOFz.c(nrow(dat), initial.K)
 
   # The hyperparameters of priors
   hp.prior     <- mk.hp.prior(data, opts)

@@ -267,12 +267,3 @@ setMethod(f = "[[", signature("NetResponseModel"),
 
 
 	
-
-#new("rpa.list", list(d = x$d[i,], sigma2 = x$sigma2[[i]], cind = x$cind, set = x$sets[[i]]))
-#setReplaceMethod(f="[[",signature("ChromosomeArmModels"),
-#                                definition=(function(x,i,j,value) {
-#                                        x@models[[i]] <- value
-#                                        return(x)
-#                                }
-#))
- 

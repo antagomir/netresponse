@@ -51,6 +51,9 @@ build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = s
     mim
 }
 
+build.mim.c <- cmpfun(build.mim)
+
+#######################################
 
 discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X))) 
 {
@@ -158,67 +161,8 @@ compute.weight <- function (pt, mu, vars, xt) {
 }
 
 
-compute.weight.bu2 <- function (pt, mu, vars, xt) {
 
-  # pt <- qOFz[t,] # P(c|t) for all c
-  # xt  <- dat[t, ] # data point
-  
-  # Initial weights are zero
-  w <- rep.int(0, nrow(mu))  
-  sds <- sqrt(vars)
-
-
-
-  # set arbitrary weigh for the first cluster
-  # (only relations between weights matter)
-  # normalize later
-  #w[[1]] <- 1 # added below
-  dens <- prod(dnorm(xt, mu[1, ], sds[1, ]))
-
-
-  if (nrow(mu) > 1) {
-
-    w <- sapply(2:nrow(mu), function (i) { 
-      print(prod(dnorm(xt, mu[i, ], sds[i, ])))
-  
-      dens * pt[[i]]/(pt[[1]] * prod(dnorm(xt, mu[i, ], sds[i, ]))) 
-
-    })
-
-    w <- c(1, w)
-
-    # normalize to unity and return
-    return(w/sum(w))
-  } else {
-    return(1) #w <- 1
-  }
-    
-}
-
-
-compute.weight.bu <- function (qOFz, mu, vars, dat, t) {
-
-  # Initial weights are zero
-  w <- rep.int(0, nrow(mu))
-  
-  sds <- sqrt(vars)
-  pt  <- qOFz[t, ]   # P(c|t) for all c
-  xt  <- dat[t, ]    # data point
-
-  # set arbitrary weigh for the first cluster
-  # (only relations between weights matter)
-  # normalize later
-  w[[1]] <- 1 
-  dens <- prod(dnorm(xt, mu[1, ], sds[1, ]))
-  for (i in (1:nrow(mu))[-1]) {
-    rel  <- (pt[[1]]/pt[[i]])*prod(dnorm(xt, mu[i, ], sds[i, ]))/dens
-    w[[i]] <- w[[1]]/rel
-  }
-  
-  # normalize to unity and return
-  w/sum(w)
-  
-}
+############################################
 
 
 retrieve.model <- function (model, subnet.id) {
@@ -248,6 +192,11 @@ retrieve.model <- function (model, subnet.id) {
   vdp.mixt(matrix(model@datamatrix[, nodes], nrow(model@datamatrix)))
 
 }
+
+#########################################
+
+prcomp.c <- cmpfun(prcomp)
+
 
 ##############################################################################
 
@@ -286,7 +235,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
   if ( length(candidates) == 0 ) { c <- 1 }
   
   qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts)
-  fc   <- mk.E.log.q.p.eta(data, hp.posterior, hp.prior, opts)
+  fc   <- mk.E.log.q.p.eta.c(data, hp.posterior, hp.prior, opts)
   log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts) 
   sub.data  <- data
 
@@ -308,7 +257,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
     # Split cluster c in qOFz into two smaller ones
 
     new.c     <- ncol(qOFz)
-    new.qOFz  <- split.qofz(qOFz, c, new.c, dat, opts$speedup, min.size)
+    new.qOFz  <- split.qofz.c(qOFz, c, new.c, dat, opts$speedup, min.size)
 
     new.K     <- ncol( new.qOFz )
     sub.qOFz  <- new.qOFz[relating.n, unique(c(c, new.c, new.K))]
@@ -323,7 +272,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
     # update_posterior sorts the clusters by size.
 
     sub.hp.posterior <- mk.hp.posterior(sub.data, sub.qOFz, hp.prior, opts)
-    dummylist        <- updatePosterior(sub.data, sub.hp.posterior, hp.prior, opts, 10, 0)
+    dummylist        <- updatePosterior.c(sub.data, sub.hp.posterior, hp.prior, opts, 10, 0)
     sub.hp.posterior <- dummylist$hp.posterior
     sub.qOFz         <- dummylist$qOFz
 
@@ -342,8 +291,8 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
     
     new.log.lambda[, insert.indices] <- sub.log.lambda
     new.fc <- fc
-    new.fc[insert.indices] <- mk.E.log.q.p.eta(sub.data, sub.hp.posterior, hp.prior, opts)
-    new.free.energy[[c]] <- mk.free.energy(data, sub.hp.posterior, hp.prior, opts, new.fc, new.log.lambda)$free.energy
+    new.fc[insert.indices] <- mk.E.log.q.p.eta.c(sub.data, sub.hp.posterior, hp.prior, opts)
+    new.free.energy[[c]] <- mk.free.energy.c(data, sub.hp.posterior, hp.prior, opts, new.fc, new.log.lambda)$free.energy
 
     # if new.qOFz is not large enough to accommodate update from sub.qOFz then add columns
     if (ncol(new.qOFz) < max(insert.indices)) {
@@ -372,79 +321,13 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
 
 
 
-find.best.neighbor <- function (delta, G, max.subnet.size, network) {
+find.best.splitting.c <- cmpfun(find.best.splitting)
 
-  dim <- nrow(network)
-  
-  a <- b <- 0
-  mindelta <- Inf
-  for (i in 1:dim){
-    #Check neighborgs
-    iNeighs <- network[i, ]
-    if (i < dim){
-      if (sum(network[i,(i+1):dim])>0){
-        #Identify best neighbor
-        neighInds <- which(iNeighs == 1)
-        x <- min(delta[i, neighInds])
-        # present things in original indices
-        z <- neighInds[which.min(delta[i, neighInds])]
-        # require also x < 0 since otherwise combining groups is
-        # worse than keeping them separate
-        if (x < 0 && x < mindelta && network[i, z] && length(c(G[[z]], G[[i]])) <= max.subnet.size){
-          # Store the so far best neighborghs
-          mindelta <- x  # NOTE: here x from delta refers to BIC change
-          b <- z         # we search for the indices (a,b) of the groups
-          a <- i         # that are joined next ..
-        }
-      }
-    }
-  }
+########################################
 
-  # Order a, b
-  temp <- sort(c(a, b))
-  a    <- temp[[1]]
-  b    <- temp[[2]]
 
-  list(a = a, b = b, mindelta = mindelta)
 
-}
-
-find.best.neighbor2 <- function (delta, G, max.subnet.size, network) {
-
-  # for graphNEL networks
-  
-  dimi <- length(nodes(network)) - 1
-  a <- b <- 0
-  mindelta <- Inf
-  for (i in 1:dimi){
-    #Check neighborgs
-    neighInds <- which(nodes(network) %in% adj(network, nodes(network)[[i]])[[1]])
-    if (!is.null(neighInds)) {
-      #Identify best neighbor
-      x <- min(delta[i, neighInds])
-      # present things in original indices
-      z <- neighInds[which.min(delta[i, neighInds])]
-      # require also x < 0 since otherwise combining groups is
-      # worse than keeping them separate
-      if (x < 0 && length(c(G[[z]], G[[i]])) <= max.subnet.size){
-        # Store the so far best neighborghs
-        mindelta <- x  # NOTE: here x from delta refers to BIC change
-        b <- z         # we search for the indices (a,b) of the groups
-        a <- i         # that are joined next ..
-      }
-    } else {}
-  }
-
-  # Order a, b
-  temp <- sort( c(a, b) )
-  a    <- temp[[1]]
-  b    <- temp[[2]]
-
-  list(a = a, b = b, mindelta = mindelta)
-
-}
-
-find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
+find.best.neighbor <- function (G, max.subnet.size, network, delta) {
 
   # Order edges by delta values. The two subnets with the smallest delta are
   # joined unless the merged subnet exceeds max size.
@@ -480,21 +363,11 @@ find.best.neighbor3 <- function (G, max.subnet.size, network, delta) {
 }
 
 
-join.subnets <- function (network, a, b) {
-  # for binary matrices
-  
-  # put merged a,b into a's place and remove b  
-  #network[a, ]  <- as.numeric(network[a, ] | network[b, ]) 
-  network[a, ]  <- (network[a, ] | network[b, ]) 
-  network[, a]  <- network[a, ]
-  network[a, a] <- 0
-  # remove the merged group
-  #Matrix(network[-b, -b])
-  matrix(network[-b, -b], nrow(network) - 1)
-    
-}
+find.best.neighbor.c <- cmpfun(find.best.neighbor)
 
-join.subnets2 <- function (network, delta, best.edge) {
+
+
+join.subnets <- function (network, delta, best.edge) {
   # for edge matrices
   a <- network[1, best.edge]
   b <- network[2, best.edge]  
@@ -515,6 +388,9 @@ join.subnets2 <- function (network, delta, best.edge) {
   list(network = matrix(network, 2), delta = delta)
 }
 
+join.subnets.c <- cmpfun(join.subnets)
+
+########################################################
 
 check.bins <- function (difexp, mybreaks) {
 
@@ -533,6 +409,7 @@ check.bins <- function (difexp, mybreaks) {
 
   bins
 }
+
 
 
 ###############################################################################
@@ -565,6 +442,8 @@ sortqofz <- function(qOFz){
   
 }
 
+sortqofz.c <- cmpfun(sortqofz)
+
 ############################################################
 
 
@@ -593,7 +472,7 @@ rand.qOFz <- function(N, K){
 
 }
 
-
+rand.qOFz.c <- cmpfun(rand.qOFz)
 
 ############################################################
 
@@ -601,6 +480,7 @@ rand.qOFz <- function(N, K){
 # INPUT: "old" free_energy value, "new" free_energy value, options
 # OUTPUT: bool: 0 if the there was no significant improvement.
 #               1 if new_free_energy is smaller than free_energy (more than opts$threshold).
+
 
 
 free.energy.improved <- function(free.energy, new.free.energy,
@@ -623,12 +503,14 @@ free.energy.improved <- function(free.energy, new.free.energy,
 
   diff <- new.free.energy - free.energy
 
-  if(is.nan(abs(diff/free.energy)) || abs(diff/free.energy) < threshold){
+  v <- abs(diff/free.energy)
+  
+  if(is.nan(v) || v < threshold){
     bool <- 0
   } else { 
     if(diff > 0){
       if( warn.when.increasing ){
-        if( abs(diff/free.energy) > 1e-3 ){
+        if( v > 1e-3 ){
           stop(c("the free energy increased. The diff is ", toString(diff)))
         } else {
           warning(c("the free energy increased. The diff is ", toString(diff)))
@@ -637,12 +519,13 @@ free.energy.improved <- function(free.energy, new.free.energy,
       bool <- 0
     } else {
       bool <- ifelse(diff == 0, 0, 1)
-      #if(diff == 0){bool <- 0} else {bool <- 1}
     }
   }
   
   bool
 }
+
+free.energy.improved.c <- cmpfun(free.energy.improved)
 
 #################################################################################
 
@@ -668,26 +551,26 @@ greedy <- function(data, hp.posterior, hp.prior, opts, min.size){
   #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
   #  Paul Wagner
   
-  free.energy <- mk.free.energy(data, hp.posterior, hp.prior, opts)$free.energy
+  free.energy <- mk.free.energy.c(data, hp.posterior, hp.prior, opts)$free.energy
 
   while(1){
 
     # ALGORITHM STEP 2-4
 
-    templist <- find.best.splitting(data, hp.posterior, hp.prior, opts, min.size)
+    templist <- find.best.splitting.c(data, hp.posterior, hp.prior, opts, min.size)
     new.free.energy  <- templist$free.energy
     new.hp.posterior <- templist$hp.posterior
     c                <- templist$c
     if ( c == (-1) ) { break } # infinite free energy -> break splitting
 
     # ALGORITHM STEP 5
-    dummylist <- updatePosterior(data, new.hp.posterior, hp.prior,
+    dummylist <- updatePosterior.c(data, new.hp.posterior, hp.prior,
                                   opts, ite = opts$ite, do.sort = 1)
     new.free.energy  <- dummylist$free.energy
     new.hp.posterior <- dummylist$hp.posterior
     
     # ALGORITHM STEP 6
-    if( free.energy.improved(free.energy, new.free.energy, 0, opts$threshold) == 0 ) {
+    if( free.energy.improved.c(free.energy, new.free.energy, 0, opts$threshold) == 0 ) {
       break #free.energy didn't improve, greedy search is over
     } 
 
@@ -738,7 +621,7 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
     cnt <- 0
     while (is.infinite(new.free.energy) && cnt <= 10) {
       
-      templist <- mk.free.energy(data, hp.posterior, hp.prior, opts.internal)
+      templist <- mk.free.energy.c(data, hp.posterior, hp.prior, opts.internal)
       new.free.energy <- templist$free.energy
       log.lambda <- templist$log.lambda
       if( is.infinite(new.free.energy) ) {
@@ -750,7 +633,7 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
 
     if ( (is.finite(ite) && i>= ite) ||
          (is.infinite(ite) && 
-          free.energy.improved(free.energy, new.free.energy, 0, opts.internal$threshold) == 0)){
+          free.energy.improved.c(free.energy, new.free.energy, 0, opts.internal$threshold) == 0)){
         free.energy <- new.free.energy
         if( do.sort && opts.internal$do.sort && (!start.sort) && is.finite(free.energy)){
           start.sort <- 1
@@ -766,7 +649,7 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
       if(sum(qOFz[, ncol(qOFz)]) >= epsilon){ qOFz <- cbind(qOFz, 0) }
 
       # Sort components by size (note: last component kept in its place)
-      if( start.sort ){ qOFz <- sortqofz(qOFz) }
+      if( start.sort ){ qOFz <- sortqofz.c(qOFz) }
 
       # If the smallest of the previous components
       # (excluding the one added in this interation)
@@ -784,6 +667,8 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
        hp.posterior = hp.posterior,
                qOFz = qOFz)
 }
+
+updatePosterior.c <- cmpfun(updatePosterior)
 
 ###########################################################################
 
@@ -830,7 +715,7 @@ softmax <- function( A ){
   
 }
 
-
+softmax.c <- cmpfun(softmax)
 
 mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 
@@ -902,7 +787,7 @@ mk.hp.prior <- function(data, opts){
   dat <- data$given.data$X1 # real-valued. Data to be clustered.
   
   Mean  <- colMeans(dat)     # mean of each dimension
-  Var   <- colVariances(dat, Mean) # Variance of each dimension
+  Var   <- colVariances.c(dat, Mean) # Variance of each dimension
                   #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 
 
   # priors for distribution of codebook vectors Mu ~ N(MuMu, S2.Mu)..
@@ -910,8 +795,7 @@ mk.hp.prior <- function(data, opts){
   # priors for data variance Ksi ~ invgam(AlphaKsi, BetaKsi)
   # variance is modeled with inverse Gamma distribution
   # FIXME: some of these are redundant, remove to save memory
-  list(Mumu = Mean, S2mu = Var, U.p = Inf, AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)),
-           BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha)
+  list(Mumu = Mean, S2mu = Var, U.p = Inf, AlphaKsi = rep(opts$prior.alphaKsi, ncol(dat)), BetaKsi = rep(opts$prior.betaKsi, ncol(dat)), alpha = opts$prior.alpha)
   
 }
 
@@ -939,18 +823,21 @@ mk.free.energy <- function(data, hp.posterior, hp.prior, opts,
   #  Paul Wagner
   
   if( is.null(fc) || is.null(log.lambda) ){
-    fc <- mk.E.log.q.p.eta(data, hp.posterior, hp.prior, opts)      # 1*K
+    fc <- mk.E.log.q.p.eta.c(data, hp.posterior, hp.prior, opts)      # 1*K
     log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts) # N*K
   } 
- 
-  E.log.p.of.V <- lgamma(colSums(hp.posterior$gamma)) -
+
+  hpgsum <- colSums(hp.posterior$gamma)
+  dig <- digamma(hpgsum)
+  
+  E.log.p.of.V <- lgamma(hpgsum) -
       lgamma(1 + hp.prior$alpha) -
       colSums(lgamma(hp.posterior$gamma)) +
       lgamma(hp.prior$alpha) +
       ( (hp.posterior$gamma[1, ] - 1) * 
-        (digamma(hp.posterior$gamma[1, ]) - digamma(colSums(hp.posterior$gamma)))) +
+        (digamma(hp.posterior$gamma[1, ]) - dig)) +
       ( (hp.posterior$gamma[2, ] - hp.prior$alpha) *
-        (digamma(hp.posterior$gamma[2, ]) - digamma(colSums(hp.posterior$gamma))))
+        (digamma(hp.posterior$gamma[2, ]) - dig))
 
   extra.term <- sum(E.log.p.of.V)
   free.energy <- extra.term + sum(fc) - sumlogsumexp(log.lambda)
@@ -960,6 +847,7 @@ mk.free.energy <- function(data, hp.posterior, hp.prior, opts,
 
 }
   
+mk.free.energy.c <- cmpfun(mk.free.energy)
 
 mk.qOFz <- function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
 
@@ -976,12 +864,14 @@ mk.qOFz <- function(data, hp.posterior, hp.prior, opts, log.lambda = NULL){
     log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts)
   }
 
-  qOFz <- softmax( log.lambda )
+  qOFz <- softmax.c( log.lambda )
 
   # Do not allow empty clusters
   as.matrix(qOFz[, !colSums(qOFz) == 0], nrow(log.lambda))
   
 }
+
+
 
 mk.log.lambda <- function(data, hp.posterior, hp.prior, opts){
 
@@ -1023,6 +913,7 @@ mk.log.lambda <- function(data, hp.posterior, hp.prior, opts){
 # INPUT:   data, hp_posterior, hp_prior, opts
 # OUTPUT:  matrix [1xk]: used to compute the free_energy formula. 
 # DESCRIPTION: Regards the gaussian model's parameters.
+
 
 
 mk.E.log.q.p.eta <- function(data, hp.posterior, hp.prior, opts){
@@ -1069,6 +960,7 @@ mk.E.log.q.p.eta <- function(data, hp.posterior, hp.prior, opts){
   t(l.codebook)
 }
 
+mk.E.log.q.p.eta.c <- cmpfun(mk.E.log.q.p.eta)
 
 #################################################
 
@@ -1079,7 +971,7 @@ colVariances <- function (dat, Mean) {
   colSums((dat - rep(Mean, each = nrow(dat)))^2)/(nrow(dat) - 1)
 }
 
-
+colVariances.c <- cmpfun(colVariances)
 
 ############################################################################
 
@@ -1174,77 +1066,21 @@ split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4){
 
 }
 
+split.qofz.c <- cmpfun(split.qofz)
+
 ###############################################################################
 
 
-fsort <- function (df, sortvar, decreasing = FALSE) {
+#fsort <- function (df, sortvar, decreasing = FALSE) {
+fsort <- function (df, sortvar) {
 
   o <- order(df[[sortvar]])
-  if (decreasing) {o <- rev(o)}
+  #if (decreasing) {o <- rev(o)}
   df[o,]
 
 }
 
+fsort.c <- cmpfun(fsort)
+
 ##################################################################
-
-# Problem, calls x from GlobalEnv
-#esort <- function(x, sortvar, ...) {
-#  #Sort data frame dd by columns like: esort(dd, -z, b)  
-#  attach(x)
-#  x <- x[with(x,order(sortvar,...)),]
-#  return(x)
-#  detach(x)
-#}
-	  
-# should be useful trick in weight summations, check
-#  # to avoid floating errors, utilize the fact that 
-#  # exp(a+b)/(exp(a+b) + exp(a+c)) = exp(b)/(exp(b)+exp(c))
-#  # now: a = min(denses)
-#  denses <- unlist(denses)
-#  denses <- unlist(exp(denses-max(denses)))
-#  denses/sum(denses)
-															      
-##################################################################
-		
-summarize.pwnets <- function (pwnets) {
-
-  # Summarize all networks into one
-  mat <- array(0,dim=dim(pwnets[[which(!is.na(pwnets))[[1]]]]),dimnames=dimnames(pwnets[[which(!is.na(pwnets))[[1]]]]))
-  for (pwn in pwnets) {
-    if (!is.na(pwn)) {
-      mat <- mat + pwn
-    }	
-  }
-  
-  # make it symmetric i.e. ignore the causal order of regulation
-  mat2 <- mat + t(mat)
-
-  # Make it binary
-  mat2[ mat2 > 0 ] <- 1
-
-  mat2
-
-}
-
-pick.interactions <- function(gids,beta,pwa,direct){
-
-  all.interactions = matrix(0,nrow=length(gids),ncol=length(gids))
-  rownames(all.interactions) = gids
-  colnames(all.interactions) = gids
-  
-  if (length(direct)==1) {
-    inds = which(beta==direct)
-  } else {inds = seq(length(beta))}
-  
-  for (pwi in 1:dim(pwa)[[1]]) {
-    for (betai in inds) {
-      ints = pwa[pwi,betai,,]
-      ints[is.na(ints)] = 0
-      all.interactions = all.interactions + ints
-    }
-  }
-  
-  all.interactions
-}
-
-
+	
