@@ -123,6 +123,9 @@ compute.weight <- function (pt, mu, vars, xt) {
   w <- rep.int(0, nrow(mu))  
   sds <- sqrt(vars)
 
+  # Avoid overflows: no probability can be 0 exactly. Add negligible constant in these cases
+  pt[pt < 1e-320] <- 1e-320
+  pt <- pt/sum(pt) # renormalize
 
   # set arbitrary weigh for the first cluster
   # (only relations between weights matter)
@@ -131,19 +134,19 @@ compute.weight <- function (pt, mu, vars, xt) {
   # operate on log domain to avoid floating errors
 
   logdens <- sum(dnorm(xt, mu[1, ], sds[1, ], log = TRUE))
-
+ 
   if (nrow(mu) > 1) {
     logw <- sapply(2:nrow(mu), function (i) { 
       #print(prod(dnorm(xt, mu[i, ], sds[i, ])))
   
       #dens * pt[[i]]/(pt[[1]] * prod(dnorm(xt, mu[i, ], sds[i, ]))) 
 
-      logdens + log(pt[[i]]) - log(pt[[1]]) - prod(dnorm(xt, mu[i, ], sds[i, ]), log = TRUE)
+      logdens + log(pt[[i]]) - log(pt[[1]]) - sum(dnorm(xt, mu[i, ], sds[i, ], log = TRUE))
 
     })
     w <- exp(logw)
 
-    # densities in original domain, standardized s.t. first weight is 1
+    # Densities in original domain, standardized s.t. first weight is 1
     w <- c(1, w)
 
     # normalize to unity and return

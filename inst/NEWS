@@ -1,3 +1,7 @@
+CHANGES IN VERSION 1.5.10 (2011-06-28)
+
+  o corrected weight estimation from vdp.mixt
+
 CHANGES IN VERSION 1.5.09 (2011-06-13)
 
   o updated toydata

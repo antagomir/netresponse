@@ -47,7 +47,7 @@ function(dat,
   #  Paul Wagner
   #
 
-# INPUT: mydat::
+# INPUT: dat::
 #       Each Row is an observation.
 #       Each Column is a variable.
 #
@@ -95,8 +95,8 @@ function(dat,
 #    implicit.noise = 0; c.max = 10
 
 
-  #system("/Rpath/bin/R CMD SHLIB /path/netresponse.c")
-  #dyn.load("/path/netresponse/src/netresponse.so")
+  #system("/usr/bin/R CMD SHLIB /Users/jarkko/Rpackages/netresponse/netresponse/src/netresponse.c")
+  #dyn.load("/Users/jarkko/Rpackages/netresponse/netresponse/src/netresponse/src/netresponse.so")
 
   # Prior parameters
   opts <- list(
@@ -172,18 +172,14 @@ function(dat,
 
   #############################################
   
-  # FIXME: improve later, or retrieve weight directly from vdp code
-  # estimate weights using data and other parameters
-  # take average to get more robust estimate over data points
-
-  # Calculate weights on at most 20 points
-  # (weights are almost identical in all points, calculate on many points to increase robustness)
-  rsample <- sample(nrow(dat), min(nrow(dat), 20))
-  ws <- matrix(sapply(rsample, function (i) {compute.weight(qOFz[i,], centroids, variances, dat[i,])}), length(rsample))
-
-  # Remove those with NAs (zero densities in some components mess the weights)
-  w <- apply(ws, 2, function (wcol) { mean(wcol, rm.na = TRUE) })
-
+  # Estimate weights directly from mass on each component; with large sample size the solution should converge there
+  w <- colSums(qOFz); 
+  w <- w/sum(w) # normalize
+  # FIXME: improve later, or retrieve weight directly from vdp code or the densities
+  # to make more robust also for small sample size
+  # NOTE: the way we calculate weights here is not in exact agreement with the real weights in the model
+  # that would give qOFz but it is an approximation, and needed for end analysis
+  
   posterior <- list(
                   weights = w, 
                   centroids = centroids, # Mubar
@@ -204,6 +200,3 @@ function(dat,
        opts         = opts,  
        free.energy  = templist$free.energy)
 }
-
-
-
