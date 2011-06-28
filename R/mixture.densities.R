@@ -23,6 +23,7 @@
 
 ###################################################################
 
+# FIXME: add compiled versions 
 
 
 P.rS <- function (dat, pars, log = TRUE) {

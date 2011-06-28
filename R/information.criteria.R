@@ -16,15 +16,17 @@ info.criterion <- function (nparams, nlog, logp, criterion = "BIC") {
 
   # Calculate various information criteria
 
-  if (criterion == "BIC") {     # Bayesian IC   
-    return(BIC(nparams, nlog, logp))
-  } else if (criterion == "AIC") { # Akaike IC
-    return(AIC(nparams, nlog, logp))
+  if (criterion == "AIC") {         # Akaike IC 
+    return(AIC.c(nparams, nlog, logp))
+  } else if (criterion == "BIC") {  # Bayesian IC   
+    return(BIC.c(nparams, nlog, logp))
   } else if (criterion == "AICc") { # Akaike for linear models, finite sample
-    return(AICc(nparams, nlog, logp))
+    return(AICc.c(nparams, nlog, logp))
   }
 
 }
+
+
 
 
 BIC <- function (nparams, nlog, logp) {
@@ -90,9 +92,13 @@ AICc <- function (nparams, nlog, logp) {
 
   n <- exp(nlog)
   
-  AIC(nparams, nlog, logp) + 2*nparams(nparams + 1)/(n - nparams - 1)
+  AIC.c(nparams, nlog, logp) + 2*nparams(nparams + 1)/(n - nparams - 1)
   
 }
 
 
 
+
+AIC.c <- cmpfun(AIC)
+AICc.c <- cmpfun(AICc)
+BIC.c <- cmpfun(BIC)
