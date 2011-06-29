@@ -1,10 +1,10 @@
 read.sif <- 
-function (sif.file, format = "graphNEL", directed = FALSE) 
+function (sif.file, format = "graphNEL", directed = FALSE, header = TRUE, sep = "\t", ...) 
 {
 
-    net <- read.csv(file = sif.file, sep = "\t", colClasses = "character")
+    net <- read.csv(file = sif.file, sep = sep, colClasses = "character", header = header, ...)
         
-    # assume form: node1 linktype node2 side.info..
+    # Assume form: node1 linktype node2 side.info..
     if ( ncol(net) > 2 ) { 
 
       # remove NA nodes 
@@ -29,6 +29,7 @@ function (sif.file, format = "graphNEL", directed = FALSE)
     }
 
     if (format == "graphNEL") { net <- igraph.to.graphNEL(net) }
+    # if (format == "igraph") { net <- igraph.from.graphNEL(igraph.to.graphNEL(net)) }
 
     net
 }
