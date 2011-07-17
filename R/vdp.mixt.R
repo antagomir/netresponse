@@ -21,7 +21,9 @@ function(dat,
          min.size = 5 # min size for a component to be splitted
          ) {
 
- 
+    # prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01; do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf; implicit.noise = 0; c.max = 10; speedup = TRUE; min.size = 5 
+
+
   #
   #  This file is a part of the NetResponse R package.
   #
@@ -95,8 +97,7 @@ function(dat,
 #    implicit.noise = 0; c.max = 10
 
 
-  #system("/usr/bin/R CMD SHLIB /Users/jarkko/Rpackages/netresponse/netresponse/src/netresponse.c")
-  #dyn.load("/Users/jarkko/Rpackages/netresponse/netresponse/src/netresponse/src/netresponse.so")
+  #system("~/local/R/R-2.13.0/bin/R CMD SHLIB ../src/netresponse.c"); dyn.load("../src/netresponse.so")
 
   # Prior parameters
   opts <- list(
@@ -160,8 +161,8 @@ function(dat,
 
   # Calculate variances (mean and mode of the invgam distr.) from scale and shape
   # FIXME: beta/alpha used in C code
-  #var.update <- matrix(invgam.scale/invgam.shape, Kreal)
-  #var.mean <- matrix(invgam.scale/(invgam.shape - 1), Kreal)
+  # var.update <- matrix(invgam.scale/invgam.shape, Kreal)
+  # var.mean <- matrix(invgam.scale/(invgam.shape - 1), Kreal)
   var.mode  <- matrix(invgam.scale/(invgam.shape + 1), Kreal)
   variances <- var.mode # select mean, mode, or their average for update
 

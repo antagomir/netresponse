@@ -30,7 +30,8 @@
 
 
 
-order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2) {
+order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
+
   # Given sample (for instance set of samples associated with a given factor level)
   # order the responses across all subnetworks based on their association strength
 
@@ -41,14 +42,17 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
   # Get model statistics
   stat <- model.stats(model)
-
+  
   # Filter the results
   sn <- get.subnets(model, get.names = TRUE, min.size, max.size, min.responses)
   stat <- stat[names(sn),]
-
+  if (is.null(subnet.ids)) { subnet.ids <- rownames(stat) }
+  
   # Check enrichment in the selected responses  
-  for (subnet.id in rownames(stat)) {
+  for ( subnet.id in subnet.ids ) {
 
+    if ( verbose ) { message(subnet.id) }
+    
     for (response in 1:length(model@models[[subnet.id]]$w)) {
   
       enr <- response.enrichment(subnet.id, model, sample, response, method)
@@ -59,7 +63,11 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
     }
   }
-			
+
+  # Filter out subnets with no proper enrichments
+  #print(dim(enrichment.info[[42]]))
+  enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
+
   enr <- as.data.frame(t(sapply(enrichment.info, identity)))
 
   if ("pvalue" %in% colnames(enr)) {
@@ -69,14 +77,16 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
   }
 
   enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
-  ord <- order(enr$enrichment.score, decreasing = TRUE)
-  enr <- enr[ord,]
-  enr[["subnet"]] <- as.character(enr[["subnet"]])
 
-  # Add subnet info in the result table
-  enr <- cbind(enr, stat[enr$subnet,])
-
-  list(ordered.responses = enr, method = method, sample = sample)
+  if ("enrichment.score" %in% names(enr)) {
+    enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
+    enr[["subnet"]] <- as.character(enr[["subnet"]])
+    # Add subnet info in the result table
+    enr <- cbind(enr, stat[enr$subnet,])
+    return(list(ordered.responses = enr, method = method, sample = sample))
+  } else {
+    return(NA)
+  }
 		
 }
 			    
@@ -89,8 +99,10 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
     warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
   }
 
-  response.sample <- response2sample(model, subnet.id, component.list = TRUE)[[response]]
-
+  response.samples <- response2sample(model, subnet.id, component.list = TRUE)
+  if (length(response.samples) == 0) { return(NULL) }
+  response.sample <- response.samples[[response]]
+  
   # Fixme: there is some minor stochasticity here, perhaps due to numerical limitations?
  
   pars <- get.model.parameters(model, subnet.id)
@@ -103,6 +115,10 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
 
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
+  if (any(!s %in% rownames(model@datamatrix))) {
+    warning("Not all samples are in the original data matrix and removed from enrichment analysis.")
+    s <- intersect(s, rownames(model@datamatrix))
+  }
   dat <- matrix(model@datamatrix[s, nodes], ncol = length(nodes))
   rownames(dat) <- s
   colnames(dat) <- nodes

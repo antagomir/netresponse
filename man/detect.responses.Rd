@@ -8,7 +8,7 @@
         0.01, update.hyperparams = 0, implicit.noise = 0, vdp.threshold =
         1.0e-5, merging.threshold = 0, ite = Inf,
         information.criterion = "AIC", speedup = TRUE,
-        speedup.max.edges = 10)}
+        speedup.max.edges = 10, mc.cores = 1, ...)}
 
 \value{NetResponseModel object.}
 
@@ -88,6 +88,11 @@ citation("netresponse") for details.}
   modeling will be among the top mutual infomation candidates. This way
   it is possible to avoid calculating exhaustive many models on the
   network hubs.}
+
+  \item{mc.cores}{Number of cores to be used in parallelization. See
+help(mclapply) for details.}
+ 
+  \item{...}{Further optional arguments to be passed.}
 
 }
   

@@ -3,7 +3,8 @@
 \title{response2sample}
 \description{List the most strongly associated response of a given
   subnetwork for each sample.}
-\usage{response2sample(model, subnet.id, component.list = TRUE)}
+\usage{response2sample(model, subnet.id, component.list = TRUE, verbose
+= FALSE)}
 \arguments{
 
   \item{model}{A NetResponseModel object. Result from NetResponse
@@ -16,6 +17,7 @@
                         component (TRUE). Else list the most strongly
                         associated component for each sample (FALSE).}
 
+  \item{verbose}{Follow progress by intermediate messages.}
 } 
 
 \value{A list. Each element corresponds to one subnetwork response,
