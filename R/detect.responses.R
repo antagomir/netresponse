@@ -52,8 +52,10 @@ function(datamatrix,
          ite = Inf,                # max. iterations in updatePosterior
          information.criterion = "AIC", # information criterion for model selection
          speedup = TRUE,                 # speed up calculations by approximations
-         speedup.max.edges = 10  # max. new joint models to be calculated; MI-based prefiltering applied
-         )
+         speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
+	 mc.cores = 1, # number of cores for parallelization
+         ... # Further arguments
+)
 
 {
 
@@ -80,6 +82,7 @@ function(datamatrix,
 
   set.seed(2341)
   #  require(Matrix)
+  require(multicore)
 
   #if (exists("discretize")) {rm(discretize)}
   
@@ -197,7 +200,7 @@ function(datamatrix,
   rownames(datamatrix) <- samples
   rm(samples)
 
-#################################################################################
+#####################################################################
 
 ### INITIALIZE ###
   
@@ -209,11 +212,6 @@ function(datamatrix,
   # print(" diagonal contains number of parameters for corresponding model")
   # off-diagonal tells number of parameters for the joint model
   # initial costs for the independent and joint models
-
-  # Each variable pair has cost function value; add this as network edge property
-  # is sparse matrices are slow, use arrays; they are faster than matrices
-  #delta     <- matrix(Inf, dim, dim)
-  #delta.nodes <- vector(Inf, network.nodes)
 
   # Network rows:                                        
   # 1) nodes 2) nodes 3) merging cost function delta
@@ -252,28 +250,28 @@ function(datamatrix,
                       speedup = speedup )
 
     cost.ind <- info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion) # COST for model
-    C              <- C + cost.ind # Total cost
+    C <- C + cost.ind # Total cost
     model.nodes[[k]] <- pick.model.parameters(model, node)
-
 }
 
 gc()
   
 if (verbose) { cat('done\n') }
 
-
 ##########################################################################################
 
 ###   compute costs for combined variable pairs  ###
 
-for (edge in 1:ncol(network)){
+if (mc.cores == 1) {
 
-  if (verbose) { cat(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
+  for (edge in 1:ncol(network)){
 
-  a <- network[1, edge]
-  b <- network[2, edge]  
-  vars            <- network.nodes[c(a, b)]
-  model           <- vdp.mixt(
+    if (verbose) { cat(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
+
+    a <- network[1, edge]
+    b <- network[2, edge]  
+    vars            <- network.nodes[c(a, b)]
+    model           <- vdp.mixt(
                               matrix(datamatrix[, vars], nrow( datamatrix )),
                               implicit.noise = implicit.noise,
                               prior.alpha = prior.alpha,
@@ -285,25 +283,85 @@ for (edge in 1:ncol(network)){
                               c.max = max.responses - 1,
                               speedup = speedup)
 
-  # Compute COST-value for two independent subnets vs. joint model 
-  # Negative free energy (-cost) is (variational) lower bound for P(D|H)
-  # Use it as an approximation for P(D|H)
-  # Cost for the indpendent and joint models
-  # -cost is sum of two independent models (cost: appr. log-likelihoods)
-  costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = information.criterion)
-  costjoint.ab   <-  info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+    # Compute COST-value for two independent subnets vs. joint model 
+    # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+    # Use it as an approximation for P(D|H)
+    # Cost for the indpendent and joint models
+    # -cost is sum of two independent models (cost: appr. log-likelihoods)
+    costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = information.criterion)
+    costjoint.ab   <-  info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
  
-      # NOTE: COST is additive so summing is ok
-      # change (increase) of the total COST / cost
-  delta[[edge]] <- as.numeric(costjoint.ab - costind.ab)
-      # Store these only if it would improve the cost; otherwise never needed
-  if (-delta[[edge]] > merging.threshold) {    
-    model.pairs[[edge]] <- pick.model.parameters(model, vars)
-  } else {
-    model.pairs[[edge]] <- 0
-  }      
-}
+    # NOTE: COST is additive so summing is ok
+    # change (increase) of the total COST / cost
+    delta <- as.numeric(costjoint.ab - costind.ab)
+      
+    # Store these only if it would improve the cost; otherwise never needed
+    if (-delta > merging.threshold) {    
+      model.pairs[[edge]] <- pick.model.parameters(model, vars)
+    } else {
+      model.pairs[[edge]] <- 0
+    }
+  }
 
+} else {
+
+    # initialize mc
+    require(multicore)
+    require(doMC)    
+    #options(cores = mc.cores)
+    registerDoMC(mc.cores)            
+
+    if (verbose) {
+      cat(paste('Computing delta values for edges with multiple cores\n'))
+      cat(paste("Using", getDoParWorkers(), "cores", "\n")) # number of cores being usedpaste("Using", getDoParWorkers(), cores) # number of cores being used
+    }
+    
+    #tmp <- mclapply(as.list(1:mc.cores), function (x) {x}, mc.cores = 2, mc.preschedule = TRUE)
+    #foreach(x = 1:4, .combine=cbind, .inorder = TRUE) %dopar% (x)
+    #print("OK")
+
+    res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
+		   "netresponse", .inorder = TRUE) %dopar%
+		   netresponse::edge.delta(edge, network = network, network.nodes =
+		   network.nodes, datamatrix = datamatrix,
+		   implicit.noise = implicit.noise, prior.alpha =
+		   prior.alpha, prior.alphaKsi = prior.alphaKsi,
+		   prior.betaKsi = prior.betaKsi, threshold =
+		   threshold, initial.K = initial.responses, ite =
+		   ite, c.max = max.responses - 1, speedup = speedup,
+		   model.nodes = model.nodes, Nlog = Nlog, model =
+		   model, information.criterion =
+		   information.criterion, verbose = verbose,
+		   vdp.threshold = vdp.threshold, max.responses =
+		   max.responses, merging.threshold =
+		   merging.threshold)
+
+    #res <- mclapply(1:ncol(network), function (edge) {edge.delta(edge,#
+	#	   network = network, network.nodes = network.nodes,
+#		   datamatrix = datamatrix, implicit.noise =
+#		   implicit.noise, prior.alpha = prior.alpha,
+#		   prior.alphaKsi = prior.alphaKsi, prior.betaKsi =
+#		   prior.betaKsi, threshold = threshold, initial.K =
+#		   initial.responses, ite = ite, c.max = max.responses - 1,
+#		   speedup = speedup, model.nodes = model.nodes, Nlog
+#		   = Nlog, model = model, information.criterion =
+#		   information.criterion, verbose = verbose,
+#		   vdp.threshold = vdp.threshold, max.responses =
+#		   max.responses, merging.threshold =
+#		   merging.threshold)}, mc.cores = mc.cores,
+#		   mc.preschedule = FALSE)
+
+    # Convert to vector
+    #delta <- unlist(mclapply(res, function (x) {x$delt}, mc.cores = mc.cores))
+    #delta <- unlist(foreach(x = res, .combine=cbind, .inorder = TRUE) %dopar% (x$delt))
+    delta <- unlist(lapply(res, function (x) {x$delt})) # FIXME: parallelize
+
+    # Convert to list
+    #model.pairs <- mclapply(res, function (x) {x[1:5]}, mc.cores = mc.cores)
+    #model.pairs <- foreach(x = res, .combine=cbind, .inorder = TRUE) %dopar% (x$mod.pair)
+    model.pairs <- lapply(res, function (x) {x[1:5]}) # FIXME: parallelize
+
+}
 gc()
 
 #######################################################################################
@@ -389,7 +447,6 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
           dat <- cbind(prcomp.c(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
                        prcomp.c(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
 
-          #mis[[mi.cnt]] <- minet:::build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
           mis[[mi.cnt]] <- build.mim.c(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
 
         }
@@ -424,7 +481,6 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
         if (is.finite(model$free.energy)) {
           cost.ind <- info.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
           cost.joint <- info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
-          
           # change (increase) of the total cost
           delta[[edge]] <- cost.joint - cost.ind
         } else  {
@@ -441,7 +497,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
       }
     }
   } else{
-    if ( verbose ) {cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.\n'))}
+    if ( verbose ) { cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.\n')) }
     break
   }
 }
@@ -452,7 +508,8 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
   G <- G[!nainds]
 
   # Form a list of subnetworks (no filters)
-  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] })
+  #subnet.list <- mclapply(G, function(x) { network.nodes[unlist(x)] }, mc.cores = mc.cores)
+  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] })  
 
   # name the subnetworks
   names(model.nodes) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
@@ -472,4 +529,5 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
       network = network.orig,
       models = model.nodes
       )
+
 }

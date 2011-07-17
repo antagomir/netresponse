@@ -12,7 +12,8 @@ this factor.
 }
 \usage{
 %order.responses(model, phenodata, which.factor, which.level, method = "hypergeometric")
-order.responses(model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2)
+order.responses(model, sample, method = "hypergeometric", min.size = 2,
+max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE)
 }
 \arguments{
   \item{model}{ NetResponseModel object. }
@@ -25,7 +26,11 @@ observed responses.}
 response; 'precision' measures response purity for each factor level;
 'dependency' measures logarithm of the joint density between response
 and factor level vs. their marginal densities: log(P(r,s)/(P(r)P(s)))}
-  \item{min.size, max.size, min.responses}{Optional parameters to filter the results based on subnet size and number of responses.}
+  \item{min.size, max.size, min.responses}{Optional parameters to filter
+    the results based on subnet size and number of responses.},
+  \item{subnet.ids}{Specify subnets for which the responses shall be
+    ordered. By default, use all subnets.},
+  \item{verbose}{Follow progress by intermediate messages.}
 }
 %\details{}
 \value{

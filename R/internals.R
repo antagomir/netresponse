@@ -17,6 +17,52 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
+edge.delta <- function (edge, network, network.nodes, datamatrix, 
+			implicit.noise, prior.alpha, prior.alphaKsi,
+			prior.betaKsi, threshold, initial.K, ite,
+			c.max, speedup, model.nodes, Nlog, model, 
+			information.criterion, verbose, vdp.threshold,
+			max.responses, merging.threshold) {
+
+    if ( verbose ) { cat(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
+
+    a <- network[1, edge]
+    b <- network[2, edge]
+    vars            <- network.nodes[c(a, b)]
+    model           <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
+                                implicit.noise = implicit.noise,
+			        prior.alpha = prior.alpha,
+                                prior.alphaKsi = prior.alphaKsi,
+			        prior.betaKsi = prior.betaKsi,
+                                threshold = vdp.threshold,
+			        initial.K = initial.K,
+				ite = ite,
+		                c.max = max.responses - 1,
+				speedup = speedup)
+    
+    # Compute COST-value for two independent subnets vs. joint model
+    # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+    # Use it as an approximation for P(D|H)
+    # Cost for the indpendent and joint models
+    # -cost is sum of two independent models (cost: appr. log-likelihoods)
+    costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy))
+    costjoint.ab   <-  info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+
+    # NOTE: COST is additive so summing is ok
+    # change (increase) of the total COST / cost
+    delt <- as.numeric(costjoint.ab - costind.ab)
+    # Store these only if it would improve the cost; otherwise never needed
+    if (-delt > merging.threshold) {
+      mod.pair <- pick.model.parameters(model, vars)
+    } else {
+      mod.pair <- 0
+    }
+			
+    return(list(c(mod.pair, delt = delt)))
+}
+
+
+
 build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = sqrt(NROW(dataset))) 
 {
     # This function is licensed under cc-by-sa 3.0

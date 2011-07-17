@@ -56,7 +56,7 @@ get.qofz
 )
 
 #exportMethods(get.model.parameters)
-#importFrom(Matrix, Diag)
+#importFrom(doMC, getDoParWorkers)
 #export(Diag)
 #importFrom(graphics, plot)                                        
 

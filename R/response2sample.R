@@ -15,7 +15,7 @@
 
 
 response2sample <-
-function (model, subnet.id, component.list = TRUE) {
+function (model, subnet.id, component.list = TRUE, verbose = FALSE) {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -26,8 +26,10 @@ function (model, subnet.id, component.list = TRUE) {
 
   # For each sample, list the most strongly associated response (highest P(r|s))
   clusters <- apply(response.probabilities, 1, which.max)
-  
-  if ( component.list ) {
+
+  if (length(clusters) == 0) {
+    warning(paste("Error with response2sample in subnet", subnet.id))
+  } else if ( component.list ) {
     # list samples separately for each cluster
     clusters <- lapply(seq(max(clusters)), function( i ){ names(which(clusters == i)) })
     # Names(clusters) <- FIXME add names here
