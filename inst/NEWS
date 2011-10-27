@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.5.14 (2011-10-28)
+
+  o removed compiler package and functions as they are included in
+    R-2.14
+
 CHANGES IN VERSION 1.5.12 (2011-06-29)
 
   o added options for read.network
