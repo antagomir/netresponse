@@ -119,7 +119,7 @@ find.similar.features <- function (model, subnet.id, datamatrix = NULL, verbose 
   df <- as.data.frame(delta)
   df[["feature.name"]] <- rownames(df)
   df <- df[c("feature.name", "delta")]
-  df <- fsort.c(df, "delta")
+  df <- fsort(df, "delta")
   
   df
 }

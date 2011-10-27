@@ -382,7 +382,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
     # the new merged pair would not exceed the max allowed subnetwork
     # size)
 
-  tmp <- find.best.neighbor.c(G, max.subnet.size, network, delta)
+  tmp <- find.best.neighbor(G, max.subnet.size, network, delta)
   delta <- tmp$delta
 
   # If merging still possible
@@ -398,7 +398,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
     # which this is needed.  For others, put Inf on the a neighborgs,
 
     # combine a and b in the network, remove self-link a-a, remove b (row and col)
-    tmp.join <- join.subnets.c(network, delta, best.edge)
+    tmp.join <- join.subnets(network, delta, best.edge)
     network <- tmp.join$network
       delta <- tmp.join$delta
     model.nodes[[a]] <- model.pairs[[best.edge]]
@@ -444,10 +444,10 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
           # Pick node indices
           a <- network[1, edge]
           i <- network[2, edge]
-          dat <- cbind(prcomp.c(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
-                       prcomp.c(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
+          dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
+                       prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
 
-          mis[[mi.cnt]] <- build.mim.c(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
+          mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
 
         }
 
