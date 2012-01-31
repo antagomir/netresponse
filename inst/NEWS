@@ -1,3 +1,15 @@
+CHANGES IN VERSION 1.7.01 (2012-01-31)
+
+ o switched to R-2.14.1
+ o now allowing max.subnet.size = 1 in detect.responses
+ o order.responses: fixed minor bug which occurs when no enrichments are detected
+ o added mode = hard in sample2response function
+ o added (optional) initial mutual information based filtering of the network edges
+   also in the first stage where pairwise similarities are calculated for all node pairs
+   This can give considerable speedups with large networks
+ o plot.associations -> plotAssociations
+ o plot.pca -> plotPCA
+
 CHANGES IN VERSION 1.5.14 (2011-10-28)
 
   o removed compiler package and functions as they are included in

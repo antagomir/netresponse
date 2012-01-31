@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011 Leo Lahti
+# Copyright (C) 2008-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,6 @@
  #                                          - Jon Claerbout
 
 ###################################################################
-
-# FIXME: add compiled versions 
-
 
 P.rS <- function (dat, pars, log = TRUE) {
 

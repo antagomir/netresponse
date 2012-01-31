@@ -6,13 +6,14 @@
 
 \description{ Probabilistic sample-response assignments for given
   subnet. }
-\usage{sample2response(model, subnet.id)}
+\usage{sample2response(model, subnet.id, mode = "soft")}
 \arguments{
   \item{ model }{Result from NetResponse (detect.responses function).}
 
   \item{ subnet.id }{Subnet identifier. A natural number which
   specifies one of the subnetworks within the 'model' object.}
 
+  \item{ mode }{ soft: gives samples x responses probabilistic assignment matrix; hard: gives the most likely response for each sample}
 }
 
 \value{A matrix of probabilities. Sample-response assignments for given

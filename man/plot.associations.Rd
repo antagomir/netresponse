@@ -1,9 +1,9 @@
-\name{plot.associations}
-\alias{plot.associations}
+\name{plotAssociations}
+\alias{plotAssociations}
 \title{Association strength between category labels and responses.}
 \description{Plot association strength between user-defined category labels and responses in a selected subnetwork.}
 \usage{
-plot.associations(x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...)
+plotAssociations(x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

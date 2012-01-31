@@ -1,5 +1,5 @@
 
-# Copyright (C) 2010-2011 Leo Lahti
+# Copyright (C) 2010-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -64,28 +64,30 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     }
   }
 
-  # Filter out subnets with no proper enrichments
-  #print(dim(enrichment.info[[42]]))
-  enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
+  if (length(enrichment.info) > 0) {
+    enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
 
-  enr <- as.data.frame(t(sapply(enrichment.info, identity)))
+    enr <- as.data.frame(t(sapply(enrichment.info, identity)))
 
-  if ("pvalue" %in% colnames(enr)) {
-    # calculate q-values
-    library(qvalue)
-    enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
-  }
+    if ("pvalue" %in% colnames(enr)) {
+      # calculate q-values
+      library(qvalue)
+      enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+    }
 
-  enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
+    enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
 
-  if ("enrichment.score" %in% names(enr)) {
-    enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
-    enr[["subnet"]] <- as.character(enr[["subnet"]])
-    # Add subnet info in the result table
-    enr <- cbind(enr, stat[enr$subnet,])
-    return(list(ordered.responses = enr, method = method, sample = sample))
+    if ("enrichment.score" %in% names(enr)) {
+      enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
+      enr[["subnet"]] <- as.character(enr[["subnet"]])
+      # Add subnet info in the result table
+      enr <- cbind(enr, stat[enr$subnet,])
+      return(list(ordered.responses = enr, method = method, sample = sample))
+    } else {
+      return(NULL)
+    }
   } else {
-    return(NA)
+    return(NULL)
   }
 		
 }

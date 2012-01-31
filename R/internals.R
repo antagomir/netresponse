@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2011 Olli-Pekka Huovilainen and Leo Lahti
+# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,6 +16,60 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
+
+filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins) {
+
+  # Include at maximum speedup.max.edges for each node in the network
+  # based on mutual information
+  # return list of edges to keep
+
+  remove.edges <- c()
+  uniq.edges <- unique(network[1,])  
+
+  for (idx in 1:length(uniq.edges)) {
+    message(paste(idx, "/",  length(uniq.edges)))
+    a <- uniq.edges[[idx]]
+
+    # Pick edges for this node
+    eds <- which(network[1, ] == a)
+
+    # Calculate MI scores
+    require(minet)
+    mis <- c()
+    mi.cnt <- 0  
+    # FIXME: could be parallelized
+    for (edge in eds){ # which(is.na(delta))
+      mi.cnt <- mi.cnt + 1
+
+      # Pick node indices
+      i <- network[2, edge]
+
+      # Pick data
+      # For real subnets using first PCA component
+      #dat <- cbind(prcomp(matrix(datamatrix[, a], nrow(datamatrix)), center = TRUE)$x[, 1],
+      #             prcomp(matrix(datamatrix[, i], nrow(datamatrix)), center = TRUE)$x[, 1])
+
+      # For singletons
+      dat <- cbind(datamatrix[, a], datamatrix[, i])
+                   
+      mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
+    }
+    
+    # Edges to remove
+    remove.edges <- eds[na.omit(order(mis, decreasing = TRUE)[-seq(speedup.max.edges)])]
+    keep.edges <- setdiff(1:ncol(network), remove.edges)
+
+    # Filter out remove.edges
+    if (length(remove.edges) > 0) {
+      network <- network[, keep.edges]
+      delta <- delta[keep.edges] 
+    }
+
+  }
+
+  list(network = network, delta = delta)
+
+}
 
 edge.delta <- function (edge, network, network.nodes, datamatrix, 
 			implicit.noise, prior.alpha, prior.alphaKsi,
@@ -813,7 +867,7 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 
 mk.hp.prior <- function(data, opts){
 
-  #  Copyright (C) 2008-2011 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -831,7 +885,7 @@ mk.hp.prior <- function(data, opts){
 
 
   dat <- data$given.data$X1 # real-valued. Data to be clustered.
-  
+
   Mean  <- colMeans(dat)     # mean of each dimension
   Var   <- colVariances(dat, Mean) # Variance of each dimension
                   #colSums((dat - rep(Mean, each = nrow(dat)))^2)/nrow(dat) 

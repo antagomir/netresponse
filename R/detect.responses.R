@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2011 Olli-Pekka Huovilainen and Leo Lahti 
+# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -107,13 +107,13 @@ function(datamatrix,
     if (class(datamatrix) %in% accepted.formats.emat) {
       datamatrix <- as.matrix(datamatrix)
     } else {
-     stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats.emat, collapse = "; ")))
+      stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats.emat, collapse = "; ")))
     }    
   }
   if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
   if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
   
-  # FIXME: later add other forms of sparse matrices from Matrix package                                        
+  # FIXME: later add other forms of sparse matrices from Matrix package   
   accepted.formats.net <- c("matrix", "Matrix", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
   if (!class(network)[[1]] %in% accepted.formats.net) {  
     stop(paste("network needs to be in one of the following formats:", paste(accepted.formats.net, collapse = "; ")))
@@ -217,8 +217,25 @@ function(datamatrix,
   # 1) nodes 2) nodes 3) merging cost function delta
   rownames(network) <- c("node1", "node2")
   delta <- rep(NA, ncol(network))
+  # network and delta always go hand-in-hand
+
   # FIXME: add individual models separately                                        
-    
+
+  if (max.subnet.size > 1) {
+    message("Filter the network to only keep the edges with highest mutual information")
+    # Filter out the least promising edges from the network
+    # based on mutual information. For each variable, pick at most
+    # speedup.max.edges
+    if (speedup && !is.null(speedup.max.edges)) {
+      tmp <- filter.network(network, delta, datamatrix, speedup.max.edges, nbins)
+      network <- tmp$network      
+      delta <- tmp$delta
+    }
+  }
+
+  # Place each node in a singleton subnet
+  G <- lapply(1:ncol( datamatrix ), function( x ){ x }) 
+ 
   # Storage list for calculated models
   model.nodes <- vector(length = length(network.nodes), mode = "list" ) # individual nodes
   model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
@@ -230,7 +247,7 @@ function(datamatrix,
 
 ### INDEPENDENT MODEL FOR EACH VARIABLE ###
   
-  if (verbose) { cat("Compute cost for each variable\n") }
+  if (verbose) { message("Compute cost for each variable\n") }
 
   for (k in 1:length(network.nodes)){
 
@@ -262,6 +279,8 @@ if (verbose) { cat('done\n') }
 
 ###   compute costs for combined variable pairs  ###
 
+if (max.subnet.size > 1) {
+
 if (mc.cores == 1) {
 
   for (edge in 1:ncol(network)){
@@ -271,6 +290,7 @@ if (mc.cores == 1) {
     a <- network[1, edge]
     b <- network[2, edge]  
     vars            <- network.nodes[c(a, b)]
+
     model           <- vdp.mixt(
                               matrix(datamatrix[, vars], nrow( datamatrix )),
                               implicit.noise = implicit.noise,
@@ -312,14 +332,11 @@ if (mc.cores == 1) {
     registerDoMC(mc.cores)            
 
     if (verbose) {
-      cat(paste('Computing delta values for edges with multiple cores\n'))
-      cat(paste("Using", getDoParWorkers(), "cores", "\n")) # number of cores being usedpaste("Using", getDoParWorkers(), cores) # number of cores being used
+      message(paste('Computing delta values for edges with multiple cores\n'))
+      # number of cores being used
+      message(paste("Using", getDoParWorkers(), "cores", "\n")) 
     }
     
-    #tmp <- mclapply(as.list(1:mc.cores), function (x) {x}, mc.cores = 2, mc.preschedule = TRUE)
-    #foreach(x = 1:4, .combine=cbind, .inorder = TRUE) %dopar% (x)
-    #print("OK")
-
     res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
 		   "netresponse", .inorder = TRUE) %dopar%
 		   netresponse::edge.delta(edge, network = network, network.nodes =
@@ -336,47 +353,32 @@ if (mc.cores == 1) {
 		   max.responses, merging.threshold =
 		   merging.threshold)
 
-    #res <- mclapply(1:ncol(network), function (edge) {edge.delta(edge,#
-	#	   network = network, network.nodes = network.nodes,
-#		   datamatrix = datamatrix, implicit.noise =
-#		   implicit.noise, prior.alpha = prior.alpha,
-#		   prior.alphaKsi = prior.alphaKsi, prior.betaKsi =
-#		   prior.betaKsi, threshold = threshold, initial.K =
-#		   initial.responses, ite = ite, c.max = max.responses - 1,
-#		   speedup = speedup, model.nodes = model.nodes, Nlog
-#		   = Nlog, model = model, information.criterion =
-#		   information.criterion, verbose = verbose,
-#		   vdp.threshold = vdp.threshold, max.responses =
-#		   max.responses, merging.threshold =
-#		   merging.threshold)}, mc.cores = mc.cores,
-#		   mc.preschedule = FALSE)
-
     # Convert to vector
-    #delta <- unlist(mclapply(res, function (x) {x$delt}, mc.cores = mc.cores))
-    #delta <- unlist(foreach(x = res, .combine=cbind, .inorder = TRUE) %dopar% (x$delt))
     delta <- unlist(lapply(res, function (x) {x$delt})) # FIXME: parallelize
 
     # Convert to list
-    #model.pairs <- mclapply(res, function (x) {x[1:5]}, mc.cores = mc.cores)
-    #model.pairs <- foreach(x = res, .combine=cbind, .inorder = TRUE) %dopar% (x$mod.pair)
     model.pairs <- lapply(res, function (x) {x[1:5]}) # FIXME: parallelize
 
 }
+}
+
 gc()
 
 #######################################################################################
 
 ### MERGE VARIABLES ###
 
-G <- lapply(1:ncol( datamatrix ), function( x ){ x }) # Place each node in a singleton subnet
 move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
+
+
+if (max.subnet.size > 1) {
 
 # if there are groups left sharing a link and improvement (there are
 # connected items that have delta<0) then continue merging
 # note that diag(network) has been set to 0
 while ( !is.null(network) && any( -delta > merging.threshold )){
 
-  if ( verbose ) { cat(paste('Combining groups, ', sum(!is.na(G)), ' group(s) left...\n'))} else{}
+  if ( verbose ) { message(paste('Combining groups, ', sum(!is.na(G)), ' group(s) left...\n'))} else{}
     
     # Identify the best neighbor pair in the network (also check that
     # the new merged pair would not exceed the max allowed subnetwork
@@ -390,6 +392,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
     a <- tmp$a 
     b <- tmp$b
     best.edge <- tmp$best.edge
+
     # Store results                                        
     C <- C + tmp$mindelta
     move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))
@@ -417,7 +420,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
  
     # Skip the first b-1 elements as we only apply lower triangle here
     if ( ncol(network) == 1 ) {
-      if ( verbose ) { cat("All nodes have been merged.\n") }
+      if ( verbose ) { message("All nodes have been merged.\n") }
       delta <- Inf #indicating that no merging can be be done any more
     } else {
       # Compute new joint models for the new merged subnet and its neighborghs
@@ -500,6 +503,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
     if ( verbose ) { cat(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.\n')) }
     break
   }
+}
 }
   
   # Remove left-out nodes (from the merges)

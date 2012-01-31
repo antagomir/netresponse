@@ -1,33 +1,6 @@
-vdp.mixt <-
-function(dat,
-    prior.alpha    = 1,  
-    prior.alphaKsi = 0.01,
-    prior.betaKsi  = 0.01,
-           do.sort = TRUE,   # qOFz sorted in decreasing fashion based on colSums(qOFz) 
-         threshold = 1.0e-5, # minimal free energy improvement that stops the algorithm
-         initial.K = 1,      # initial number of components
-               ite = Inf,    # used on updatePosterior: maximum number of iterations
-         implicit.noise = 0, # Adds implicit noise in 
-	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
-             c.max = 10,     # max. candidates to consider in find.best.splitting. 
-	                     # i.e. truncation parameter
-                             # Candidates are chosen based on their Nc value 
-                             # (larger = better). Nc = colSums(qOFz)
-           speedup = TRUE,        
-	   	             # speedup: during DP, components are splitted
-			     # based on their first PCA component.
-                             # To speed up, approximate by using only subset 
-			     # data to calculate PCA.
-         min.size = 5 # min size for a component to be splitted
-         ) {
-
-    # prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01; do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf; implicit.noise = 0; c.max = 10; speedup = TRUE; min.size = 5 
-
-
-  #
   #  This file is a part of the NetResponse R package.
   #
-  #  Copyright (C) 2008-2011 Antonio Gusmao and Leo Lahti.
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti.
   #  Contact: Leo Lahti <leo.lahti@iki.fi>
   #
   #  This program is free software; you can redistribute it and/or
@@ -47,7 +20,7 @@ function(dat,
   #  Group Analysis package: Copyright (C) 2001-2007 Esa Alhoniemi,
   #  Antti Honkela, Krista Lagus, Jeremias Seppa, Harri Valpola, and
   #  Paul Wagner
-  #
+  
 
 # INPUT: dat::
 #       Each Row is an observation.
@@ -98,6 +71,32 @@ function(dat,
 
 
   #system("~/local/R/R-2.13.0/bin/R CMD SHLIB ../src/netresponse.c"); dyn.load("../src/netresponse.so")
+
+
+vdp.mixt <-
+function(dat,
+    prior.alpha    = 1,  
+    prior.alphaKsi = 0.01,
+    prior.betaKsi  = 0.01,
+           do.sort = TRUE,   # qOFz sorted in decreasing fashion based on colSums(qOFz) 
+         threshold = 1.0e-5, # minimal free energy improvement that stops the algorithm
+         initial.K = 1,      # initial number of components
+               ite = Inf,    # used on updatePosterior: maximum number of iterations
+         implicit.noise = 0, # Adds implicit noise in 
+	 		     # vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so
+             c.max = 10,     # max. candidates to consider in find.best.splitting. 
+	                     # i.e. truncation parameter
+                             # Candidates are chosen based on their Nc value 
+                             # (larger = better). Nc = colSums(qOFz)
+           speedup = TRUE,        
+	   	             # speedup: during DP, components are splitted
+			     # based on their first PCA component.
+                             # To speed up, approximate by using only subset 
+			     # data to calculate PCA.
+         min.size = 5 # min size for a component to be splitted
+         ) {
+
+    # prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01; do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf; implicit.noise = 0; c.max = 10; speedup = TRUE; min.size = 5 
 
   # Prior parameters
   opts <- list(
