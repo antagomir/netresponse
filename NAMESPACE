@@ -18,7 +18,6 @@ export(
        sample2response,
        model.stats,
        vdp.mixt,
-       plot.associations,
        P.rS,
        P.r.s,
        P.rs.joint.individual,
@@ -36,7 +35,8 @@ export(
        #plot.scale,
        #plot.responses,
        #plot.response,
-       plot.pca,
+       plotAssociations,
+       plotPCA,
        write.netresponse.results
        )
 

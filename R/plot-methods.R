@@ -1,5 +1,21 @@
+# Copyright (C) 2010-2012 Leo Lahti
+# Contact: Leo Lahti <leo.lahti@iki.fi>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
-plot.associations <- function (x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...) {
+
+
+
+# FIXME: make general plot.associations function
+plotAssociations <- function (x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...) {
 		  
   names(labels) <- rownames(x@datamatrix) # assumes that labels are in same order as data if names not given
   
@@ -35,7 +51,7 @@ plot.associations <- function (x, subnet.id, labels, method = "hypergeometric", 
 }
 
 
-plot.pca <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
+plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 
   # FIXME: move these functions in NetResponse package
 

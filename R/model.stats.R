@@ -1,5 +1,5 @@
 
-# Copyright (C) 2010-2011 Leo Lahti
+# Copyright (C) 2010-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,6 @@ model.stats <- function ( model ) {
 
   Ncomps <- c()
   for (subnet.id in names(subnets)) {
-    #print(subnet.id)
-    # number of mixture components
     Ncomps[[subnet.id]] <- length(model@models[[subnet.id]]$w)
   }
 

@@ -1,6 +1,8 @@
 
-# Copyright (C) 2010-2011 Leo Lahti
+# Copyright (C) 2010-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
+# This file is part of NetResponse R program
+#  
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-sample2response <- function (model, subnet.id) {
+sample2response <- function (model, subnet.id, mode = "soft") {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -21,8 +23,16 @@ sample2response <- function (model, subnet.id) {
   
   # P(response | sample)
   #assignment.matrix <- model@models[[subnet.id]]$posterior$qOFz
-  get.qofz(model, subnet.id, log = FALSE)
+  assignment.matrix <- get.qofz(model, subnet.id, log = FALSE)
   
+  if (mode == "hard") {
+    sample.names <- rownames(assignment.matrix)
+    assignment.matrix <- colnames(assignment.matrix)[apply(assignment.matrix, 1, which.max)]
+    names(assignment.matrix) <- sample.names
+  }
+
+  assignment.matrix
+
 }
 
 
