@@ -227,7 +227,7 @@ function(datamatrix,
     # based on mutual information. For each variable, pick at most
     # speedup.max.edges
     if (speedup && !is.null(speedup.max.edges)) {
-      tmp <- filter.network(network, delta, datamatrix, speedup.max.edges, nbins)
+      tmp <- filter.network(network, delta, datamatrix, speedup.max.edges, nbins, verbose = verbose)
       network <- tmp$network      
       delta <- tmp$delta
     }
