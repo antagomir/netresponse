@@ -17,7 +17,7 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins) {
+filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins, verbose = FALSE) {
 
   # Include at maximum speedup.max.edges for each node in the network
   # based on mutual information
@@ -27,7 +27,7 @@ filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins
   uniq.edges <- unique(network[1,])  
 
   for (idx in 1:length(uniq.edges)) {
-    message(paste(idx, "/",  length(uniq.edges)))
+    if (verbose) {message(paste(idx, "/",  length(uniq.edges)))}
     a <- uniq.edges[[idx]]
 
     # Pick edges for this node
@@ -43,11 +43,6 @@ filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins
 
       # Pick node indices
       i <- network[2, edge]
-
-      # Pick data
-      # For real subnets using first PCA component
-      #dat <- cbind(prcomp(matrix(datamatrix[, a], nrow(datamatrix)), center = TRUE)$x[, 1],
-      #             prcomp(matrix(datamatrix[, i], nrow(datamatrix)), center = TRUE)$x[, 1])
 
       # For singletons
       dat <- cbind(datamatrix[, a], datamatrix[, i])

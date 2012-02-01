@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.7.01 (2012-01-31)
+CHANGES IN VERSION 1.7.02 (2012-02-01)
 
  o switched to R-2.14.1
  o now allowing max.subnet.size = 1 in detect.responses
