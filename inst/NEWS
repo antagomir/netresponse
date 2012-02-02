@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.7.03 (2012-02-02)
+
+  o merged netresponse.visualization package in the netresponse main
+    package
+
 CHANGES IN VERSION 1.7.02 (2012-02-01)
 
  o switched to R-2.14.1
@@ -9,6 +14,7 @@ CHANGES IN VERSION 1.7.02 (2012-02-01)
    This can give considerable speedups with large networks
  o plot.associations -> plotAssociations
  o plot.pca -> plotPCA
+ o get.gofz -> getqofz
 
 CHANGES IN VERSION 1.5.14 (2011-10-28)
 

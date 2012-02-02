@@ -194,7 +194,7 @@ setMethod("get.P.rs", "NetResponseModel", function (model, subnet.id, log = FALS
 })
 
 
-setMethod("get.qofz", "NetResponseModel", function (model, subnet.id, log = FALSE) {
+setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE) {
 
   # Retrieve P(r|s) from the model, given data and model parameters
   pars <- get.model.parameters(model, subnet.id)

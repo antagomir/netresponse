@@ -1,10 +1,10 @@
-\name{get.qofz}
-\alias{get.qofz}
-\alias{get.qofz,NetResponseModel-method}
+\name{getqofz}
+\alias{getqofz}
+\alias{getqofz,NetResponseModel-method}
 \title{Sample-to-response matrix of probabilities P(r|s).}
 \description{Retrieve P(r|s) from NetResponseModel model.}
 \usage{
-get.qofz(model, subnet.id, log = FALSE)
+getqofz(model, subnet.id, log = FALSE)
 }
 \arguments{
   \item{model}{NetResponseModel object.}
@@ -20,7 +20,7 @@ sample based on the estimated Gaussian mixture model.}
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 %\seealso{}
 \examples{
-# qofz <- get.qofz(model, subnet.id, log = FALSE)
+# qofz <- getqofz(model, subnet.id, log = FALSE)
 }
 \keyword{ utilities }
 \keyword{ internal }

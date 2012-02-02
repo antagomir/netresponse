@@ -114,3 +114,35 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
     }
   }
 }
+
+###########################################
+
+plot.data <- function (x, subnet.id, labels, ...) {
+
+    # ggplot2 boxplots for each user-defined sample category (listed in labels)
+    library(ggplot2)
+    dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
+    df <- data.frame(list(labels = labels, dat))
+    dfm <- melt(df, id = "labels")
+    p <- ggplot(dfm) + aes(x = labels, y = dfm$value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": annotation boxplot", sep = ""))    
+    print(p)
+    p
+
+}
+
+plot.expression <- function (x, maintext, ...) { # was: plot.matrix
+		  
+  # set color breakpoints and palette
+  mybreaks <- set.breaks(1, interval = .02)
+  mypalette <- colorRampPalette(c("blue", "black", "red"), space = "rgb")
+  
+  # compute differential expression in nodes with respect to the mean expression level for each gene
+  ctrl.state <- colMeans(x)
+  dmat <- t(t(x) - ctrl.state)
+
+  # Color plot of the whole expression matrix, ordered by responses
+  tmp <- plotMatrix.2way(dmat, mybreaks = mybreaks, maintext=maintext, cexlab=1, mypalette = mypalette)
+}
+
+
+

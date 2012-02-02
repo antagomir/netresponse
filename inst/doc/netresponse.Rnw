@@ -4,10 +4,9 @@
 
 \title{netresponse\\probabilistic tools for functional network analysis}
 \author{Leo Lahti$^{1,2}$\footnote{leo.lahti@iki.fi}, Olli-Pekka
-Huovilainen$^1$, Ant{\'o}nio Gusm{\~a}o$^1$ and Juuso Parkkinen$^1$\\
+Huovilainen$^1$,\\Ant{\'o}nio Gusm{\~a}o$^1$ and Juuso Parkkinen$^1$\\
 \\(1) Dpt. Information and Computer Science, Aalto University,
-Finland\\(2) Dpt. Veterinary Bioscience, University of Helsinki,
-Finland}
+Finland\\(2) Wageningen University, Netherlands}
 
 \usepackage{amsmath,amssymb,amsfonts}
 %\usepackage[authoryear,round]{natbib}
@@ -41,7 +40,7 @@ time points, it becomes possible to construct a global view of network
 activation patterns. Different parts of the network respond to
 different conditions, and in different ways. Systematic, data-driven
 identification of these responses will help to obtain a holistic view
-of network activity \cite{Lahti10thesis, Lahti10bioinf}. This package
+of network activity \cite{Lahti10bioinf, Lahti10thesis}. This package
 provides robust probabilistic algorithms for functional network
 analysis \cite{Lahti10bioinf, Parkkinen10bmcsysbio}. 
 
@@ -194,10 +193,56 @@ res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
 res$clustering <- apply(res$comp.memb, 2, which.max)
 @
 
+\section{Visualization}
+
+Plot subnetwork responses (Fig.~\ref{fig:responses}). The
+visualization tools depend on {\it Rgraphviz} and {\it igraph}
+packages.
+
+\begin{figure}[H]
+\begin{center}
+<<visu1, fig=true>>=
+subnet.id <- "Subnet-2" # specify the subnet to visualize
+vis <- plot.responses(model, subnet.id)
+@
+\end{center}
+\caption{}
+\label{fig:responses}
+\end{figure}
+
+Plot color scale used in the visualization:
+<<>>=
+plot.scale(vis$breaks, vis$palette)
+@
+
+%Plot the subnetwork (Fig.~\ref{fig:subnet}):
+%\begin{figure}[H]
+%\begin{center}
+%<<visu, fig=true>>=
+%# Fix later
+%#tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, colors = FALSE, maintext = paste("Subnetwork", subnet.id))
+%@
+%\end{center}
+%\caption{}
+%\label{fig:subnet}
+%\end{figure}
+
+%Visualize data and centroids for given subnetwork with PCA (Fig.~\ref{fig:pca})
+%
+%\begin{figure}[H]
+%\begin{center}
+%<<fig=true>>=
+%plot.pca(model, subnet.id, D)
+%@
+%\end{center}
+%\caption{}
+%\label{fig:pca}
+%\end{figure}
+
 \section{Citing NetResponse}
 
-Please cite \cite{Lahti10bioinf} when using the package. When using
-the ICMg algorithms, additionally cite \cite{Parkkinen10bmcsysbio}.
+Please cite \cite{Lahti10bioinf} with the package. When using the ICMg
+algorithms, additionally cite \cite{Parkkinen10bmcsysbio}.
 
 
 \section{Version information}
@@ -217,33 +262,32 @@ sessionInfo()
 \bibitem{Lahti10bioinf}
 Leo Lahti {\em et~al.} (2010).
 \newblock Global modeling of transcriptional responses in interaction networks.
-\newblock {\em Bioinformatics}.
-\newblock Preprint: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
+\newblock {\em Bioinformatics} 26(21):2713-20
+\newblock Preprint available at: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
 
-
-\bibitem{Lahti10thesis}                                           
+\bibitem{Lahti10thesis}
 Leo Lahti (2010).                                     
 \newblock Probabilistic analysis of the human transcriptome with side
 information.                       
-\newblock PhD thesis. Aalto University School of Science and
-Technology, Department of information and Computer Science, Espoo,
-Finland, 2010.                        
+\newblock PhD thesis. TKK Dissertations in Information and Computer
+Science TKK-ICS-D19. Aalto University School of Science and
+Technology, Department of Information and Computer Science, Espoo,
+Finland, December 2010
 \newblock http://lib.tkk.fi/Diss/2010/isbn9789526033686/        
                     
-		       
 \bibitem{Honkela08} Antti Honkela {\em et~al.} (2008). \newblock
 Agglomerative independent variable group analysis. \newblock {\em
-Neurocomputing\/} 71, 1311--1320.
+Neurocomputing\/} 71, 1311--20.
 
 \bibitem{Kurihara07nips}
 Kenichi Kurihara {\em et~al.} (2007).
 \newblock Accelerated variational Dirichlet process mixtures.
 \newblock In B.~Sch\"olkopf, J.~Platt, and T.~Hoffman, eds., {\em Advances
-  in Neural Information Processing Systems 19\/}, 761--768. MIT Press,
+  in Neural Information Processing Systems 19\/}, 761-8. MIT Press,
   Cambridge, MA.
 
 \bibitem{Parkkinen10bmcsysbio}
-Parkkinen, J., and Kaski, S.
+Parkkinen, J. and Kaski, S.
 \newblock Searching for functional gene modules with interaction component models.
 \newblock {\em BMC Systems Biology 4\/} (2010), 4.
 
