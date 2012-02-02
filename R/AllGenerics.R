@@ -1,5 +1,5 @@
 setGeneric("get.subnets", function( model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2){ standardGeneric ("get.subnets") })
-setGeneric("get.qofz", function( model, subnet.id, log = FALSE){ standardGeneric ("get.qofz") })
+setGeneric("getqofz", function( model, subnet.id, log = FALSE){ standardGeneric ("getqofz") })
 setGeneric("get.dat", function( model, subnet.id, sample = NULL){ standardGeneric ("get.dat") })
 setGeneric("get.P.r", function(model, subnet.id, log = TRUE){ standardGeneric ("get.P.r") })
 setGeneric("get.P.Sr", function(sample, model, subnet.id, log = TRUE ){ standardGeneric ("get.P.Sr") })

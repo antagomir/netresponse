@@ -30,13 +30,15 @@ export(
        ICMg.combined.sampler,
        ICMg.links.sampler,
        ICMg.get.comp.memberships,
-       #set.breaks,
-       #plot.subnet,
-       #plot.scale,
-       #plot.responses,
-       #plot.response,
        plotAssociations,
        plotPCA,
+       plot.data,
+       plot.expression,
+       plot.response,
+       plot.responses,
+       plot.scale,
+       plot.subnet,
+       set.breaks,
        write.netresponse.results
        )
 
@@ -50,7 +52,7 @@ exportMethods(
 "[[",
 show,
 get.subnets,
-get.qofz
+getqofz
 #"[<-","$","$<-", 
 #"plot","print" 
 )

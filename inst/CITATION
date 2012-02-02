@@ -11,11 +11,11 @@ citEntry(entry="article",
 	 year = "2010",
          volume = "26", 
 	 issue = "21", 
-	 pages = "2713--2720", 
+	 pages = "2713--20", 
          textVersion =
          paste("Leo Lahti et al.",
                "Global modeling of transcriptional responses in interaction networks",
-               "Bioinformatics 26(21):2713--2720, 2010.",
+               "Bioinformatics 26(21):2713--20, 2010.",
                sep=" ")
          )
 

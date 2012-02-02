@@ -23,7 +23,7 @@ sample2response <- function (model, subnet.id, mode = "soft") {
   
   # P(response | sample)
   #assignment.matrix <- model@models[[subnet.id]]$posterior$qOFz
-  assignment.matrix <- get.qofz(model, subnet.id, log = FALSE)
+  assignment.matrix <- getqofz(model, subnet.id, log = FALSE)
   
   if (mode == "hard") {
     sample.names <- rownames(assignment.matrix)
