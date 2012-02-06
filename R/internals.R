@@ -1179,10 +1179,11 @@ fsort <- function (df, sortvar) {
 
 ##################################################################
 	
-plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", ylab = "", cexlab = 1, mypalette = NULL, interval = .1, cex.main = 1, xaxis = FALSE, yaxis = TRUE, row.tick = 1, col.tick = 1, cex.xlab = .9, cex.ylab = .9, cex.lab = .9, limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
+plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", ylab = "", mypalette = NULL, interval = .1, cex.main = 1, xaxis = FALSE, yaxis = TRUE, row.tick = 1, col.tick = 1, cex.xlab = .9, cex.ylab = .9, cex.lab = .9, limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
 
   # mat: differential expression matrix to plot in two-color palette
   # interval: interval for palette color switches
+  # FIXME: synchronize with PlotMatrix in sorvi package  
     
   require(graph)
   require(RBGL)
