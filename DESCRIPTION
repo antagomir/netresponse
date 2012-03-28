@@ -7,7 +7,7 @@ Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.
 License: GPL (>=2)
-Depends: R (>= 2.14.1), methods, igraph, graph, minet, qvalue, doMC, parallel, RColorBrewer, Rgraphviz, ggplot2
+Depends: R (>= 2.14.1), methods, igraph, graph, minet, qvalue, parallel, RColorBrewer, Rgraphviz, ggplot2
 URL: http://netpro.r-forge.r-project.org/
 LazyLoad: yes
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, GraphsAndNetworks, DifferentialExpression, Microarray, Transcription
