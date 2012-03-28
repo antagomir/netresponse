@@ -288,13 +288,6 @@ retrieve.model <- function (model, subnet.id) {
 
 }
 
-#########################################
-
-#prcomp.c <- cmpfun(prcomp)
-
-
-##############################################################################
-
 
 
 # INPUT:   data, hp_posterior, hp_prior, opts
@@ -305,13 +298,11 @@ retrieve.model <- function (model, subnet.id) {
 #
 # DESCRIPTION: Implements the VDP algorithm steps 2 to 4.
 
-
-
 find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5){
 
   # min.size: minimum size of a component required for splitting
   
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -322,13 +313,16 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
 
   dat <- data$given.data$X1
   epsilon <- 1e-10    # FIXME: should this be a tunable function parameter?
-  c.max <- opts$c.max # FIXME: should this be a tunable function parameter?
+  c.max <- opts$c.max 
 
   # ALGORITHM STEP 2
  
-  candidates <- which(hp.posterior$Nc > 2)
+  # Sort clusters by size, use at most c.max candidates and ensure cluster size is > 2
+  candidates <- order(hp.posterior$Nc, decreasing = TRUE)
+  candidates <- candidates[hp.posterior$Nc[candidates] > 2]
+  # candidates <- which(hp.posterior$Nc > 2)
   if ( length(candidates) == 0 ) { c <- 1 }
-  
+
   qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts)
   fc   <- mk.E.log.q.p.eta(data, hp.posterior, hp.prior, opts)
   log.lambda <- mk.log.lambda(data, hp.posterior, hp.prior, opts) 
@@ -337,13 +331,14 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
   # ALGORITHM STEP 3 (3a,3b,3c) check which split gives best improvements in cost
 
   new.qOFz.list <- list()   #Initialize
-  new.free.energy <- rep(Inf, max(candidates))
-  for (c in candidates[1:min(c.max,length(candidates))]) {
+  new.free.energy <- rep(Inf, min(c.max, length(candidates)))
+
+  for (c in candidates[1:min(c.max, length(candidates))]) {
 
     # relating.n has the indexes of data points that belonged to the candidate cluster prior
     # to splitting (that's why it is the sum over the now 2 clusters (after splitting).
-    # REMARK: Is this 0.5 correct? when there are lots of clusters it is natural to 
-    # assume points will have less than 0.5 for any cluster.
+    # REMARK: Is 0.5 ok? - when there are lots of clusters it is natural to 
+    # assume some points will have less than 0.5 for any cluster.
 
     relating.n <- which(qOFz[, c] > 0.5)
     if (length(relating.n) == 0) { next } else {}
@@ -361,10 +356,9 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
     sub.data$given.data$data <- sub.data$given.data$X1 <- array(dat[relating.n, ],
                                     dim = c(length(relating.n), ncol(dat)))    
 
-
     # ALGORITHM STEP 3b and 3c
-    # update the posterior of the split clusters for a small number of iter. (10)
-    # update_posterior sorts the clusters by size.
+    # update the posterior of the split clusters for a small number of iter.
+    # update_posterior sorts clusters by size
 
     sub.hp.posterior <- mk.hp.posterior(sub.data, sub.qOFz, hp.prior, opts)
     dummylist        <- updatePosterior(sub.data, sub.hp.posterior, hp.prior, opts, 10, 0)
@@ -373,6 +367,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
 
     # FIXME: check this already previously for c == new.c? 
     if(ncol( sub.qOFz ) < 3) { next } else { } 
+
     # If there are more than 1 empty components then go to next step
     if(sum(colSums(sub.qOFz) < epsilon) > 1) { next } else { }
 
@@ -550,7 +545,7 @@ sortqofz <- function(qOFz){
 
 rand.qOFz <- function(N, K){
 
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -620,8 +615,6 @@ free.energy.improved <- function(free.energy, new.free.energy,
   bool
 }
 
-#free.energy.improved.c <- cmpfun(free.energy.improved)
-
 #################################################################################
 
 
@@ -637,7 +630,7 @@ free.energy.improved <- function(free.energy, new.free.energy,
 
 greedy <- function(data, hp.posterior, hp.prior, opts, min.size){
 
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -661,6 +654,7 @@ greedy <- function(data, hp.posterior, hp.prior, opts, min.size){
     # ALGORITHM STEP 5
     dummylist <- updatePosterior(data, new.hp.posterior, hp.prior,
                                   opts, ite = opts$ite, do.sort = 1)
+
     new.free.energy  <- dummylist$free.energy
     new.hp.posterior <- dummylist$hp.posterior
     
@@ -694,7 +688,7 @@ greedy <- function(data, hp.posterior, hp.prior, opts, min.size){
 
 updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.sort = 1) {
                             
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -739,12 +733,22 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
       free.energy <- new.free.energy
       qOFz <- mk.qOFz(data, hp.posterior, hp.prior, opts.internal, log.lambda)
 
-      # if the last component is not 'empty',
+      # if the last component is not 'empty' and max number components not reached
       # add a new empty component
-      if(sum(qOFz[, ncol(qOFz)]) >= epsilon){ qOFz <- cbind(qOFz, 0) }
+      if(sum(qOFz[, ncol(qOFz)]) >= epsilon && ncol(qOFz) < opts$c.max){ 
+        qOFz <- cbind(qOFz, 0) 
+      }
 
       # Sort components by size (note: last component kept in its place)
       if( start.sort ){ qOFz <- sortqofz(qOFz) }
+
+      # Pick at most c.max+1 components, remove the smallest one, except the one added in this iteration (ie. c.max + 1)
+      # FIXME: consider how to improve the implementation regarding to this!
+      # (3/2012)
+      #if (ncol(qOFz) == opts$c.max + 1) {
+      # 	 qOFz <- qOFz[, setdiff(1:ncol(qOFz), opts$c.max), drop = FALSE]        
+      #} 
+
 
       # If the smallest of the previous components
       # (excluding the one added in this interation)
@@ -754,6 +758,7 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
         qOFz <- matrix(qOFz[, -(ncol(qOFz) - 1)], nrow(qOFz))
       }
 
+      qOFz <- matrix(qOFz/rowSums(qOFz), nrow(qOFz)) # probabilities sum to one      
       hp.posterior <- mk.hp.posterior(data, qOFz, hp.prior, opts.internal)    
 
   }
@@ -763,13 +768,9 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
                qOFz = qOFz)
 }
 
-#updatePosterior.c <- cmpfun(updatePosterior)
-
-###########################################################################
 
 sumlogsumexp <- function(log.lambda){.Call("vdpSumlogsumexp", log.lambda, PACKAGE = "netresponse")}
 
-###############################################################################
 
 softmax <- function( A ){
   qOFz <- .Call("vdpSoftmax", A, PACKAGE = "netresponse")
@@ -788,8 +789,8 @@ softmax <- function( A ){
   # asap. As this is part of iteration, simply replace the defected sample with
   # equal probability in all groups.
   if (sum(!is.na(qOFz)) > 0) {
-    # FIXME: could be optimized with apply!
-    # Detect  empty components and ignore
+    # FIXME: optimize with apply!
+    # Detect empty components and ignore
     inds <- c()
     for (i in 1:ncol(qOFz)) {
       if (sum(na.omit(qOFz[, i])) == 0) {
@@ -810,11 +811,9 @@ softmax <- function( A ){
   
 }
 
-#softmax.c <- cmpfun(softmax)
-
 mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
 
-  #  Copyright (C) 2008-2010 Antonio Gusmao and Leo Lahti
+  #  Copyright (C) 2008-2012 Antonio Gusmao and Leo Lahti
   #  Licence: GPL >=2
   #  This function is based on the Variational Dirichlet Process Gaussian
   #  Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara
@@ -828,11 +827,18 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
   # Ensure that qOFz is a matrix
   qOFz <- matrix(qOFz, nrow(dat))
 
+  # If qOFz exceeds max cluster size then remove one cluster 
+  # (the second last one, which assumes clusters are sorted and the last is a new one)
+  # FIXME 3/2012 quick hack - consider better implementations regarding this
+  if (ncol(qOFz) > opts$c.max + 1) {
+    inds <- setdiff(1:ncol(qOFz), ncol(qOFz) - 1)
+    qOFz <- matrix(qOFz[, inds], nrow(dat))
+    qOFz <- matrix(qOFz/rowSums(qOFz), nrow(dat))
+  }
+
   # Compatibility variables not needed for the current functionality
   tmp.realS <- X2 <- dimX2 <- 0
 
-  #hp.prior <- update.hyper(qOFz, data, hp.prior, hp.posterior) # test 7.5.2010
-  
   out <- .Call("mHPpost",
                dat,
                ncol(dat),
@@ -845,7 +851,10 @@ mk.hp.posterior <- function(data, qOFz, hp.prior, opts){
                qOFz, ncol(qOFz), PACKAGE = "netresponse")
 
   qOFz <- matrix(out$qOFz, nrow(qOFz))
-  
+
+  #if (ncol(qOFz) > opts$c.max) {
+  #}
+
   hp.posterior <- list(
     Mubar     = matrix(out$Mubar,    ncol(qOFz)),
     Mutilde   = matrix(out$Mutilde,  ncol(qOFz)),
@@ -1186,7 +1195,7 @@ plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", yla
   # FIXME: synchronize with PlotMatrix in sorvi package  
     
   require(graph)
-  require(RBGL)
+  #require(RBGL)
   require(Rgraphviz)
   require(graphics)
 	   

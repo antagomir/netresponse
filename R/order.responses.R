@@ -28,8 +28,6 @@
 #  sort(enr, decreasing = TRUE)
 #}
 
-
-
 order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
 
   # Given sample (for instance set of samples associated with a given factor level)

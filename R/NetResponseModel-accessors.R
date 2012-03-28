@@ -223,7 +223,7 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 
 setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
 
-  #  Copyright (C) 2008-2011 Leo Lahti
+  #  Copyright (C) 2008-2012 Leo Lahti
   #  Licence: GPL >=2
                 
   grouping <- model@last.grouping
