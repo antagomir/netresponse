@@ -84,6 +84,7 @@ function(datamatrix,
   #require(multicore)
 
   # Store here all params used in the model (defined in function call)
+
   params <- list(initial.responses = initial.responses, 
   	    	 max.responses = max.responses,
 		 max.subnet.size = max.subnet.size,
@@ -347,21 +348,38 @@ if (mc.cores == 1) {
     }
    
     # FIXME: not supported in Windows, change to use the 'parallel' package
-    res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
-		   "netresponse", .inorder = TRUE) %dopar%
-		   netresponse::edge.delta(edge, network = network, network.nodes =
-		   network.nodes, datamatrix = datamatrix,
-		   implicit.noise = implicit.noise, prior.alpha =
-		   prior.alpha, prior.alphaKsi = prior.alphaKsi,
-		   prior.betaKsi = prior.betaKsi, threshold =
-		   threshold, initial.K = initial.responses, ite =
-		   ite, c.max = max.responses - 1, speedup = speedup,
-		   model.nodes = model.nodes, Nlog = Nlog, model =
-		   model, information.criterion =
-		   information.criterion, verbose = verbose,
-		   vdp.threshold = vdp.threshold, max.responses =
-		   max.responses, merging.threshold =
-		   merging.threshold)
+    # This works for Mac and Linux
+    #res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
+    #		   "netresponse", .inorder = TRUE) %dopar%
+    #		   netresponse::edge.delta(edge, network = network, network.nodes =
+    #		   network.nodes, datamatrix = datamatrix,
+    #		   implicit.noise = implicit.noise, prior.alpha =
+    #		   prior.alpha, prior.alphaKsi = prior.alphaKsi,
+    #		   prior.betaKsi = prior.betaKsi, threshold =
+    #		   threshold, initial.K = initial.responses, ite =
+    #		   ite, c.max = max.responses - 1, speedup = speedup,
+    #		   model.nodes = model.nodes, Nlog = Nlog, model =
+    #		   model, information.criterion =
+    #		   information.criterion, verbose = verbose,
+    #		   vdp.threshold = vdp.threshold, max.responses =
+    #		   max.responses, merging.threshold =
+    #		   merging.threshold)
+
+    # FIXME: parallelize - mclapply caused some problems with test/test.R		  
+    res <- lapply(1:ncol(network), function (edge) {	
+    	edge.delta(edge, network = network, network.nodes =   			     	   
+	network.nodes, datamatrix = datamatrix,	      		   
+	implicit.noise = implicit.noise, prior.alpha =
+	prior.alpha, prior.alphaKsi = prior.alphaKsi,
+	prior.betaKsi = prior.betaKsi, threshold =
+	threshold, initial.K = initial.responses, ite =
+	ite, c.max = max.responses - 1, speedup = speedup,
+	model.nodes = model.nodes, Nlog = Nlog, model =
+	model, information.criterion =
+	information.criterion, verbose = verbose,
+	vdp.threshold = vdp.threshold, max.responses =
+	max.responses, merging.threshold =
+	merging.threshold)[[1]]})
 
     # Convert to vector
     delta <- unlist(lapply(res, function (x) {x$delt})) # FIXME: parallelize
