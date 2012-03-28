@@ -1,3 +1,47 @@
+CHANGES IN VERSION 1.7.35 (2012-03-28)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+ o added the option to ignore network in detect.responses
+    (netw=NULL); then the methods assumes fully connected
+    network. Without speedups the performance may be very slow.
+ o added (optional) initial mutual information based filtering of the network edges
+   also in the first stage where pairwise similarities are calculated for all node pairs
+   This can give considerable speedups with large networks
+ o merged netresponse.visualization package in the netresponse main
+    package
+ o added mode = hard in sample2response function
+ o plot.associations -> plotAssociations
+ o plot.pca -> plotPCA
+ o get.gofz -> getqofz
+
+BUG FIXES
+
+ o changed dependency RBGL into RColorBrewer
+
+ o Modified mk.hp.posterior so as to accommodate 'max number of
+    responses' (c.max) option. Validations in tests/vdpmixture.R 
+    ok
+ o now allowing max.subnet.size = 1 in detect.responses
+ o order.responses: fixed minor bug which occurs when no enrichments are detected
+
+
+CHANGES IN VERSION 1.7.34 (2012-03-28)
+
+  o changed dependency RBGL into RColorBrewer
+
+CHANGES IN VERSION 1.7.33 (2012-03-13)
+
+  o Modified mk.hp.posterior so as to accommodate 'max number of
+    responses' (c.max) option. Validations in tests/vdpmixture.R 
+    ok
+
+CHANGES IN VERSION 1.7.32 (2012-02-21)
+
+  o added the option to ignore network in detect.responses
+    (netw=NULL); then the methods assumes fully connected
+    network. Without speedups the performance may be very slow.
+
 CHANGES IN VERSION 1.7.03 (2012-02-02)
 
   o merged netresponse.visualization package in the netresponse main

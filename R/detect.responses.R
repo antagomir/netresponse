@@ -80,12 +80,9 @@ function(datamatrix,
 #  res.groupings holds the groupings at each level of the hierarchy
 #  res.models has compressed representations of the models from each step
 
-  set.seed(2341)
   #  require(Matrix)
   require(multicore)
 
-  #if (exists("discretize")) {rm(discretize)}
-  
   # Store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
   	    	 max.responses = max.responses,
@@ -113,6 +110,13 @@ function(datamatrix,
   if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
   if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
   
+  # If no network is given, assume fully connected net
+  if (is.null(network)) { 
+    if (verbose) {warning("No network provided in function call: assuming fully connected nodes.")}
+    network <- matrix(1, ncol(datamatrix), ncol(datamatrix)) 
+    rownames(network) <- colnames(network) <- colnames(datamatrix)
+  }
+
   # FIXME: later add other forms of sparse matrices from Matrix package   
   accepted.formats.net <- c("matrix", "Matrix", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
   if (!class(network)[[1]] %in% accepted.formats.net) {  
@@ -481,7 +485,7 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
           # cost for two independent vs. joint model
           # Negative free energy is (variational) lower bound for P(D|H)
           # Use this to approximate P(D|H)
-        if (is.finite(model$free.energy)) {
+          if (is.finite(model$free.energy)) {
           cost.ind <- info.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = information.criterion)
           cost.joint <- info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
           # change (increase) of the total cost
@@ -523,8 +527,10 @@ while ( !is.null(network) && any( -delta > merging.threshold )){
   # Convert original network to graphNEL (not before, to save more memory for computation stage)
   network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
   nodes(network.orig) <- network.nodes
+
+  # save.image("testing.RData")
   
-  new("NetResponseModel",
+  model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
       last.grouping = G,     # network nodes given in indices
       subnets = subnet.list, # network nodes given in feature names; FIXME: remove available from models and G

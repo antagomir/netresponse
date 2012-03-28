@@ -11,6 +11,9 @@
 #######################################################################
 
 library(netresponse)
+#source("~/Rpackages/netresponse/netresponse/R/detect.responses.R")
+#source("~/Rpackages/netresponse/netresponse/R/internals.R")
+#source("~/Rpackages/netresponse/netresponse/R/vdp.mixt.R")
 #dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
 
 
@@ -53,6 +56,7 @@ for (i in 1:Ns)  {
 
 # Fit nonparametric Gaussian mixture model
 out <- vdp.mixt(D)
+# out <- vdp.mixt(D, c.max = 3) # try with limited number of components -> OK
 
 ############################################################
 
@@ -86,6 +90,9 @@ ran <- range(c(as.vector(means.in - 2*vars.in),
 plot(D, pch = 20, main = paste("Cor.means:", round(cm,3), "/ Cor.sds:", round(csd,3)), xlim = ran, ylim = ran) 
 for (ci in 1:nrow(means.out))  { add.ellipse(centroid = means.out[ci,], covmat = diag(vars.out[ci,]), col = "red") }
 for (ci in 1:nrow(means.in))  { add.ellipse(centroid = means.in[ci,], covmat = diag(vars.in[ci,]), col = "blue") }
+
+
+#######################################################
 
 
 

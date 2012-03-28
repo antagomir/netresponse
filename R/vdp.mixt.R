@@ -96,7 +96,7 @@ function(dat,
          min.size = 5 # min size for a component to be splitted
          ) {
 
-    # prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01; do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf; implicit.noise = 0; c.max = 10; speedup = TRUE; min.size = 5 
+    # dat <- D; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01; do.sort = TRUE; threshold = 1.0e-5; initial.K = 1; ite = Inf; implicit.noise = 0; c.max = 3; speedup = TRUE; min.size = 5; source("~/Rpackages/netresponse/netresponse/R/internals.R")
 
   # Prior parameters
   opts <- list(
@@ -139,7 +139,7 @@ function(dat,
   # i.e. at least some points associated with it
   Kreal <- max(apply(qOFz, 1, which.max))  #sum(colSums(qOFz) > 1e-3)
   qOFz  <- matrix(qOFz[, 1:Kreal], nrow(dat))
-      
+
   # Calculate mixture model parameters
   # FIXME: move this outside from this vdp.mixt function
   
@@ -179,7 +179,7 @@ function(dat,
   # to make more robust also for small sample size
   # NOTE: the way we calculate weights here is not in exact agreement with the real weights in the model
   # that would give qOFz but it is an approximation, and needed for end analysis
-  
+
   posterior <- list(
                   weights = w, 
                   centroids = centroids, # Mubar
