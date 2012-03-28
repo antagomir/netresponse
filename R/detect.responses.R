@@ -81,7 +81,7 @@ function(datamatrix,
 #  res.models has compressed representations of the models from each step
 
   #  require(Matrix)
-  require(multicore)
+  #require(multicore)
 
   # Store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
@@ -330,17 +330,23 @@ if (mc.cores == 1) {
 } else {
 
     # initialize mc
-    require(multicore)
-    require(doMC)    
+    #require(multicore)
+    #require(doMC)    
     #options(cores = mc.cores)
-    registerDoMC(mc.cores)            
+    #registerDoMC(mc.cores)            
 
+    #if (verbose) {
+    #  message(paste('Computing delta values for edges with multiple cores\n'))
+    #  # number of cores being used
+    #  message(paste("Using", getDoParWorkers(), "cores", "\n")) 
+    #}
     if (verbose) {
       message(paste('Computing delta values for edges with multiple cores\n'))
       # number of cores being used
-      message(paste("Using", getDoParWorkers(), "cores", "\n")) 
+      message(paste("Using", mc.cores, "cores", "\n")) 
     }
-    
+   
+    # FIXME: not supported in Windows, change to use the 'parallel' package
     res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
 		   "netresponse", .inorder = TRUE) %dopar%
 		   netresponse::edge.delta(edge, network = network, network.nodes =
