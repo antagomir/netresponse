@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.7.36 (2012-03-28)
+CHANGES IN VERSION 1.7.38 (2012-03-28)
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -19,7 +19,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES
 
  o changed dependency RBGL into RColorBrewer
- o changed dependencies multicore into parallel
+ o changed dependencies multicore and doMC into parallel
  o Modified mk.hp.posterior so as to accommodate 'max number of
     responses' (c.max) option. Validations in tests/vdpmixture.R 
     ok
