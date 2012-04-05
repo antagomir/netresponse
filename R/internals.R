@@ -17,7 +17,383 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins, verbose = FALSE) {
+check.network <- function (network, datamatrix, verbose = FALSE) {
+
+  # If no network is given, assume fully connected net
+  if (is.null(network)) { 
+    if (verbose) { warning("No network provided in function call: assuming fully connected nodes.") }
+    network <- matrix(1, ncol(datamatrix), ncol(datamatrix)) 
+    rownames(network) <- colnames(network) <- colnames(datamatrix)
+  }
+
+  # FIXME: later add other forms of sparse matrices from Matrix package   
+  accepted.formats.net <- c("matrix", "Matrix", "dgCMatrix", "dgeMatrix", "graphNEL", "igraph", "graphAM")
+  if (!class(network)[[1]] %in% accepted.formats.net) {  
+    stop(paste("network needs to be in one of the following formats:", paste(accepted.formats.net, collapse = "; ")))
+  }
+  
+  # Convert matrix into graphNEL if it is not already
+  if (!class(network) == "graphNEL") {
+    if (class(network) %in% c("dgeMatrix", "dfCMatrix", "Matrix", "data.frame")) {
+      # Sparse matrix or data.frame needs to be converted first into matrix 
+      network <- as.matrix(network)
+    }
+    
+    if (is.matrix(network)) {
+
+      if ( !nrow(network) == ncol(network) ) { stop("Error: network nrow = ncol required.\n") }
+
+      # Ensuring symmetric network
+      if (any(!network == t(network))) {
+        warning("Network is not symmetric. Removing link directions to force symmetric network.")
+        network <- ((network + t(network)) > 0) - 0
+      }
+      
+      # check that node names given in the data and correspond
+      if ( is.null(rownames( network )) || is.null(colnames( datamatrix )) ) {        
+        if ( !nrow(network) == ncol(datamatrix) ) {
+          stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
+        } else {
+          warning("Warning: network and/or data features are not named; matched by order.\n")
+          if (is.null(rownames( network )) && is.null(colnames( datamatrix ))) {
+            rownames(network) <- colnames(network) <- as.character(1:nrow(network))
+            colnames(datamatrix) <- rownames(network)
+          } else if (is.null(rownames( network )) && !is.null(colnames( datamatrix ))) {
+            rownames(network) <- colnames(network) <- colnames( datamatrix )
+          } else if (!is.null(rownames( network )) && is.null(colnames( datamatrix ))) {
+            colnames( datamatrix ) <- rownames(network)
+          }
+        }
+      }
+      network <- as(new("graphAM", adjMat = network), "graphNEL")
+    } else if (class(network) == "igraph") {
+      network <- igraph.to.graphNEL(network)
+    }
+  }
+
+  # Now the network is in graphNEL format
+
+  # FIXME: adjust such that igraph does not need to be converted in graphNEL (which is larger
+  # FIXME: add option to give this as input; seems to consume much less memory than graphNEL  
+
+  # list network nodes that are not in datamatrix  
+  common.feats <- intersect(nodes(network), colnames(datamatrix))
+  other.feats <- setdiff(nodes(network), common.feats)
+
+  # remove features with no functional data
+  if (length(other.feats) > 0) {
+    if (verbose) { message(paste("removing network nodes that are not in datamatrix: ", length(other.feats), " nodes removed;", length(common.feats), " nodes used for modeling.")) }
+    #message("converting to igraph")
+    network <- igraph.from.graphNEL(network)
+    #message("selecting nodes that have functional data")
+    network <- subgraph(network, common.feats)
+    #message("converting to graphNEL")
+    network <- igraph.to.graphNEL(network)
+    #network <- removeNode(other.feats, network)    
+  }
+
+  message("convert the network into edge matrix")
+  # store original network node list
+  network.nodes <- nodes(network)
+  network <- edgeMatrix(network, duplicates = FALSE) # indices correspond to node list in network.nodes
+  # order such that row1 < row2
+  network <- apply(network, 2, sort)
+  if (verbose) message("removing self-links")  
+  network <- network[, !network[1,] == network[2,]]
+
+  # Store the network in igraph format  
+  network.orig <- network # store network used for modeling (preprocessed)
+  # FIXME: igraph is more memory-efficient but could not be used as network class in NetResponseModel definition
+  # for some reason. If possible, convert from graphNEL to igraph later on.
+
+  # Network rows:                                        
+  # 1) nodes 2) nodes 3) merging cost function delta
+  rownames(network) <- c("node1", "node2")
+
+  # Delta corresponds to the columns of the 'network' object
+  delta <- rep(NA, ncol(network))
+
+  list(formatted = network, original = network.orig, delta = delta, nodes = network.nodes)
+}
+
+
+
+independent.models <- function (network.nodes, datamatrix, params) {
+
+  # Storage list for calculated models
+  model.nodes <- vector(length = length(network.nodes), mode = "list" ) # individual nodes
+
+  C <- 0
+  
+  if (params$verbose) { message("Compute cost for each variable") }
+
+  for (k in 1:length(network.nodes)){
+
+    node <- network.nodes[[k]]
+    
+    if ( params$verbose ) { message(paste('Computing model for node', k, "/", ncol( datamatrix ))) }
+
+    model <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
+                      implicit.noise = params$implicit.noise,
+                      prior.alpha = params$prior.alpha,
+                      prior.alphaKsi = params$prior.alphaKsi,
+                      prior.betaKsi = params$prior.betaKsi,
+                      threshold = params$vdp.threshold,
+                      initial.K = params$initial.responses,
+                      ite = params$ite,
+                      c.max = params$max.responses - 1,
+                      speedup = params$speedup )
+
+    # COST for model
+    cost.ind <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion) 
+    C <- C + cost.ind # Total cost
+    model.nodes[[k]] <- pick.model.parameters(model, node)
+  }
+
+  gc()
+
+  if (params$verbose) { message('done') }
+
+  list(nodes = model.nodes, C = C)
+
+}
+
+
+pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, params) {
+
+  # Storage list for calculated models
+  model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
+
+  if (params$max.subnet.size > 1) {
+
+    if (params$mc.cores == 1) {
+
+      for (edge in 1:ncol(network)){
+
+        if (params$verbose) { message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
+
+        a <- network[1, edge]
+        b <- network[2, edge]  
+        vars  <- network.nodes[c(a, b)]
+
+        model <- vdp.mixt(
+                              matrix(datamatrix[, vars], nrow( datamatrix )),
+                              implicit.noise = params$implicit.noise,
+                              prior.alpha = params$prior.alpha,
+                              prior.alphaKsi = params$prior.alphaKsi,
+                              prior.betaKsi = params$prior.betaKsi,
+                              threshold = params$vdp.threshold,
+                              initial.K = params$initial.responses,
+                              ite = params$ite,
+                              c.max = params$max.responses - 1,
+                              speedup = params$speedup)
+
+      # Compute COST-value for two independent subnets vs. joint model 
+      # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+      # Use it as an approximation for P(D|H)
+      # Cost for the indpendent and joint models
+      # -cost is sum of two independent models (cost: appr. log-likelihoods)
+      costind.ab <- info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
+      costjoint.ab   <-  info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion)
+ 
+      # NOTE: COST is additive so summing is ok
+      # change (increase) of the total COST / cost
+      delta <- as.numeric(costjoint.ab - costind.ab)
+      
+      # Store these only if it would improve the cost; otherwise never needed
+      if (-delta > params$merging.threshold) {    
+        model.pairs[[edge]] <- pick.model.parameters(model, vars)
+      } else {
+        model.pairs[[edge]] <- 0
+      }
+    }
+
+  } else {
+
+    if (params$verbose) {
+      message(paste('Computing delta values for edges with multiple cores\n'))
+      message(paste("Using", params$mc.cores, "cores", "\n")) 
+    }
+   
+    # FIXME: not supported in Windows, change to use the 'parallel' package
+    # This works for Mac and Linux
+    #res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
+    #		   "netresponse", .inorder = TRUE) %dopar%
+    #		   netresponse::edge.delta(edge, network = network, network.nodes =
+    #		   network.nodes, datamatrix = datamatrix,
+    #		   implicit.noise = implicit.noise, prior.alpha =
+    #		   prior.alpha, prior.alphaKsi = prior.alphaKsi,
+    #		   prior.betaKsi = prior.betaKsi, threshold =
+    #		   threshold, initial.K = initial.responses, ite =
+    #		   ite, c.max = max.responses - 1, speedup = speedup,
+    #		   model.nodes = model.nodes, Nlog = params$Nlog, model =
+    #		   model, information.criterion =
+    #		   information.criterion, verbose = verbose,
+    #		   vdp.threshold = vdp.threshold, max.responses =
+    #		   max.responses, merging.threshold =
+    #		   merging.threshold)
+
+    # FIXME: parallelize - mclapply caused some problems with test/test.R		  
+    res <- lapply(1:ncol(network), function (edge) {	
+    	edge.delta(edge, network = network, network.nodes =   			     	   
+	network.nodes, datamatrix = datamatrix,	      		   
+	implicit.noise = params$implicit.noise, prior.alpha =
+	params$prior.alpha, prior.alphaKsi = params$prior.alphaKsi,
+	prior.betaKsi = params$prior.betaKsi, threshold =
+	params$threshold, initial.K = params$initial.responses, ite =
+	params$ite, c.max = params$max.responses - 1, speedup = params$speedup,
+	model.nodes = model.nodes, Nlog = params$Nlog, model =
+	model, information.criterion =
+	params$information.criterion, verbose = params$verbose,
+	vdp.threshold = params$vdp.threshold, max.responses =
+	params$max.responses, merging.threshold =
+	params$merging.threshold)[[1]]})
+
+    # Convert to vector
+    delta <- unlist(lapply(res, function (x) {x$delt})) # FIXME: parallelize
+
+    # Convert to list
+    model.pairs <- lapply(res, function (x) {x[1:5]}) # FIXME: parallelize
+
+  }
+  }
+
+  gc()
+
+  list(model.pairs = model.pairs, delta = delta)
+
+}
+
+
+
+update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, G, params, model.nodes, model.pairs) {
+
+  # Pick node indices          
+  a <- network[1, edge]          
+  i <- network[2, edge]           
+  vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]          
+
+  model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),          
+                          implicit.noise = 0,
+                          prior.alpha = params$prior.alpha,
+                          prior.alphaKsi = params$prior.alphaKsi,
+                          prior.betaKsi = params$prior.betaKsi,
+                          threshold = params$vdp.threshold,
+                          initial.K = params$initial.responses,
+                          ite = params$ite,
+                          c.max = params$max.responses - 1,
+                          speedup = params$speedup)
+  	 
+  # Negative free energy is (variational) lower bound for P(D|H)          
+  # Use this to approximate P(D|H)          
+  if (is.finite(model$free.energy)) {
+    cost.ind <- info.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = params$information.criterion)
+    cost.joint <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion)
+    # change (increase) of the total cost
+    delta[[edge]] <- cost.joint - cost.ind             
+  } else  {
+    warning("No free energy obtained.")            
+    delta[[edge]] <- Inf       
+  }          
+          
+  # Store the joint models / cost for two independent vs. joint model  
+  if (-delta[[edge]] > params$merging.threshold) {  
+    # Store joint model only if it would improve the cost            
+    model.pairs[[edge]] <- pick.model.parameters(model, vars)            
+  } else {          
+    model.pairs[[edge]] <- 0
+  }
+
+  list(model.pairs = model.pairs, delta = delta)
+  
+}
+
+
+
+get.model <- function (datamatrix, network, edge, network.nodes, G, params) { 
+	
+  # Pick node indices          
+  a <- network[1, edge]          
+  i <- network[2, edge]           
+  vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]          
+
+  # model <- 
+  vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),          
+                          implicit.noise = 0,
+                          prior.alpha = params$prior.alpha,
+                          prior.alphaKsi = params$prior.alphaKsi,
+                          prior.betaKsi = params$prior.betaKsi,
+                          threshold = params$vdp.threshold,
+                          initial.K = params$initial.responses,
+                          ite = params$ite,
+                          c.max = params$max.responses - 1,
+                          speedup = params$speedup)
+  
+}
+
+get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
+
+  require(minet)          
+  mis <- c()          
+  mi.cnt <- 0            
+  for (edge in which(is.na(delta))){          
+    mi.cnt <- mi.cnt + 1             
+    # Pick node indices            
+    a <- network[1, edge]            
+    i <- network[2, edge]            
+    dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
+                 prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
+
+    mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+
+  }
+
+  mis
+}
+
+
+
+filter.netw <- function (network, delta, datamatrix, params) {
+
+  tmp <- list(network = network, delta = delta)
+
+  if (params$max.subnet.size > 1) {
+    if (params$verbose) {message("Filter the network to only keep the edges with highest mutual information")}
+    # Filter out the least promising edges from the network
+    # based on mutual information. For each variable, pick at most speedup.max.edges
+    if (params$speedup && !is.null(params$speedup.max.edges)) {
+      tmp <- filter.network(network, delta, datamatrix, params)
+    } 
+  }
+
+  tmp
+
+}
+
+
+
+check.matrix <- function (datamatrix) {
+  
+  accepted.formats.emat <- c("matrix", "Matrix", "data.frame")  
+
+  # ensure datamatrix is a matrix
+  if (!is.matrix(datamatrix)) {
+    if (class(datamatrix) %in% accepted.formats.emat) {
+      datamatrix <- as.matrix(datamatrix)
+    } else {
+      stop(paste("datamatrix needs to be in one of the following formats:", paste(accepted.formats.emat, collapse = "; ")))
+    }    
+  }
+  if (is.null(colnames(datamatrix))) { colnames(datamatrix) <- as.character(1:ncol(datamatrix)) }
+  if (is.null(rownames(datamatrix))) { rownames(datamatrix) <- as.character(1:nrow(datamatrix)) }  
+
+  datamatrix
+}
+
+
+
+
+filter.network <- function (network, delta, datamatrix, params) {
 
   # Include at maximum speedup.max.edges for each node in the network
   # based on mutual information
@@ -27,14 +403,14 @@ filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins
   uniq.edges <- unique(network[1,])  
 
   for (idx in 1:length(uniq.edges)) {
-    if (verbose) {message(paste(idx, "/",  length(uniq.edges)))}
+    if (params$verbose) {message(paste(idx, "/",  length(uniq.edges)))}
     a <- uniq.edges[[idx]]
 
     # Pick edges for this node
     eds <- which(network[1, ] == a)
 
     # Calculate MI scores
-    require(minet)
+    #require(minet)
     mis <- c()
     mi.cnt <- 0  
     # FIXME: could be parallelized
@@ -47,11 +423,11 @@ filter.network <- function (network, delta, datamatrix, speedup.max.edges, nbins
       # For singletons
       dat <- cbind(datamatrix[, a], datamatrix[, i])
                    
-      mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = nbins)[1, 2]
+      mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
     }
     
     # Edges to remove
-    remove.edges <- eds[na.omit(order(mis, decreasing = TRUE)[-seq(speedup.max.edges)])]
+    remove.edges <- eds[na.omit(order(mis, decreasing = TRUE)[-seq(params$speedup.max.edges)])]
     keep.edges <- setdiff(1:ncol(network), remove.edges)
 
     # Filter out remove.edges
@@ -748,7 +1124,6 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
       #if (ncol(qOFz) == opts$c.max + 1) {
       # 	 qOFz <- qOFz[, setdiff(1:ncol(qOFz), opts$c.max), drop = FALSE]        
       #} 
-
 
       # If the smallest of the previous components
       # (excluding the one added in this interation)

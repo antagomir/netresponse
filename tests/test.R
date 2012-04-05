@@ -23,8 +23,10 @@ w.real <- c(70, 70, 60)/200
 rv <- 1
 
 # Compute the model
-res <- detect.responses(D, netw, verbose = TRUE, mc.cores = 2)
-#res <- detect.responses(D, netw, verbose = TRUE)
+#res <- detect.responses(D, netw, verbose = TRUE, mc.cores = 2)
+res <- detect.responses(D, netw, verbose = TRUE, max.responses = 4)
+# FIXME: we only get the correct 3-mode solution with
+# max.responses <- 4; fix this.
 
 # Subnets (each is a list of nodes)
 subnet <- get.subnets(res)

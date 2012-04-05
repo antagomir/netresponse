@@ -12,9 +12,9 @@
 
 \value{NetResponseModel object.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional
-responses in interaction networks. Bioinformatics (2010). See
-citation("netresponse") for details.}
+\references{
+See citation("netresponse").
+}
 
 \author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
         Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
