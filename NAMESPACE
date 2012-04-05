@@ -6,10 +6,14 @@ useDynLib("netresponse")
 
 export(
        add.ellipse,
+       check.matrix,
+       check.network,
        detect.responses,
+       filter.netw,
        find.similar.features,
        get.dat,
        get.model.parameters,
+       independent.models,
        list.significant.responses,
        order.responses,
        #order.samples,
@@ -18,6 +22,7 @@ export(
        sample2response,
        model.stats,
        vdp.mixt,
+       pick.model.pairs,
        P.rS,
        P.r.s,
        P.rs.joint.individual,
