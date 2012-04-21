@@ -1,13 +1,58 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.9.02
-Date: 2012-04-05
+Version: 1.9.04
+Date: 2012-04-21
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
-Description: Algorithms for functional network analysis. Includes an implementation of a variational Dirichlet process Gaussian mixture model for nonparametric mixture modeling.
+Description: Algorithms for functional network analysis. Includes an
+    implementation of a variational Dirichlet process Gaussian mixture model
+    for nonparametric mixture modeling.
 License: GPL (>=2)
-Depends: R (>= 2.14.1), methods, igraph, graph, minet, qvalue, parallel, RColorBrewer, Rgraphviz, ggplot2
+Depends:
+    R (>= 2.14.1),
+    igraph,
+    ggplot2,
+    graph,
+    methods,
+    minet,
+    parallel,
+    qvalue,
+    RColorBrewer,
+    reshape,
+    Rgraphviz
 URL: http://netpro.r-forge.r-project.org/
 LazyLoad: yes
-biocViews: CellBiology, Clustering, GeneExpression, Genetics, GraphsAndNetworks, DifferentialExpression, Microarray, Transcription
+biocViews: CellBiology, Clustering, GeneExpression, Genetics,
+    GraphsAndNetworks, DifferentialExpression, Microarray, Transcription
+Collate:
+    'AllClasses.R'
+    'AllGenerics.R'
+    'detect.responses.R'
+    'find.similar.features.R'
+    'firstlib.R'
+    'get.model.parameters.R'
+    'ICMg.combined.sampler.R'
+    'ICMg.get.comp.memberships.R'
+    'ICMg.internals.R'
+    'ICMg.links.sampler.R'
+    'information.criteria.R'
+    'internals.R'
+    'interpretation.R'
+    'latent.class.univariate.R'
+    'mixture.densities.R'
+    'model.stats.R'
+    'NetResponseModel-accessors.R'
+    'order.responses.R'
+    'plot-methods.R'
+    'plot.response.R'
+    'plot.responses.R'
+    'plot.scale.R'
+    'plot.subnet.R'
+    'read.network.R'
+    'response2sample.R'
+    'sample2response.R'
+    'set.breaks.R'
+    'show-methods.R'
+    'utilities.R'
+    'vdp.mixt.R'

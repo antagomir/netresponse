@@ -39,7 +39,7 @@ detect.responses <-
 function(datamatrix,
          network,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
-         max.responses = 10,      # max. responses # FIXME: check if really used
+         max.responses = 10,      
          max.subnet.size = 10,    # max. subnetwork size
          verbose = TRUE,          # print proc. information
          prior.alpha    = 1,      # Prior parameters
@@ -134,9 +134,9 @@ function(datamatrix,
   ########################################################################
 
   ### INDEPENDENT MODEL FOR EACH VARIABLE ###
-  tmp <- independent.models(network.nodes, datamatrix, params)
+  tmp <- independent.models(datamatrix, params)
   model.nodes <- tmp$nodes
-  C <- tmp$C
+  C <- sum(tmp$C)
 
   ###   compute costs for combined variable pairs  ###
   tmp <- pick.model.pairs(network, network.nodes, model.nodes, datamatrix, params) 

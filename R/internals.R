@@ -118,18 +118,19 @@ check.network <- function (network, datamatrix, verbose = FALSE) {
 
 
 
-independent.models <- function (network.nodes, datamatrix, params) {
+independent.models <- function (datamatrix, params) {
 
   # Storage list for calculated models
-  model.nodes <- vector(length = length(network.nodes), mode = "list" ) # individual nodes
-
-  C <- 0
+  model.nodes <- vector(length = ncol(datamatrix), mode = "list" ) # individual nodes
   
   if (params$verbose) { message("Compute cost for each variable") }
 
-  for (k in 1:length(network.nodes)){
+  C <- vector(length = ncol(datamatrix), mode = "numeric")
 
-    node <- network.nodes[[k]]
+  # FIXME parallelize?
+  for (k in 1:ncol(datamatrix)){
+
+    node <- colnames(datamatrix)[[k]]
     
     if ( params$verbose ) { message(paste('Computing model for node', k, "/", ncol( datamatrix ))) }
 
@@ -145,16 +146,17 @@ independent.models <- function (network.nodes, datamatrix, params) {
                       speedup = params$speedup )
 
     # COST for model
-    cost.ind <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion) 
-    C <- C + cost.ind # Total cost
-    model.nodes[[k]] <- pick.model.parameters(model, node)
-  }
+    C[[k]] <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion) 
 
+    model.nodes[[k]] <- pick.model.parameters(model, node)
+
+  }
+  
   gc()
 
   if (params$verbose) { message('done') }
 
-  list(nodes = model.nodes, C = C)
+  list(nodes = model.nodes, C = C)  
 
 }
 
@@ -558,7 +560,7 @@ pick.model.parameters <- function (m, nodes) {
   # m is the outcome from vdp.mixt function 
   # nodes is the list of nodes for the investigated subnetwork, for naming purposes only
   
-  #  Copyright (C) 2008-2011 Leo Lahti
+  #  Copyright (C) 2008-2012 Leo Lahti
   #  Licence: GPL >=2
  
   # Pick parameters

@@ -121,9 +121,10 @@ plot.data <- function (x, subnet.id, labels, ...) {
 
     # ggplot2 boxplots for each user-defined sample category (listed in labels)
     library(ggplot2)
+    library(reshape)
     dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
     df <- data.frame(list(labels = labels, dat))
-    dfm <- melt(df, id = "labels")
+    dfm <- reshape::melt(df, id = "labels")
     p <- ggplot(dfm) + aes(x = labels, y = dfm$value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": annotation boxplot", sep = ""))    
     print(p)
     p
