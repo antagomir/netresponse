@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.9.04
-Date: 2012-04-21
+Version: 1.9.05
+Date: 2012-04-27
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -23,7 +23,7 @@ Depends:
     Rgraphviz
 URL: http://netpro.r-forge.r-project.org/
 LazyLoad: yes
-biocViews: CellBiology, Clustering, GeneExpression, Genetics,
+biocViews: CellBiology, Clustering, GeneExpression, Genetics, NetworkAnalysis,
     GraphsAndNetworks, DifferentialExpression, Microarray, Transcription
 Collate:
     'AllClasses.R'
