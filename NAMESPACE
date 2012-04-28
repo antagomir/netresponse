@@ -1,72 +1,41 @@
+export(add.ellipse)
+export(bic.mixture.multivariate)
+export(bic.mixture.univariate)
+export(centerData)
+export(detect.responses)
 export(factor.responses)
+export(find.similar.features)
+export(get.model.parameters)
+export(ICMg.combined.sampler)
+export(ICMg.get.comp.memberships)
+export(ICMg.links.sampler)
 export(latent.class.analysis)
 export(list.responses)
-#exportPattern("^[^0]*$")
-import(minet)
-import(methods)
-
-useDynLib("netresponse")
-
-export(
-       add.ellipse,
-       check.matrix,
-       check.network,
-       detect.responses,
-       filter.netw,
-       find.similar.features,
-       get.dat,
-       get.model.parameters,
-       independent.models,
-       list.significant.responses,
-       order.responses,
-       #order.samples,
-       read.sif,
-       response2sample,
-       sample2response,
-       model.stats,
-       vdp.mixt,
-       pick.model.pairs,
-       P.rS,
-       P.r.s,
-       P.rs.joint.individual,
-       P.rs.joint,
-       P.Sr,
-       P.S,
-       P.sr,
-       P.s.individual,
-       response.enrichment,
-       ICMg.combined.sampler,
-       ICMg.links.sampler,
-       ICMg.get.comp.memberships,
-       plotAssociations,
-       plotPCA,
-       plot.data,
-       plot.expression,
-       plot.response,
-       plot.responses,
-       plot.scale,
-       plot.subnet,
-       set.breaks,
-       write.netresponse.results
-       )
-
-exportClasses("NetResponseModel")
-#S4method(get.subnets, NetResponseModel)
-
-
-
-exportMethods(
-#"[",
-"[[",
-show,
-get.subnets,
-getqofz
-#"[<-","$","$<-", 
-#"plot","print" 
-)
-
-#exportMethods(get.model.parameters)
-#importFrom(doMC, getDoParWorkers)
-#export(Diag)
-#importFrom(graphics, plot)                                        
-
+export(list.significant.responses)
+exportMethods(get.dat)
+exportMethods(getqofz)
+exportMethods(get.subnets)
+export(mixture.model)
+export(model.stats)
+export(order.responses)
+export(plot.data)
+export(plot.expression)
+export(plot.response)
+export(plot.responses)
+export(plot.scale)
+export(plot.subnet)
+export(P.r.s)
+export(P.rS)
+export(P.rs.joint)
+export(P.rs.joint.individual)
+export(P.S)
+export(P.s.individual)
+export(P.s.r)
+export(P.Sr)
+export(read.sif)
+export(response2sample)
+export(response.enrichment)
+export(sample2response)
+export(set.breaks)
+export(vdp.mixt)
+export(write.netresponse.results)

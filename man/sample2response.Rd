@@ -1,32 +1,31 @@
 \name{sample2response}
-
 \alias{sample2response}
-
 \title{sample2response}
-
-\description{ Probabilistic sample-response assignments for given
-  subnet. }
-\usage{sample2response(model, subnet.id, mode = "soft")}
-\arguments{
-  \item{ model }{Result from NetResponse (detect.responses function).}
-
-  \item{ subnet.id }{Subnet identifier. A natural number which
-  specifies one of the subnetworks within the 'model' object.}
-
-  \item{ mode }{ soft: gives samples x responses probabilistic assignment matrix; hard: gives the most likely response for each sample}
+\usage{
+  sample2response(model, subnet.id, mode = "soft")
 }
+\arguments{
+  \item{model}{Result from NetResponse (detect.responses
+  function).}
 
-\value{A matrix of probabilities. Sample-response assignments for given
-  subnet, listing the probability of each response, given a sample.}
+  \item{subnet.id}{Subnet identifier. A natural number
+  which specifies one of the subnetworks within the 'model'
+  object.}
 
-\references{Leo Lahti et al.: Global modeling of transcriptional
-responses in interaction networks. Bioinformatics (2010).  See
-citation("netresponse") for citation details.}
-
-\author{Leo Lahti \email{leo.lahti@iki.fi}}
-
+  \item{mode}{soft: gives samples x responses probabilistic
+  assignment matrix; hard: gives the most likely response
+  for each sample}
+}
+\value{
+  A matrix of probabilities. Sample-response assignments
+  for given subnet, listing the probability of each
+  response, given a sample.
+}
+\description{
+  Probabilistic sample-response assignments for given
+  subnet.
+}
 \examples{
-
 #library(netresponse)
 #data( toydata )        # Load toy data set
 #D    <- toydata$emat   # Response matrix (for example, gene expression)
@@ -37,6 +36,14 @@ citation("netresponse") for citation details.}
 
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
 #response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
-
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  Leo Lahti et al.: Global modeling of transcriptional
+  responses in interaction networks. Bioinformatics (2010).
+  See citation("netresponse") for citation details.
 }
 \keyword{utilities}
+

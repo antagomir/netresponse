@@ -1,34 +1,46 @@
+\docType{data}
 \name{dna}
 \alias{dna}
-\docType{data}
 \title{Dna damage data set (PPI and expression)}
+\format{List of following objects: \describe{ \item{ppi}{PPI data matrix}
+\item{exp}{gene expression profiles data matrix} \item{gids}{Vector of gene
+ids corresponding to indices used in data matrices} \item{obs}{Gene
+expression observation details} \item{combined.links}{pooled matrix of PPI
+and expression links} }}
+\source{
+  PPI data pooled from yeast data sets of [1] and [2]. Dna
+  damage expression set of [3].
+}
 \description{
-  A combined yeast data set with protein-protein interactions and gene expression (dna damage). Gene expression profiles are transformed into links by computing a Pearson correlation for all pairs of genes and treating all correlations above 0.85 as additional links.
-}
-\usage{data(dna)}
-\format{ List of following objects:
-	\describe{
-	\item{ppi}{PPI data matrix}
-	\item{exp}{gene expression profiles data matrix}
-	\item{gids}{Vector of gene ids corresponding to indices used in data matrices}
-	\item{obs}{Gene expression observation details}
-	\item{combined.links}{pooled matrix of PPI and expression links}
-}
+  A combined yeast data set with protein-protein
+  interactions and gene expression (dna damage). Gene
+  expression profiles are transformed into links by
+  computing a Pearson correlation for all pairs of genes
+  and treating all correlations above 0.85 as additional
+  links.
 }
 \details{
-  Number of genes: 1823, number of interactions: 12382, number of gene expression observations: 52, number of total links with PPI and expression links: 15547.
-}
-\source{
-  PPI data pooled from yeast data sets of [1] and [2]. Dna damage expression set of [3].
-}
-\references{
-Ulitsky, I. and Shamir, R. \emph{Identification of functional modules using network topology and high-throughput data.} BMC Systems Biology 2007, 1:8.
-
-Nariai, N., Kolaczyk, E. D. and Kasif, S. \emph{Probabilistic Protein Function Predition from Heterogenous Genome-Wide Data}. PLoS ONE 2007, 2(3):e337.
-
-Gasch, A., Huang, M., Metzner, S., Botstein, D. and Elledge, S. \emph{Genomic expression responses to DNA-damaging agents and the regulatory role of the yeast ATR homolog Mex1p.} Molecular Biology of the Cell 2001, 12:2987-3003.
+  Number of genes: 1823, number of interactions: 12382,
+  number of gene expression observations: 52, number of
+  total links with PPI and expression links: 15547.
 }
 \examples{
 data(dna)
 }
+\references{
+  Ulitsky, I. and Shamir, R. \emph{Identification of
+  functional modules using network topology and
+  high-throughput data.} BMC Systems Biology 2007, 1:8.
+
+  Nariai, N., Kolaczyk, E. D. and Kasif, S.
+  \emph{Probabilistic Protein Function Predition from
+  Heterogenous Genome-Wide Data}. PLoS ONE 2007, 2(3):e337.
+
+  Gasch, A., Huang, M., Metzner, S., Botstein, D. and
+  Elledge, S. \emph{Genomic expression responses to
+  DNA-damaging agents and the regulatory role of the yeast
+  ATR homolog Mex1p.} Molecular Biology of the Cell 2001,
+  12:2987-3003.
+}
 \keyword{datasets}
+

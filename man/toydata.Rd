@@ -1,37 +1,34 @@
+\docType{data}
 \name{toydata}
 \alias{toydata}
-\docType{data}
 \title{toydata}
-\description{ Toy data for NetResponse examples. }
-\usage{ data(toydata) }
-\format{
+\format{Toy data: a list with three elements:
 
-Toy data: a list with three elements:
+emat: Data matrix (samples x features). This contains the same features that
+are provided in the network (toydata$netw). The matrix characterizes
+measurements of network states across different conditions.
 
-  emat: Data matrix (samples x features). This contains the same
-                    features that are provided in the network
-                    (toydata$netw). The matrix characterizes
-                    measurements of network states across different
-                    conditions.
+netw: Binary matrix that describes pairwise interactions between features.
+This defines an undirected network over the features. A link between two
+nodes is denoted by 1.
 
-  netw: Binary matrix that describes pairwise interactions between
-                    features. This defines an undirected network over
-                    the features. A link between two nodes is denoted
-                    by 1.
-
-  model: A pre-calculated model. Object of NetResponseModel class,
-                     resulting from applying the netresponse algorithm
-                     on the toydata with model <- detect.responses(D,
-                     netw).
-
+model: A pre-calculated model. Object of NetResponseModel class, resulting
+from applying the netresponse algorithm on the toydata with model <-
+detect.responses(D, netw).}
+\description{
+  Toy data for NetResponse examples.
 }
-
-\references{Leo Lahti et al.: Global modeling of transcriptional responses in interaction networks. Bioinformatics (2010).}
 \examples{
-  data(toydata)
+data(toydata)
   D    <- toydata$emat   # Response matrix (samples x features)
   netw <- toydata$netw   # Network between the features
   model <- toydata$model # Pre-calculated NetResponseModel obtained with
                          # model <- detect.responses(D, netw)
 }
-\keyword{ misc }
+\references{
+  Leo Lahti et al.: Global modeling of transcriptional
+  responses in interaction networks. Bioinformatics (2010).
+}
+\keyword{datasets}
+\keyword{misc}
+

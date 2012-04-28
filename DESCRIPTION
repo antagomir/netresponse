@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.9.05
-Date: 2012-04-27
+Version: 1.9.07
+Date: 2012-04-28
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -10,10 +10,11 @@ Description: Algorithms for functional network analysis. Includes an
     for nonparametric mixture modeling.
 License: GPL (>=2)
 Depends:
-    R (>= 2.14.1),
+    R (>= 2.15.0),
     igraph,
     ggplot2,
     graph,
+    mclust,
     methods,
     minet,
     parallel,
@@ -29,30 +30,23 @@ Collate:
     'AllClasses.R'
     'AllGenerics.R'
     'detect.responses.R'
-    'find.similar.features.R'
     'firstlib.R'
-    'get.model.parameters.R'
-    'ICMg.combined.sampler.R'
-    'ICMg.get.comp.memberships.R'
     'ICMg.internals.R'
-    'ICMg.links.sampler.R'
     'information.criteria.R'
     'internals.R'
     'interpretation.R'
-    'latent.class.univariate.R'
     'mixture.densities.R'
+    'mixtures.R'
     'model.stats.R'
     'NetResponseModel-accessors.R'
     'order.responses.R'
     'plot-methods.R'
-    'plot.response.R'
-    'plot.responses.R'
-    'plot.scale.R'
-    'plot.subnet.R'
     'read.network.R'
     'response2sample.R'
     'sample2response.R'
-    'set.breaks.R'
     'show-methods.R'
     'utilities.R'
     'vdp.mixt.R'
+    'pkg-package.R'
+    'ICMg.R'
+    'visualization.R'

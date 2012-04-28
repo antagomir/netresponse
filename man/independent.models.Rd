@@ -1,24 +1,37 @@
 \name{independent.models}
 \alias{independent.models}
 \title{independent.models}
-\description{Mainly for internal use. Provide independent models for each node.}
-\usage{independent.models(datamatrix, params)}
+\usage{
+  independent.models(datamatrix, params, mixture.method =
+    "vdp")
+}
 \arguments{
   \item{datamatrix}{datamatrix}
+
   \item{params}{parameters}
+
+  \item{mixture.method}{Specify the approach to use in
+  mixture modeling. Options. vdp (nonparametric Variational
+  Dirichlet process mixture model); bic (based on Gaussian
+  mixture modeling with EM, using BIC to select the optimal
+  number of components)}
 }
 \value{
-  \item{nodes }{Model for each node}
-  \item{C }{Costs for individual models}
-
+  \item{nodes }{Model for each node} \item{C }{Costs for
+  individual models}
 }
-\references{
-See citation("netresponse")
+\description{
+  Mainly for internal use. Provide independent models for
+  each node.
 }
-\author{Leo Lahti \email{leo.lahti@iki.fi}}
-
 \examples{
 # TBA
 }
-\keyword{ internal }
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{internal}
 

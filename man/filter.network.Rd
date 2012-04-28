@@ -1,26 +1,35 @@
-\name{filter.netw}
-\alias{filter.netw}
-\title{filter.netw}
-\description{Mostly for internal use. Prefilter edges if speedups required.}
+\name{filter.network}
+\alias{filter.network}
+\title{filter.network}
 \usage{
-filter.netw(network, delta, datamatrix, params)
+  filter.network(network, delta, datamatrix, params)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{network}{network}
-  \item{delta}{associated cost function value changes for each node merge}
+
+  \item{delta}{associated cost function value changes for
+  each node merge}
+
   \item{datamatrix}{datamatrix}
+
   \item{params}{parameters}
 }
-\details{Include to the network only the edges with the highest mutual information, calculated based on the first principal components.}
-\value{Filtered network}
-\references{
-See citation("netresponse")
+\value{
+  Filtered network
 }
-\author{Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
-        Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
+\description{
+  Include to the network only the edges with the highest
+  mutual information, calculated based on the first
+  principal components.
+}
 \examples{
 # TBA
 }
-\keyword{ internal }
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{internal}
 

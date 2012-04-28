@@ -23,6 +23,25 @@
 
 ###################################################################
 
+
+
+
+#' Description: Probabiity of mode given multiple samples (ie. data matrix)
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
 P.rS <- function (dat, pars, log = TRUE) {
 
   # Probability of a response, given sample (group)
@@ -45,6 +64,23 @@ P.rS <- function (dat, pars, log = TRUE) {
 }
 
 
+
+#' Description: Probabiity of mode given a sample (a data vector)
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
 P.r.s <- function (dat, pars, log = TRUE) {
   # P(r|s) for each response r and sample s
 
@@ -56,6 +92,22 @@ P.r.s <- function (dat, pars, log = TRUE) {
 }
 
 
+#' Description: Joint probabiity density for mode and sample
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
 P.rs.joint.individual <- function (dat, pars, log = TRUE) {
 
   # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
@@ -64,7 +116,7 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
   
   # FIXME: merge with P.rs.joint and/or P.rS to avoid redundancy
   
-  psr.log <- P.sr(dat, pars, log = TRUE)
+  psr.log <- P.s.r(dat, pars, log = TRUE)
   pr.log <- log(pars$w)
 
   #Prs.log <- get.P.rs(model, subnet.id, log = TRUE)
@@ -85,6 +137,22 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
 }
 
 
+
+#' Description: Joint probabiity density for mode and sample group
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
 
 P.rs.joint <- function (dat, pars, log = TRUE) {
 
@@ -115,10 +183,26 @@ P.rs.joint <- function (dat, pars, log = TRUE) {
 
 
 
+#' Description: Probabiity density for sample group given mode
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
 P.Sr <- function (dat, pars, log = TRUE) {
 
   # dat is features x samples matrix
-  psr <- P.sr(dat, pars, log = TRUE)
+  psr <- P.s.r(dat, pars, log = TRUE)
 
   # Returns responses x samples matrix
   # for each response, calculate logsum over samples
@@ -130,8 +214,25 @@ P.Sr <- function (dat, pars, log = TRUE) {
 }
 
 
-P.sr <- function (dat, pars, log = TRUE) {
- 
+
+#' Description: Probabiity density for sample given mode
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
+P.s.r <- function (dat, pars, log = TRUE) {
+
   # dat: features x samples matrix
 
   # Log probability density on each data point for each response
@@ -172,6 +273,24 @@ P.sr <- function (dat, pars, log = TRUE) {
 }
 
 
+
+
+#' Description: Probabiity density for sample 
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
+
 P.S <- function (dat, pars, log = TRUE) {
 
   # psi: individual sample densities P(s) given in _log domain_
@@ -198,6 +317,23 @@ P.S <- function (dat, pars, log = TRUE) {
 }
 
 
+
+
+#' Description: Probabiity density for individual sample 
+#' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
+#'
+#' Arguments:
+#'  @param dat features x samples data matrix for mixture modeling
+#'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
+#'  @param log Logical. Return densities in log domain.
+#'
+#' Returns:
+#'   @return Probability density
+#'            
+#' @export
+#' @references See citation("netresponse") 
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords internal utilities
 
 P.s.individual <- function (dat, pars, log = TRUE) {
 
@@ -226,8 +362,5 @@ P.s.individual <- function (dat, pars, log = TRUE) {
 }
 
 
-
-
-###########################################################
 
 

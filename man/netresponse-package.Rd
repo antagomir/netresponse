@@ -1,26 +1,19 @@
-\name{netresponse-package}
-\alias{netresponse-package}
-\alias{netresponse}
 \docType{package}
-\title{NetResponse: Global modeling of transcriptional responses in interaction networks}
-\description{Global modeling of transcriptional responses in interaction networks.}
+\name{netresponse-package}
+\alias{netresponse}
+\alias{netresponse-package}
+\title{NetResponse: Global modeling of transcriptional responses in interaction
+networks}
+\description{
+  Global modeling of transcriptional responses in
+  interaction networks.
+}
 \details{
-\tabular{ll}{
-Package: \tab netresponse\cr
-Type: \tab Package\cr
-Version: \tab See sessionInfo() or DESCRIPTION file\cr
-Date: \tab 2011-02-03\cr
-License: \tab GNU GPL >=2\cr
-LazyLoad: \tab yes\cr
+  \tabular{ll}{ Package: \tab netresponse\cr Type: \tab
+  Package\cr Version: \tab See sessionInfo() or DESCRIPTION
+  file\cr Date: \tab 2011-02-03\cr License: \tab GNU GPL
+  >=2\cr LazyLoad: \tab yes\cr }
 }
-}
-\author{Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen.
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}}
-\references{Leo Lahti et al.: Global modeling of transcriptional
-responses in interaction networks. Bioinformatics (2010). See
-citation("netresponse") for details.}
-\keyword{package}
-%\seealso{%%~~ \code{\link[somepkg:somepkg-package]{somepkg}} ~~}}
 \examples{
 # Load the package
 library(netresponse)
@@ -29,7 +22,7 @@ library(netresponse)
 Ns <- 200  # number of samples (conditions)
 Nf <- 10   # number of features (nodes)
 feature.names <- paste("feat", seq(Nf), sep="")
-sample.names  <- paste("sample", seq(Ns), sep="") 
+sample.names  <- paste("sample", seq(Ns), sep="")
 
 # random seed
 set.seed( 123 )
@@ -39,7 +32,7 @@ netw <- pmax(array(sign(rnorm(Nf^2)), dim = c(Nf, Nf)), 0)
 # in pathway analysis nodes correspond to genes
 rownames(netw) <- colnames(netw) <- feature.names
 
-# Random responses of the nodes across conditions 
+# Random responses of the nodes across conditions
 D <- array(rnorm(Ns*Nf), dim = c(Ns,Nf), dimnames = list(sample.names, feature.names))
 D[1:100, 4:6]  <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 1:3)}))
 D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
@@ -54,6 +47,18 @@ get.subnets( model )
 # means, standard devations and weights for the components
 inds <- which(sapply(model@last.grouping, length) > 2)
 subnet.id <- names(model@subnets)[[1]]
-m <- get.model.parameters(model, subnet.id) 
+m <- get.model.parameters(model, subnet.id)
 print(m)
 }
+\author{
+  Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and
+  Juuso Parkkinen. Maintainer: Leo Lahti
+  \email{leo.lahti@iki.fi}
+}
+\references{
+  Leo Lahti et al.: Global modeling of transcriptional
+  responses in interaction networks. Bioinformatics (2010).
+  See citation("netresponse") for details.
+}
+\keyword{package}
+
