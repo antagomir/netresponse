@@ -103,6 +103,27 @@
   Main function of the NetResponse algorithm. Detecting
   network responses across the conditions.
 }
+\details{
+  NetResponse: Detect condition-specific network responses,
+  given network and a set of measurements of node activity
+  in a set of conditions.
+
+  res <- netresponse(dataset, network)
+
+  INPUT:
+
+  datamatrix: 'samples x features' matrix network: binary
+  matrix defining network between the features
+
+  OUTPUT: Returns a set of subnetworks and their estimated
+  context-specific responses.
+
+  res.costs are the cost function values at each state
+  res.moves has the indices of groups joined at each state
+  in its columns res.groupings holds the groupings at each
+  level of the hierarchy res.models has compressed
+  representations of the models from each step
+}
 \examples{
 library(netresponse)
 data( toydata )        # Load toy data set

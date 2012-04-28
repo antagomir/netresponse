@@ -13,7 +13,6 @@
 
 ###################################################################
 
-
  #  "An article about computational science in a scientific publication
  #  is not the scholarship itself, it is merely advertising of the
  #  scholarship. The actual scholarship is the complete software
@@ -22,9 +21,6 @@
  #                                          - Jon Claerbout
 
 ###################################################################
-
-
-
 
 #' Description: Probabiity of mode given multiple samples (ie. data matrix)
 #' Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.
@@ -117,7 +113,7 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
   # FIXME: merge with P.rs.joint and/or P.rS to avoid redundancy
   
   psr.log <- P.s.r(dat, pars, log = TRUE)
-  pr.log <- log(pars$w)
+  pr.log <- as.vector(log(pars$w))
 
   #Prs.log <- get.P.rs(model, subnet.id, log = TRUE)
   #ps <- sum_r P(s,r) = sum_r P(s|r)P(r) 

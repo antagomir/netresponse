@@ -28,7 +28,6 @@
 #}
 
 
-
 #' order.responses
 #' 
 #' Orders the responses by association strength (enrichment score) to a given
@@ -149,8 +148,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 #' @examples #
 #' 
 response.enrichment <- function (subnet.id, model, s, response, method = "hypergeometric") {
-
-  # s:   # samples associated with this factor level (ensure they are in the data)
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")

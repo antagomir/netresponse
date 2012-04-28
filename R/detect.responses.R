@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-2# the Free Software Foundation; either version 2, or (at your option)
+# the Free Software Foundation; either version 2, or (at your option)
 # any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -40,7 +40,26 @@
 #' 
 #' Main function of the NetResponse algorithm. Detecting network responses
 #' across the conditions.
+#'
+#'  NetResponse: Detect condition-specific network responses, given
+#'  network and a set of measurements of node activity in a set of
+#'  conditions.
+#'          
+#'  res <- netresponse(dataset, network)
+#'  
+#'  INPUT:
+#'
+#'  datamatrix: 'samples x features' matrix
+#'  network: binary matrix defining network between the features
+#'
+#'  OUTPUT:
+#'  Returns a set of subnetworks and their estimated
+#'  context-specific responses.
 #' 
+#'  res.costs are the cost function values at each state
+#'  res.moves has the indices of groups joined at each state in its columns
+#'  res.groupings holds the groupings at each level of the hierarchy
+#'  res.models has compressed representations of the models from each step
 #' 
 #' @usage detect.responses(datamatrix, network, initial.responses = 1,
 #' max.responses = 10, max.subnet.size = 10, verbose = TRUE, prior.alpha = 1,
@@ -103,8 +122,7 @@
 #' optimal number of components)
 #' @param ... Further optional arguments to be passed.
 #' @return NetResponseModel object.
-#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
-#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse").
 #' @keywords methods iteration
 #' @export
@@ -141,27 +159,6 @@ detect.responses <- function(datamatrix,
 )
 
 {
-
-
-#  NetResponse: Detect condition-specific network responses, given
-#  network and a set of measurements of node activity in a set of
-#  conditions.
-#          
-#  res <- netresponse(dataset, network)
-#  
-#  INPUT:
-#
-#  datamatrix: 'samples x features' matrix
-#  network: binary matrix defining network between the features
-#
-#  OUTPUT:
-#  Returns a set of subnetworks and their estimated
-#  context-specific responses.
-# 
-#  res.costs are the cost function values at each state
-#  res.moves has the indices of groups joined at each state in its columns
-#  res.groupings holds the groupings at each level of the hierarchy
-#  res.models has compressed representations of the models from each step
 
   datamatrix <- check.matrix(datamatrix)
 
@@ -220,21 +217,19 @@ detect.responses <- function(datamatrix,
   ### INDEPENDENT MODEL FOR EACH VARIABLE ###
 
   tmp <- independent.models(datamatrix, params, mixture.method)
-  model.nodes <- tmp$nodes
+  node.models <- tmp$nodes # model parameters
   C <- sum(tmp$C)
-
-  ### compute costs for combined variable pairs  ###
-  tmp <- pick.model.pairs(network, network.nodes, model.nodes, datamatrix, params)
-  model.pairs <- tmp$model.pairs
-  delta <- tmp$delta
-
-  #######################################################################################
 
   ### MERGE VARIABLES ###
 
   move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
 
   if (params$max.subnet.size > 1) {
+
+    ### compute costs for combined variable pairs  ###
+    tmp <- pick.model.pairs(network, network.nodes, node.models, datamatrix, params)
+    model.pairs <- tmp$model.pairs
+    delta <- tmp$delta
 
     # if there are groups left sharing a link and improvement (there are
     # connected items that have delta<0) then continue merging
@@ -269,8 +264,8 @@ detect.responses <- function(datamatrix,
         tmp.join <- join.subnets(network, delta, best.edge)
         network <- tmp.join$network
         delta <- tmp.join$delta
-        model.nodes[[a]] <- model.pairs[[best.edge]]
-        model.nodes[[b]] <- NA
+        node.models[[a]] <- model.pairs[[best.edge]]
+        node.models[[b]] <- NA
     
         # remove self-links
         keep <- !(network[1,] == network[2,])
@@ -313,7 +308,7 @@ detect.responses <- function(datamatrix,
       
           # FIXME: lapply, or parallelize to speed up
           for (edge in merge.edges) {
-	    tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, model.nodes, model.pairs)
+	    tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
 	    model.pairs <- tmp$model.pairs
 	    delta <- tmp$delta
 	  }
@@ -327,8 +322,8 @@ detect.responses <- function(datamatrix,
 }
   
   # Remove left-out nodes (from the merges)
-  nainds <- is.na(model.nodes)
-  model.nodes <- model.nodes[!nainds]
+  nainds <- is.na(node.models)
+  node.models <- node.models[!nainds]
   G <- G[!nainds]
 
   # Form a list of subnetworks (no filters)
@@ -336,13 +331,12 @@ detect.responses <- function(datamatrix,
   subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) 
 
   # name the subnetworks
-  names(model.nodes) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
+  names(node.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
   gc()
 
   # Convert original network to graphNEL (not before, to save more memory for computation stage)
   network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
   nodes(network.orig) <- network.nodes
-
   
   model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
@@ -351,7 +345,6 @@ detect.responses <- function(datamatrix,
       params = params,
       datamatrix = datamatrix,
       network = network.orig,
-      models = model.nodes
+      models = node.models
       )
-
 }

@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2008-2011 Juuso Parkkinen
 # Contact: Juuso Parkkinen <juuso.parkkinen@gmail.com>
 #

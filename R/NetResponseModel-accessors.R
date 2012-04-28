@@ -1,4 +1,3 @@
-
 # Copyright (C) 2010-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
@@ -222,7 +221,7 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
   dat  <- get.dat(model, subnet.id)  # Dat is now features x samples matrix
   qofz <- P.r.s(dat, pars, log = log)
   rownames(qofz) <- rownames(model@datamatrix) #model@samples
-  colnames(qofz) <- paste("Response", 1:ncol(qofz), sep = "-")   
+  colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")   
 
   qofz
   

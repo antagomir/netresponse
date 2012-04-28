@@ -163,10 +163,8 @@ check.network <- function (network, datamatrix, verbose = FALSE) {
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @keywords internal
+#' @export
 #' @examples
-#' 
-#' # TBA
-#' 
 independent.models <- function (datamatrix, params, mixture.method = "vdp") {
 
   # Storage list for calculated models
@@ -204,7 +202,14 @@ independent.models <- function (datamatrix, params, mixture.method = "vdp") {
 
       model <- bic.mixture.univariate(datamatrix[, node], max.modes = params$max.responses)
 
-      model.params <- list(mu = model$means, sd = model$sds, w = model$ws, free.energy = model$free.energy, Nparams = model$Nparams)
+      means <- matrix(model$means, nrow = length(model$means))   
+      sds <- matrix(model$sds, nrow = length(model$sds))   
+      ws <- matrix(model$ws, nrow = length(model$ws))   
+
+      rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
+      colnames(means) <- colnames(sds) <- node
+      
+      model.params <- list(mu = means, sd = sds, w = ws, free.energy = model$free.energy, Nparams = model$Nparams)
 
     } else {
       stop("Provide proper mixture.method")
@@ -228,14 +233,12 @@ independent.models <- function (datamatrix, params, mixture.method = "vdp") {
 
 
 
-
 #' pick.model.pairs
 #' 
 #' Mainly for internal use. Calculate joint models for each node pair
 #' 
 #' 
-#' @usage pick.model.pairs(network, network.nodes, model.nodes, datamatrix,
-#' params, mixture.method = "vdp")
+#' @usage pick.model.pairs(network, network.nodes, model.nodes, datamatrix, params, mixture.method = "vdp")
 #' @param network network
 #' @param network.nodes network.nodes
 #' @param model.nodes model.nodes
@@ -251,14 +254,13 @@ independent.models <- function (datamatrix, params, mixture.method = "vdp") {
 #' Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @keywords internal
+#' @export
 #' @examples
-#' 
-#' # TBA
-#' 
 pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, params, mixture.method = "vdp") {
 
   # Storage list for calculated models
-  model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
+  model.pairs <- vector(length = ncol(network), mode = "list" ) 
+  delta <- rep(NA, ncol(network))
 
   if (params$max.subnet.size > 1) {
 
@@ -327,8 +329,6 @@ pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, p
 }
 
 
-
-
 #' update.model.pair
 #' 
 #' Mainly for internal use. Calculate joint model for given node pair and
@@ -352,9 +352,6 @@ pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, p
 #' @references See citation("netresponse")
 #' @keywords internal
 #' @examples
-#' 
-#' # TBA
-#' 
 update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, G, params, model.nodes, model.pairs) {
 
   # Pick node indices          
@@ -736,20 +733,27 @@ discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X)))
 }
 
 
+
+
+
+#' pick.model.parameters
+#' 
+#' @param m vdp.mixt output
+#' @param nodes node names for naming purposes 
+#' @return Model parameters
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @export
+#' @examples #
 pick.model.parameters <- function (m, nodes) {
- 
-  # m is the outcome from vdp.mixt function 
-  # nodes is the list of nodes for the investigated subnetwork, for naming purposes only
-  
-  #  Copyright (C) 2008-2012 Leo Lahti
-  #  Licence: GPL >=2
  
   # Pick parameters
   w    <- m$posterior$weights    # component weights
   mu   <- m$posterior$centroids  # component centroids
   sds  <- m$posterior$sds        # component standard devs
 
-  rownames(mu) <- rownames(sds) <- names(w) <- paste("Response", 1:length(w), sep = "-")
+  rownames(mu) <- rownames(sds) <- names(w) <- paste("Mode", 1:length(w), sep = "-")
   colnames(mu) <- colnames(sds) <- nodes		       
 
   # For mu and std, rows correspond to the mixture components, in w the elements
