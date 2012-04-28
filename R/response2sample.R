@@ -11,10 +11,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-
-
-
-
 #' response2sample
 #' 
 #' List the most strongly associated response of a given subnetwork for each
@@ -54,8 +50,7 @@
 #' response2sample(model, subnet.id = 1)
 #' 
 #' 
-response2sample <-
-function (model, subnet.id, component.list = TRUE, verbose = FALSE) {
+response2sample <- function (model, subnet.id, component.list = TRUE, verbose = FALSE) {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")

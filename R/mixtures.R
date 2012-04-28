@@ -3,7 +3,7 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-2# the Free Software Foundation; either version 2, or (at your option)
+# the Free Software Foundation; either version 2, or (at your option)
 # any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -54,6 +54,7 @@ mixture.model <- function (mat, vars, params, ...) {
     }    
 
     list(model = model, params = model.params)
+
 }
 
 
@@ -134,18 +135,6 @@ bic.mixture.multivariate <- function (x, max.modes, ...) {
 
 }
 
-# Copyright (C) 2012 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
 
 #' Description: Latent class analysis based on (infinite) Gaussian mixture model. If the input (dat) is data matrix, a multivariate model is fitted. If the input is a vector or a 1-dimensional matrix, a univariate model is fitted.
 #'

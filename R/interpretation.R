@@ -49,8 +49,7 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 #' annotation matrix
 #' 
 #' Arguments:
-#' 
-#' 
+#'  
 #' @usage list.responses(annotation.df, model, method = "hypergeometric",
 #' min.size = 2, qth = Inf, verbose = TRUE)
 #' @param annotation.df annotation data.frame with discrete factor levels, rows

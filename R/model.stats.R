@@ -12,9 +12,6 @@
 # GNU General Public License for more details.
 
 
-
-
-
 #' model.stats
 #' 
 #' Subnetwork statistics: size and number of distinct responses for each

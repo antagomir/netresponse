@@ -13,8 +13,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-
-
 #' sample2response
 #' 
 #' Probabilistic sample-response assignments for given subnet.
@@ -47,8 +45,6 @@
 #' 
 #' # Assign samples to responses (soft, probabilistic assignments sum to 1)
 #' #response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
-#' 
-#' 
 sample2response <- function (model, subnet.id, mode = "soft") {
 
   if (is.numeric(subnet.id)) {

@@ -101,10 +101,6 @@ centerData <- function (X, rm.na = TRUE, meanvalue = NULL) {
 }
 
 
-
-
-
-
 #' get.model.parameters
 #' 
 #' Retrieve the mixture model parameters of the NetResponse algorithm for a
@@ -139,7 +135,6 @@ centerData <- function (X, rm.na = TRUE, meanvalue = NULL) {
 #' # Get model parameters for a given subnet
 #' # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
 #' get.model.parameters(model, subnet.id = 1)
-#' 
 #' 
 get.model.parameters <- function (model, subnet.id) {
             

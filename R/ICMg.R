@@ -1,4 +1,3 @@
-#
 # Copyright (C) 2008-2012 Juuso Parkkinen and Leo Lahti
 # Contact: Juuso Parkkinen <juuso.parkkinen@gmail.com>
 #
