@@ -1,10 +1,9 @@
-#
 # Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
+2# the Free Software Foundation; either version 2, or (at your option)
 # any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -35,8 +34,91 @@
 
   ######################################################################
 
-detect.responses <-
-function(datamatrix,
+
+
+#' detect.responses
+#' 
+#' Main function of the NetResponse algorithm. Detecting network responses
+#' across the conditions.
+#' 
+#' 
+#' @usage detect.responses(datamatrix, network, initial.responses = 1,
+#' max.responses = 10, max.subnet.size = 10, verbose = TRUE, prior.alpha = 1,
+#' prior.alphaKsi = 0.01, prior.betaKsi = 0.01, update.hyperparams = 0,
+#' implicit.noise = 0, vdp.threshold = 1.0e-5, merging.threshold = 0, ite =
+#' Inf, information.criterion = "BIC", speedup = TRUE, speedup.max.edges = 10,
+#' mc.cores = 1, mixture.method = "vdp", ...)
+#' @param datamatrix Matrix of samples x features. For example, gene expression
+#' matrix with conditions on the rows, and genes on the columns. The matrix
+#' contains same features than the 'network' object, characterizing the network
+#' states across the different samples.
+#' 
+
+#' @param network Network describing undirected pairwise interactions between
+#' features of 'datamatrix'. The following formats are supported: binary
+#' matrix, graphNEL, igraph, graphAM, Matrix, dgCMatrix, dgeMatrix
+#' @param initial.responses Initial number of components for each subnetwork
+#' model. Used to initialize calculations.
+#' @param max.responses Maximum number of responses for each subnetwork. Can be
+#' used to limit the potential number of network states.
+#' @param max.subnet.size Numeric. Maximum allowed subnetwork size.
+#' @param verbose Logical. Verbose parameter.
+#' @param implicit.noise Implicit noise parameter. Add implicit noise to vdp
+#' mixture model. Can help to avoid overfitting to local optima, if this
+#' appears to be a problem.
+#' @param update.hyperparams Logical. Indicate whether to update
+#' hyperparameters during modeling.
+#' @param prior.alpha,prior.alphaKsi,prior.betaKsi Prior parameters for
+#' Gaussian mixture model that is calculated for each subnetwork
+#' (normal-inverse-Gamma prior). alpha tunes the mean; alphaKsi and betaKsi are
+#' the shape and scale parameters of the inverse Gamma function, respectively.
+#' @param vdp.threshold Minimal free energy improvement after which the
+#' variational Gaussian mixture algorithm is deemed converged.
+#' @param merging.threshold Minimal cost value improvement required for merging
+#' two subnetworks.
+#' @param ite Defines maximum number of iterations on posterior update
+#' (updatePosterior). Increasing this can potentially lead to more accurate
+#' results, but computation may take longer.
+#' @param information.criterion Information criterion for model selection.
+#' Default is BIC (Bayesian Information Criterion); other options include AIC
+#' and AICc.
+#' @param speedup Takes advantage of approximations to PCA, mutual information
+#' etc in various places to speed up calculations. Particularly useful with
+#' large and densely connected networks and/or large sample size.
+#' @param speedup.max.edges Used if speedup = TRUE. Applies prefiltering of
+#' edges for calculating new joint models between subnetwork pairs when
+#' potential cost changes (delta) are updated for a newly merged subnetwork and
+#' its neighborghs. Empirical mutual information between each such subnetwork
+#' pair is calculated based on their first principal components, and joint
+#' models will be calculated only for the top candidates up to the number
+#' specified by speedup.max.edges. It is expected that the subnetwork pair that
+#' will benefit most from joint modeling will be among the top mutual
+#' infomation candidates. This way it is possible to avoid calculating
+#' exhaustive many models on the network hubs.
+#' @param mc.cores Number of cores to be used in parallelization. See
+#' help(mclapply) for details.
+#' @param mixture.method Specify the approach to use in mixture modeling.
+#' Options. vdp (nonparametric Variational Dirichlet process mixture model);
+#' bic (based on Gaussian mixture modeling with EM, using BIC to select the
+#' optimal number of components)
+#' @param ... Further optional arguments to be passed.
+#' @return NetResponseModel object.
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse").
+#' @keywords methods iteration
+#' @export
+#' @examples
+#' library(netresponse)
+#' data( toydata )        # Load toy data set
+#' D    <- toydata$emat   # Response matrix (for example, gene expression)
+#' netw <- toydata$netw   # Network
+#' 
+#' # Run NetReponse algorithm
+#' model <- detect.responses(D, netw, verbose = FALSE)
+#' 
+#' 
+detect.responses <- function(datamatrix,
          network,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
          max.responses = 10,      
@@ -50,11 +132,12 @@ function(datamatrix,
          vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
          merging.threshold = 0,   # min. cost improvement for merging
          ite = Inf,                # max. iterations in updatePosterior
-         information.criterion = "AIC", # information criterion for model selection
+         information.criterion = "BIC", # information criterion for model selection
          speedup = TRUE,                 # speed up calculations by approximations
          speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
 	 mc.cores = 1, # number of cores for parallelization
-         ... # Further arguments
+         mixture.method = "vdp", # Which approach to use for mixture estimation
+	 ... # Further arguments
 )
 
 {
@@ -119,7 +202,8 @@ function(datamatrix,
 		 speedup.max.edges = speedup.max.edges,
 		 Nlog = Nlog,
 		 nbins = nbins,
-		 mc.cores = mc.cores
+		 mc.cores = mc.cores,
+		 mixture.method = mixture.method
 		 )
 
   # Place each node in a singleton subnet
@@ -134,12 +218,13 @@ function(datamatrix,
   ########################################################################
 
   ### INDEPENDENT MODEL FOR EACH VARIABLE ###
-  tmp <- independent.models(datamatrix, params)
+
+  tmp <- independent.models(datamatrix, params, mixture.method)
   model.nodes <- tmp$nodes
   C <- sum(tmp$C)
 
-  ###   compute costs for combined variable pairs  ###
-  tmp <- pick.model.pairs(network, network.nodes, model.nodes, datamatrix, params) 
+  ### compute costs for combined variable pairs  ###
+  tmp <- pick.model.pairs(network, network.nodes, model.nodes, datamatrix, params)
   model.pairs <- tmp$model.pairs
   delta <- tmp$delta
 
@@ -200,7 +285,7 @@ function(datamatrix,
         # Skip the first b-1 elements as we only apply lower triangle here
         if ( ncol(network) == 1 ) {
           if ( verbose ) { message("All nodes have been merged.\n") }
-          delta <- Inf #indicating that no merging can be be done any more
+          delta <- Inf # indicating that no merging can be be done any more
         } else {
           # Compute new joint models for the new merged subnet and its neighborghs
           merge.edges <- which(is.na(delta))
@@ -240,7 +325,6 @@ function(datamatrix,
   }
  }
 }
-
   
   # Remove left-out nodes (from the merges)
   nainds <- is.na(model.nodes)
@@ -248,7 +332,8 @@ function(datamatrix,
   G <- G[!nainds]
 
   # Form a list of subnetworks (no filters)
-  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) # mclapply was slower here
+  # mclapply was slower here  
+  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) 
 
   # name the subnetworks
   names(model.nodes) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  

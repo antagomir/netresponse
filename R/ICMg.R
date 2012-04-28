@@ -1,0 +1,386 @@
+#
+# Copyright (C) 2008-2012 Juuso Parkkinen and Leo Lahti
+# Contact: Juuso Parkkinen <juuso.parkkinen@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+
+
+#' ICMg.combined.sampler
+#' 
+#' Main function of the ICMg algorithm. ICMg.combined.sampler computes samples
+#' from the posterior of the assignments of datapoints (interactions and
+#' expression profiles) to latent components. From these we can then obtain
+#' component membership distributions and clusterings for genes.
+#' 
+#' One run consists of two parts, during burnin the sampler is expected to mix,
+#' after which the samples are taken. Information about convergence (convN and
+#' convL are estimates of convergence for link and node sampling, respectively)
+#' and component sizes are printed after each burnin/sample round. For example:
+#' B.num=8, B.size=100, S.num=20, S.size=10, runs 800 burnin iterations in 8
+#' rounds and then takes 20 samples with an interval of 10 iterations.
+#' 
+#' @usage ICMg.combined.sampler(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1,
+#' V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1)
+#' @param L N x 2 matrix of link endpoints (N = number of links).
+#' @param X M x D matrix of gene expression profiles (M = number of nodes, D =
+#' number of observations).
+#' @param C Number of components.
+#' @param alpha Hyperparameter describing the global distribution over
+#' components, larger alpha gives a more uniform distribution.
+#' @param beta Hyperparameter describing the component-wise distributions over
+#' nodes, larger beta gives a more uniform distribution.
+#' @param pm0 Hyperparameter describing the prior mean of the expression
+#' profiles, should be zero.
+#' @param V0 Hyperparameter describing the variation of the component-wise
+#' expression profiles means around pm0.
+#' @param V Hyperparameter describing the variation of gene-specific expression
+#' profiles around the component-wise means.
+#' @param B.num Number of burnin rounds.*
+#' @param B.size Size of one burnin round.*
+#' @param S.num Number of sample rounds.*
+#' @param S.size Size of one sample round.*
+#' @param C.boost Set to 1 to use faster iteration with C, set to 0 to use
+#' slower R functions.
+#' @return Returns samples as a list: \item{z}{ S.num x N matrix of samples of
+#' component assignments for links. } \item{w}{ S.num x M matrix of samples of
+#' component assignments for gene expression profiles. } \item{convl}{ Vector
+#' of length (B.num + S.num) with convergence estimator values for link
+#' sampling. } \item{convn}{ Vector of length (B.num + S.num) with convergence
+#' estimator values for node sampling. } \item{countsl}{ (B.num + S.num) x C
+#' matrix of link component sizes. } \item{countsn}{ (B.num + S.num) x C matrix
+#' of node component sizes. } additionally all parameters of the run are
+#' included in the list.
+#' @author Juuso Parkkinen
+#' @seealso \code{\link{ICMg.links.sampler}}
+#' @references Parkkinen, J. and Kaski, S. Searching for functional gene
+#' modules with interaction component models. BMC Systems Biology 4 (2010), 4.
+#' @keywords methods
+#' @export
+#' @examples
+#' 
+#' 	library(netresponse)
+#' 	data(osmo) # Load data set
+#' 
+#' 	## Run ICMg combined sampler
+#' 	res = ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10) 
+#' 
+ICMg.combined.sampler <- function(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1, V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1) {
+# Sample posterior assignments of data points to the latent components, based on both network and functional data
+
+  cat("Sampling ICMg2...\n")
+  ## L is Nx2 matrix of link endpoints
+  ## X is MXD matrix of node data (real value vectors)
+  ## C is the number of latent components
+  ## alpha and beta are the hyperparameters
+  ## pm0, V0 and V are the node data parameters
+
+  ## B.size is the size of one burnin round,
+  ## after which convergence and component counts are reported
+  ## B.num is the number of these burnin rounds
+  ## S size is likewise the size of one sample round, after which samples are taken
+  ## S.num is the number of these sample rounds
+  ## C.boost = 1 uses faster C functions for sampling
+
+  N <- dim(L)[1]                # The number of links
+  M <- dim(X)[1]                # The number of nodes
+  D <- dim(X)[2]                # The number of observations in the expression data
+
+  cat("nodes:",N,"links:",M,"observations:",D,"components:",C,"alpha:",alpha,"beta:",beta,"\n")
+  
+  out <- list()
+  out$z <- vector("integer", N)    # link l is generated by component z[l]
+  out$w <- vector("integer", M)    # node k is generated by component w[k]
+  out$n <- vector("integer", C)    # n[z] links generated by component z
+  out$m <- vector("integer", C)    # m[w] nodes generated by component w
+  out$q <- matrix(0, C, M)       # q[z,i] links generated by z end at i, {{and + 1, if node k generated by z}}
+  out$E <- matrix(0, C, D) # \sum_k^{m_w} x_k Sum of datas generated by component w
+
+  ## Initialize vectors randomly
+  out$z <- sample(1:C, N, replace=TRUE)
+  out$w <- sample(1:C, M, replace=TRUE)
+  out$n <- as.vector(table(factor(out$z, levels=1:C)))
+  out$m <- as.vector(table(factor(out$w, levels=1:C)))
+
+  ## Initialize k and E according to z and w
+  for (l in 1:N) {
+    out$q[out$z[l], L[l,1]] <- out$q[out$z[l], L[l,1]]+1
+    out$q[out$z[l], L[l,2]] <- out$q[out$z[l], L[l,2]]+1
+  }
+  for (k in 1:M) {
+    out$q[out$w[k],k] <- out$q[out$w[k],k] +1
+    out$E[out$w[k],] <- out$E[out$w[k], ] + X[k, ]
+  }
+
+  ## Initialize C random number generator
+  ICMg.randominit()
+
+  ## Initialize some necessary data structures
+  samples <- list(z=matrix(0, S.num, N), w=matrix(0, S.num, M),
+                  convl=vector("numeric", B.num+S.num),
+                  convn=vector("numeric", B.num+S.num),
+                  countsl=matrix(0,B.num+S.num,C),
+                  countsn=matrix(0,B.num+S.num,C))
+  convl <- vector("numeric", N)
+  convn <- vector("numeric", M)
+  
+  cat("Sampling", B.num*B.size + S.num*S.size,"iterationcs\n")
+  
+  ## Burnin
+  cat("Burnin iterations:",B.num*B.size,"\n")
+  cat("I: 0\n")
+  cat("n(z):",out$n,"\n")
+  cat("m(z):",out$m,"\n")
+
+  for (b in 1:B.num) {
+
+    ## Randomize links and nodes
+    Lindices <- sample(N)
+    Nindices <- sample(M)   
+    ## Sample components for links and nodes
+    out <- ICMg.combined.wrapper(L, X, B.size, N, M, Lindices, Nindices,
+                         D, C, out$z, out$w, out$n, out$m, out$q, out$E,
+                         alpha, beta, pm0, V0, V, convl, convn, C.boost)
+    ## Save and print convergence monitoring and component counts
+    samples$convl[b] <- mean(log(out$convl))
+    samples$countsl[b,] <- out$n
+    samples$convn[b] <- mean(log(out$convn))
+    samples$countsn[b,] <- out$m
+    cat("I:",b*B.size,"\n")
+    cat("convL:",samples$convl[b],"n(z):",samples$countsl[b,],"\n")
+    cat("convN:",samples$convn[b],"m(z):",samples$countsn[b,],"\n")
+  }
+
+  ## Samples
+  cat("Sample iterations:",S.num*S.size,"\n")
+  for (s in 1:S.num) {
+
+    ## Randomize links and nodes
+    Lindices <- sample(N)
+    Nindices <- sample(M) 
+    ## Sample components for links and nodes
+    out <- ICMg.combined.wrapper(L, X, B.size, N, M, Lindices, Nindices,
+                         D, C, out$z, out$w, out$n, out$m, out$q, out$E,
+                         alpha, beta, pm0, V0, V, convl, convn, C.boost)
+    ## Save and print convergence monitoring and component counts
+    samples$convl[B.num+s] <- mean(log(out$convl))
+    samples$countsl[B.num+s,] <- out$n
+    samples$convn[B.num+s] <- mean(log(out$convn))
+    samples$countsn[B.num+s,] <- out$m
+    cat("I:",B.num*B.size+s*S.size,"\n")
+    cat("convL:",samples$convl[B.num+s],"n(z):",samples$countsl[B.num+s,],"\n")
+    cat("convN:",samples$convn[B.num+s],"m(z):",samples$countsn[B.num+s,],"\n")
+    ## Take samples
+    samples$z[s,] <- out$z
+    samples$w[s,] <- out$w
+  }
+
+  ## Save parameters
+  samples$B.num <- B.num
+  samples$B.size <- B.size
+  samples$S.num <- S.num
+  samples$S.size <- S.size
+  samples$alpha <- alpha
+  samples$beta <- beta
+  samples$pm0 <- pm0
+  samples$V0 <- V0
+  samples$V <- V
+
+  cat("DONE\n")
+  return(samples)
+}
+
+
+
+#' ICMg.links.sampler
+#' 
+#' ICMg.links.sampler computes samples from the posterior of the assignments of
+#' datapoints (interactions) to latent components. From these we can then
+#' obtain component membership distributions and clusterings for genes.
+#' 
+#' One run consists of two parts, during burnin the sampler is expected to mix,
+#' after which the samples are taken. Information about convergence (convN and
+#' convL are estimates of convergence for link and node sampling, respectively)
+#' and component sizes are printed after each burnin/sample round. For example:
+#' B.num=8, B.size=100, S.num=20, S.size=10, runs 800 burnin iterations in 8
+#' rounds and then takes 20 samples with an interval of 10 iterations.
+#' 
+#' @usage ICMg.links.sampler(L, C, alpha=10, beta=0.01, B.num=8, B.size=100,
+#' S.num=20, S.size=10, C.boost=1)
+#' @param L N x 2 matrix of link endpoints (N = number of links).
+#' @param C Number of components.
+#' @param alpha Hyperparameter describing the global distribution over
+#' components, larger alpha gives a more uniform distribution.
+#' @param beta Hyperparameter describing the component-wise distributions over
+#' nodes, larger beta gives a more uniform distribution.
+#' @param B.num Number of burnin rounds.*
+#' @param B.size Size of one burnin round.*
+#' @param S.num Number of sample rounds.*
+#' @param S.size Size of one sample round.*
+#' @param C.boost Set to 1 to use faster iteration with C, set to 0 to use
+#' slower R functions.
+#' @return Returns samples as a list: \item{z}{ S.num x N matrix of samples of
+#' component assignments for links. } \item{conv}{ Vector of length (B.num +
+#' S.num) with convergence estimator values for link sampling. } \item{counts}{
+#' (B.num + S.num) x C matrix of link component sizes. } additionally all
+#' parameters of the run are included in the list.
+#' @author Juuso Parkkinen
+#' @seealso \code{\link{ICMg.combined.sampler}}
+#' @references Parkkinen, J. and Kaski, S. Searching for functional gene
+#' modules with interaction component models. BMC Systems Biology 4 (2010), 4.
+#' @keywords methods
+#' @export
+#' @examples #
+#' library(netresponse)
+#' data(osmo) # Load data
+#' 
+#' ## Run ICMg links sampler	
+#' res = ICMg.links.sampler(osmo$ppi, C=10) 
+#' 
+ICMg.links.sampler <- function(L, C, alpha=10, beta=0.01,  B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1) {
+# Sample posterior assignments of data points to the latent components, based on network data only
+
+  cat("Sampling ICM...\n")
+  ## L is Nx2 matrix of link endpoints
+  ## C is the number of latent component
+  ## alpha and beta are the hyperparameters
+  
+  ## B.size is the size of one burnin round, after which convergence and component counts are reported
+  ## B.num is the number of these burnin rounds
+  ## S size is likewise the size of one sample round, after which samples are taken
+  ## S.num is the number of these sample rounds
+  
+  Nlinks <- dim(L)[1]
+  Nnodes <- max(L)
+
+  cat("nodes:",Nnodes,"links:",Nlinks,"components:",C,"alpha:",alpha,"beta:",beta,"\n")
+  
+  out <- list()
+  out$z <- vector("integer", Nlinks)     # link l is generated by z[l]
+  out$n <- vector("integer", C) # n[z] links generated by component z
+  out$q <- matrix(0, C, Nnodes) # k[z,i] links generated by z end at i
+
+  ## Start from random initialization  
+  out$z <- sample(1:C, Nlinks, replace=TRUE)
+  out$n <- as.vector(table(factor(out$z, levels=1:C)))
+  
+  for (l in 1:Nlinks) {
+    out$q[out$z[l], L[l,1]] <- out$q[out$z[l], L[l,1]]+1
+    out$q[out$z[l], L[l,2]] <- out$q[out$z[l], L[l,2]]+1
+  }
+
+  ## Initialize random number generator
+  ICMg.randominit()
+
+  ## Initialize some necessary data structures
+  samples <- list(z=matrix(0, S.num, Nlinks), conv=vector("numeric", B.num+S.num),
+                  counts=matrix(0,B.num+S.num,C))
+  conv <- vector("numeric", Nlinks)
+  
+  cat("Sampling", B.num*B.size + S.num*S.size,"iterations\n")
+  
+  ## Do burnin and monitor convergence
+  cat("Burnin iterations:",B.num*B.size,"\n")
+  cat("I: 0 n(z):",out$n,"\n")
+  for (b in 1:B.num) {
+    
+    Lindices <- sample(Nlinks)
+    out <- ICMg.links.wrapper(L, B.size, Nlinks, Nnodes, Lindices, C,
+                       out$z, out$q, out$n, alpha, beta, conv, C.boost)
+    samples$conv[b] <- mean(log(out$conv))
+    samples$counts[b,] <- out$n
+    cat("I:",b*B.size,"conv:",samples$conv[b],"n(z):",samples$counts[b,],"\n")
+  }
+
+  ## After burnin take samples
+  cat("Sample iterations:",S.num*S.size,"\n")
+  for (s in 1:S.num) {
+
+    Lindices <- sample(Nlinks)
+    out <- ICMg.links.wrapper(L, S.size, Nlinks, Nnodes, Lindices, C,
+                       out$z, out$q, out$n, alpha, beta, conv, C.boost)
+    samples$conv[B.num +s] <- mean(log(out$conv))
+    samples$counts[B.num+s,] <- out$n
+    cat("I:",B.num*B.size + s*S.size,"conv:",samples$conv[B.num +s],
+        "n(z):",samples$counts[B.num+s,],"\n")
+    samples$z[s,] <- out$z
+  }
+
+  ## Save parameters
+  samples$B.num <- B.num
+  samples$B.size <- B.size
+  samples$S.num <- S.num
+  samples$S.size <- S.size
+  samples$alpha <- alpha
+  samples$beta <- beta
+
+  cat("Sampling finished\n")
+  return(samples)
+}
+
+
+
+#' ICMg.get.comp.memberships
+#' 
+#' Function for computing the component memberships for each data point from
+#' the MCMC samples.
+#' 
+#' 
+#' @usage ICMg.get.comp.memberships(links, samples)
+#' @param links N x 2 matrix of link endpoints (N = number of links).
+#' @param samples Posterior samples, as given by either ICMg.combined.sampler
+#' or ICMg.links.sampler.
+#' @return A matrix containing the component memberships for each data point
+#' (node).
+#' @author Juuso Parkkinen
+#' @seealso \code{\link{ICMg.combined.sampler}},
+#' \code{\link{ICMg.links.sampler}}
+#' @references Parkkinen, J. and Kaski, S. Searching for functional gene
+#' modules with interaction component models. BMC Systems Biology 4 (2010), 4.
+#' @export
+#' @keywords methods
+ICMg.get.comp.memberships <- function(links, samples) {
+
+  Nnodes <- max(links)
+  Nlinks <- dim(links)[1]
+  Ncomps <- max(samples$z)
+  Nsamples <- dim(samples$z)[1]
+
+  ## Node proportion matrix (average over counts)
+  proportions <- matrix(0, Ncomps, Nnodes)
+
+  for (s in 1:Nsamples) {
+ 
+    counts <- matrix(0, Ncomps, Nnodes)
+    ## Counts from link components
+    for (n in 1:Nlinks) {
+
+      a <- links[n,1]
+      b <- links[n,2]
+      c <- samples$z[s,n]
+      counts[c,a] <- counts[c,a]+1
+      counts[c,b] <- counts[c,b]+1
+    }
+
+    ## Counts from node components (if given)
+    if (length(samples$w)>0) {
+      for (m in 1:Nnodes) {
+        c <- samples$w[s,m]
+        counts[c,m] <- counts[c,m]+1
+      }
+    }
+    
+    ## Compute component-wise average from the samples
+    proportions <- proportions + t(t(counts)/apply(counts, 2, sum))
+  }
+  return(proportions/Nsamples)
+}
+

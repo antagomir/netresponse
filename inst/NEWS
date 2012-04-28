@@ -1,3 +1,19 @@
+CHANGES IN VERSION 1.9.07 (2012-04-25)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+  o changed all documentation into Roxygen
+  o added bic.mixture.univariate function
+  o added argument mixture.method in detect.responses and to consecutive downstream functions
+
+BUG FIXES
+  o added information.criterion option to edge.delta costind.ab calculation
+  o "c.max <- max.responses - 1"--> "c.max <- max.responses" in vdp.mixt
+
+CHANGES IN VERSION 1.9.05 (2012-04-24)
+
+  o added the plot.mode = "pca" in plot.responses function
+  o added tests/mclust-mixture.R example
+
 CHANGES IN VERSION 1.9.04 (2012-04-21)
 
   o removed the redundant network.nodes parameter from independent.models input 
@@ -5,7 +21,6 @@ CHANGES IN VERSION 1.9.04 (2012-04-21)
 CHANGES IN VERSION 1.7.38 (2012-03-28)
 
 SIGNIFICANT USER-VISIBLE CHANGES
-
  o added the option to ignore network in detect.responses
     (netw=NULL); then the methods assumes fully connected
     network. Without speedups the performance may be very slow.

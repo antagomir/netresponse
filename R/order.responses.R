@@ -1,4 +1,3 @@
-
 # Copyright (C) 2010-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
@@ -28,6 +27,44 @@
 #  sort(enr, decreasing = TRUE)
 #}
 
+
+
+#' order.responses
+#' 
+#' Orders the responses by association strength (enrichment score) to a given
+#' sample set. For instance, if the samples correspond to a particular
+#' experimental factor, this function can be used to prioritize the responses
+#' according to their association strength to this factor.
+#'  
+#' @param model NetResponseModel object.
+#' @param sample Measure enrichment of this sample (set) across the observed
+#' responses.
+#' @param method 'hypergeometric' measures enrichment of factor levels in this
+#' response; 'precision' measures response purity for each factor level;
+#' 'dependency' measures logarithm of the joint density between response and
+#' factor level vs. their marginal densities: log(P(r,s)/(P(r)P(s)))
+#' @param min.size,max.size,min.responses Optional parameters to filter the
+#' results based on subnet size and number of responses.
+#' @param subnet.ids Specify subnets for which the responses shall be ordered.
+#' By default, use all subnets.
+#' @param verbose Follow progress by intermediate messages.
+#' @return A data frame with elements 'ordered.responses' which gives a data
+#' frame of responses ordered by enrichment score for the investigated sample.
+#' The subnetwork, response id and enrichment score are shown. The method field
+#' indicates the enrichment calculation method. The sample field lists the
+#' samples et for which the enrichments were calculated. The info field lists
+#' additional information on enrichment statistics.
+#' @note Tools for analyzing end results of the model.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse") for citation details.
+#' @keywords utilities
+#' @export
+#' @examples #
+#' 
+#' # - for given sample/s (factor level), order responses (across all subnets) by association strength (enrichment score)
+#' #order.responses(model, sample, method  = "hypergeometric") # overrepresentation
+#' 
+#' 
 order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
 
   # Given sample (for instance set of samples associated with a given factor level)
@@ -90,6 +127,27 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 		
 }
 			    
+
+
+#' Enrichment for a specified sample group in the given response.
+#' 
+#' Calculate enrichment values for a specified sample group in the given
+#' response.
+#'
+#' @param subnet.id Subnet.
+#' @param model NetResponseModel object.
+#' @param s User-defined sample group. For instance, samples belonging to a
+#' particular annotation class.
+#' @param response Response id (integer) within the subnet.
+#' @param method Enrichment method.
+#' @return List with enrichment statistics, depending on enrichment method.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @seealso order.responses
+#' @references See citation("netresponse").
+#' @keywords utilities
+#' @export
+#' @examples #
+#' 
 response.enrichment <- function (subnet.id, model, s, response, method = "hypergeometric") {
 
   # s:   # samples associated with this factor level (ensure they are in the data)
@@ -174,7 +232,7 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
     ps.log <- log(sum(get.P.rs.joint(s, model, subnet.id, log = FALSE)))
 
     # this requires features x samples matrix
-    psr.log <- P.sr(t(dat), pars, log = TRUE)
+    psr.log <- P.s.r(t(dat), pars, log = TRUE)
     
     # log(P(s,r)/P(s)P(r)) = log(P(s|r)/P(s))
     enr <- list(score = psr.log - ps.log, info = NULL)
@@ -217,6 +275,27 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
 }
 
 
+
+
+#' List responses with significant associations to a given sample group.
+#' 
+#' List responses with significant associations to a given sample group.
+#' 
+#' 
+#' @param model NetResponseModel object.
+#' @param sample User-specified samples group for which the enrichments are
+#' calculated. For instance, an annotation category.
+#' @param qth q-value threshold for enrichments
+#' @param method Enrichment method.
+#' @return Table containing statistics of the significantly associated
+#' responses.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @seealso response.enrichment
+#' @references See citation("netresponse")
+#' @keywords utilities
+#' @export
+#' @examples #
+#' 
 list.significant.responses <- function (model, sample, qth = 1, method = "hypergeometric") {
 
   # Order responses according to their association with the given sample group

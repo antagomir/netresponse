@@ -1,10 +1,11 @@
 \name{list.responses}
 \alias{list.responses}
-\title{Description: List responses for all factors and levels in the given annotation matrix}
+\title{Description: List responses for all factors and levels in the given
+annotation matrix}
 \usage{
-  list.responses(annotation.df, model,
-    method = "hypergeometric", min.size = 2, qth = Inf,
-    verbose = TRUE)
+  list.responses(annotation.df, model, method =
+    "hypergeometric", min.size = 2, qth = Inf, verbose =
+    TRUE)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete

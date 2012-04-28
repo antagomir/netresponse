@@ -17,6 +17,32 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
+
+
+#' check.network
+#' 
+#' Mainly for internal use. Check input network and make formatting for
+#' detect.responses
+#' 
+#' 
+#' @usage check.network(network, datamatrix, verbose = FALSE)
+#' @param network Input network, see detect.responses
+#' @param datamatrix Input datamatrix, see detect.responses
+#' @param verbose Print intermediate messages
+#' @return \item{formatted }{Formatted network (self-links removed)}
+#' \item{original }{Original network (possible in another representation
+#' format)} \item{delta }{Cost function changes corresponding to the
+#' 'formatted' network.} \item{nodes }{Nodes corresponding to the 'formatted'
+#' network.}
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @seealso detect.responses
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 check.network <- function (network, datamatrix, verbose = FALSE) {
 
   # If no network is given, assume fully connected net
@@ -118,7 +144,30 @@ check.network <- function (network, datamatrix, verbose = FALSE) {
 
 
 
-independent.models <- function (datamatrix, params) {
+
+
+#' independent.models
+#' 
+#' Mainly for internal use. Provide independent models for each node.
+#' 
+#' 
+#' @usage independent.models(datamatrix, params, mixture.method = "vdp")
+#' @param datamatrix datamatrix
+#' @param params parameters
+#' @param mixture.method Specify the approach to use in mixture modeling.
+#' Options. vdp (nonparametric Variational Dirichlet process mixture model);
+#' bic (based on Gaussian mixture modeling with EM, using BIC to select the
+#' optimal number of components)
+#' @return \item{nodes }{Model for each node} \item{C }{Costs for individual
+#' models}
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
+independent.models <- function (datamatrix, params, mixture.method = "vdp") {
 
   # Storage list for calculated models
   model.nodes <- vector(length = ncol(datamatrix), mode = "list" ) # individual nodes
@@ -133,8 +182,11 @@ independent.models <- function (datamatrix, params) {
     node <- colnames(datamatrix)[[k]]
     
     if ( params$verbose ) { message(paste('Computing model for node', k, "/", ncol( datamatrix ))) }
+    
+    Nparams <- NULL
+    if (mixture.method == "vdp") {
 
-    model <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
+      model <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
                       implicit.noise = params$implicit.noise,
                       prior.alpha = params$prior.alpha,
                       prior.alphaKsi = params$prior.alphaKsi,
@@ -145,10 +197,24 @@ independent.models <- function (datamatrix, params) {
                       c.max = params$max.responses - 1,
                       speedup = params$speedup )
 
-    # COST for model
-    C[[k]] <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion) 
+      model.params <- pick.model.parameters(model, node)
 
-    model.nodes[[k]] <- pick.model.parameters(model, node)
+    } else if (mixture.method == "bic") {
+      # FIXME: add c.max here
+
+      model <- bic.mixture.univariate(datamatrix[, node], max.modes = params$max.responses)
+
+      model.params <- list(mu = model$means, sd = model$sds, w = model$ws, free.energy = model$free.energy, Nparams = model$Nparams)
+
+    } else {
+      stop("Provide proper mixture.method")
+    }
+
+    # COST for model
+
+    C[[k]] <- info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion) 
+
+    model.nodes[[k]] <- model.params
 
   }
   
@@ -161,7 +227,35 @@ independent.models <- function (datamatrix, params) {
 }
 
 
-pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, params) {
+
+
+#' pick.model.pairs
+#' 
+#' Mainly for internal use. Calculate joint models for each node pair
+#' 
+#' 
+#' @usage pick.model.pairs(network, network.nodes, model.nodes, datamatrix,
+#' params, mixture.method = "vdp")
+#' @param network network
+#' @param network.nodes network.nodes
+#' @param model.nodes model.nodes
+#' @param datamatrix datamatrix
+#' @param params parameters
+#' @param mixture.method Specify the approach to use in mixture modeling.
+#' Options. vdp (nonparametric Variational Dirichlet process mixture model);
+#' bic (based on Gaussian mixture modeling with EM, using BIC to select the
+#' optimal number of components)
+#' @return \item{model.pairs}{joint models for each node pair}
+#' \item{delta}{corresponding delta value for the cost function}
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
+pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, params, mixture.method = "vdp") {
 
   # Storage list for calculated models
   model.pairs <- vector(length = ncol(network), mode = "list" ) # model for each pair
@@ -172,92 +266,58 @@ pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, p
 
       for (edge in 1:ncol(network)){
 
-        if (params$verbose) { message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
+        if (params$verbose) { 
+	  message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) 
+	}
 
         a <- network[1, edge]
         b <- network[2, edge]  
         vars  <- network.nodes[c(a, b)]
 
-        model <- vdp.mixt(
-                              matrix(datamatrix[, vars], nrow( datamatrix )),
-                              implicit.noise = params$implicit.noise,
-                              prior.alpha = params$prior.alpha,
-                              prior.alphaKsi = params$prior.alphaKsi,
-                              prior.betaKsi = params$prior.betaKsi,
-                              threshold = params$vdp.threshold,
-                              initial.K = params$initial.responses,
-                              ite = params$ite,
-                              c.max = params$max.responses - 1,
-                              speedup = params$speedup)
+        tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), vars, params)
+  	model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
+  	model.params <- tmp$params
 
-      # Compute COST-value for two independent subnets vs. joint model 
-      # Negative free energy (-cost) is (variational) lower bound for P(D|H)
-      # Use it as an approximation for P(D|H)
-      # Cost for the indpendent and joint models
-      # -cost is sum of two independent models (cost: appr. log-likelihoods)
-      costind.ab <- info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
-      costjoint.ab   <-  info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion)
- 
-      # NOTE: COST is additive so summing is ok
-      # change (increase) of the total COST / cost
-      delta <- as.numeric(costjoint.ab - costind.ab)
+        # Compute COST-value for two independent subnets vs. joint model 
+        # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+        # Use it as an approximation for P(D|H)
+        # Cost for the indpendent and joint models
+        # -cost is sum of two independent models (cost: appr. log-likelihoods)
+        costind.ab <- info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
+        costjoint.ab <- info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion)
+
+        # NOTE: COST is additive -> summing the scores is ok
+        # change (increase) of the total COST / cost
+        delta <- as.numeric(costjoint.ab - costind.ab)
       
-      # Store these only if it would improve the cost; otherwise never needed
-      if (-delta > params$merging.threshold) {    
-        model.pairs[[edge]] <- pick.model.parameters(model, vars)
-      } else {
-        model.pairs[[edge]] <- 0
+        # Store these only if it would improve the cost; otherwise never needed
+        if (-delta > params$merging.threshold) {    
+          model.pairs[[edge]] <- model.params
+        } else {
+          model.pairs[[edge]] <- 0
+        }
       }
-    }
+    
+    } else {
 
-  } else {
-
-    if (params$verbose) {
-      message(paste('Computing delta values for edges with multiple cores\n'))
-      message(paste("Using", params$mc.cores, "cores", "\n")) 
-    }
+      if (params$verbose) {
+        message(paste('Computing delta values for edges with multiple cores\n'))
+        message(paste("Using", params$mc.cores, "cores", "\n")) 
+      }
    
-    # FIXME: not supported in Windows, change to use the 'parallel' package
-    # This works for Mac and Linux
-    #res <- foreach(edge = 1:ncol(network), .combine = cbind, .packages =
-    #		   "netresponse", .inorder = TRUE) %dopar%
-    #		   netresponse::edge.delta(edge, network = network, network.nodes =
-    #		   network.nodes, datamatrix = datamatrix,
-    #		   implicit.noise = implicit.noise, prior.alpha =
-    #		   prior.alpha, prior.alphaKsi = prior.alphaKsi,
-    #		   prior.betaKsi = prior.betaKsi, threshold =
-    #		   threshold, initial.K = initial.responses, ite =
-    #		   ite, c.max = max.responses - 1, speedup = speedup,
-    #		   model.nodes = model.nodes, Nlog = params$Nlog, model =
-    #		   model, information.criterion =
-    #		   information.criterion, verbose = verbose,
-    #		   vdp.threshold = vdp.threshold, max.responses =
-    #		   max.responses, merging.threshold =
-    #		   merging.threshold)
+      # FIXME: parallelize - mclapply caused some problems with test/test.R		  
+      res <- lapply(1:ncol(network), function (edge) {	
+    	edge.delta(edge, network = network, network.nodes = network.nodes, 
+			 datamatrix = datamatrix, params = params,
+			 model.nodes = model.nodes, model = model)[[1]]})
 
-    # FIXME: parallelize - mclapply caused some problems with test/test.R		  
-    res <- lapply(1:ncol(network), function (edge) {	
-    	edge.delta(edge, network = network, network.nodes =   			     	   
-	network.nodes, datamatrix = datamatrix,	      		   
-	implicit.noise = params$implicit.noise, prior.alpha =
-	params$prior.alpha, prior.alphaKsi = params$prior.alphaKsi,
-	prior.betaKsi = params$prior.betaKsi, threshold =
-	params$threshold, initial.K = params$initial.responses, ite =
-	params$ite, c.max = params$max.responses - 1, speedup = params$speedup,
-	model.nodes = model.nodes, Nlog = params$Nlog, model =
-	model, information.criterion =
-	params$information.criterion, verbose = params$verbose,
-	vdp.threshold = params$vdp.threshold, max.responses =
-	params$max.responses, merging.threshold =
-	params$merging.threshold)[[1]]})
+      # Convert to vector
+      delta <- unlist(lapply(res, function (x) {x$delt})) 
 
-    # Convert to vector
-    delta <- unlist(lapply(res, function (x) {x$delt})) # FIXME: parallelize
+      # Convert to list
+      model.pairs <- lapply(res, function (x) {x[1:5]}) # FIXME: parallelize
 
-    # Convert to list
-    model.pairs <- lapply(res, function (x) {x[1:5]}) # FIXME: parallelize
-
-  }
+    }
   }
 
   gc()
@@ -268,29 +328,54 @@ pick.model.pairs <- function (network, network.nodes, model.nodes, datamatrix, p
 
 
 
+
+#' update.model.pair
+#' 
+#' Mainly for internal use. Calculate joint model for given node pair and
+#' update delta accordingly.
+#' 
+#' 
+#' @usage update.model.pair(datamatrix, delta, network, edge, network.nodes, G,
+#' params, model.nodes, model.pairs)
+#' @param datamatrix datamatrix
+#' @param delta delta
+#' @param network network
+#' @param edge edge
+#' @param network.nodes network.nodes
+#' @param G G
+#' @param params params
+#' @param model.nodes model.nodes
+#' @param model.pairs model.pairs
+#' @return \item{model.pairs }{model.pairs} \item{delta }{delta}
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, G, params, model.nodes, model.pairs) {
 
   # Pick node indices          
   a <- network[1, edge]          
-  i <- network[2, edge]           
-  vars  <- network.nodes[sort(c(G[[a]], G[[i]]))]          
+  b <- network[2, edge]           
+  vars  <- network.nodes[sort(c(G[[a]], G[[b]]))]          
 
-  model <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),          
-                          implicit.noise = 0,
-                          prior.alpha = params$prior.alpha,
-                          prior.alphaKsi = params$prior.alphaKsi,
-                          prior.betaKsi = params$prior.betaKsi,
-                          threshold = params$vdp.threshold,
-                          initial.K = params$initial.responses,
-                          ite = params$ite,
-                          c.max = params$max.responses - 1,
-                          speedup = params$speedup)
-  	 
+  tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), vars, params) 
+  model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
+  model.params <- tmp$params
+
   # Negative free energy is (variational) lower bound for P(D|H)          
   # Use this to approximate P(D|H)          
   if (is.finite(model$free.energy)) {
-    cost.ind <- info.criterion((model.nodes[[a]]$Nparams + model.nodes[[i]]$Nparams), params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[i]]$free.energy), criterion = params$information.criterion)
-    cost.joint <- info.criterion(model$posterior$Nparams, params$Nlog, -model$free.energy, criterion = params$information.criterion)
+    # Compute COST-value for two independent subnets vs. joint model
+    # Negative free energy (-cost) is (variational) lower bound for P(D|H)
+    # Use it as an approximation for P(D|H)
+    # Cost for the indpendent and joint models
+    # -cost is sum of two independent models (cost: appr. log-likelihoods)
+    cost.ind     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
+    cost.joint   <-  info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion)
     # change (increase) of the total cost
     delta[[edge]] <- cost.joint - cost.ind             
   } else  {
@@ -301,7 +386,7 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
   # Store the joint models / cost for two independent vs. joint model  
   if (-delta[[edge]] > params$merging.threshold) {  
     # Store joint model only if it would improve the cost            
-    model.pairs[[edge]] <- pick.model.parameters(model, vars)            
+    model.pairs[[edge]] <- model.params
   } else {          
     model.pairs[[edge]] <- 0
   }
@@ -312,6 +397,29 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
 
 
 
+
+
+#' get.model
+#' 
+#' Mainly for internal use. Calculate joint model for a given node pair.
+#' 
+#' 
+#' @usage get.model(datamatrix, network, edge, network.nodes, G, params)
+#' @param datamatrix datamatrix
+#' @param network network
+#' @param edge edge
+#' @param network.nodes network.nodes
+#' @param G G
+#' @param params parameters
+#' @return NetResponse model object
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 get.model <- function (datamatrix, network, edge, network.nodes, G, params) { 
 	
   # Pick node indices          
@@ -333,6 +441,30 @@ get.model <- function (datamatrix, network, edge, network.nodes, G, params) {
   
 }
 
+
+
+#' get.mis
+#' 
+#' Mainly for internal use. Estimate mutual information for node pairs based on
+#' the first principal components
+#' 
+#' 
+#' @usage get.mis(datamatrix, network, delta, network.nodes, G, params)
+#' @param datamatrix datamatrix
+#' @param network network
+#' @param delta delta
+#' @param network.nodes network.nodes
+#' @param G G
+#' @param params params
+#' @return mutual information matrix
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 
   require(minet)          
@@ -355,6 +487,29 @@ get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 
 
 
+
+
+#' filter.netw
+#' 
+#' Mostly for internal use. Prefilter edges if speedups required.
+#' 
+#' Include to the network only the edges with the highest mutual information,
+#' calculated based on the first principal components.
+#' 
+#' @usage filter.netw(network, delta, datamatrix, params)
+#' @param network network
+#' @param delta associated cost function value changes for each node merge
+#' @param datamatrix datamatrix
+#' @param params parameters
+#' @return Filtered network
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 filter.netw <- function (network, delta, datamatrix, params) {
 
   tmp <- list(network = network, delta = delta)
@@ -374,6 +529,26 @@ filter.netw <- function (network, delta, datamatrix, params) {
 
 
 
+
+
+#' check.matrix
+#' 
+#' Mostl for internal purposes. Check input matrix format.
+#' 
+#' 
+#' @usage check.matrix(datamatrix)
+#' @param datamatrix See detect.responses
+#' @return The datamatrix, possibly added with necessary formatting for the
+#' netresponse algorithm.
+#' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+#' Leo Lahti \email{leo.lahti@@iki.fi}
+#' @seealso detect.responses
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # datamatrix <- check.matrix(datamatrix)
+#' 
 check.matrix <- function (datamatrix) {
   
   accepted.formats.emat <- c("matrix", "Matrix", "data.frame")  
@@ -394,7 +569,24 @@ check.matrix <- function (datamatrix) {
 
 
 
-
+#' filter.network
+#' 
+#' 
+#' Include to the network only the edges with the highest mutual information,
+#' calculated based on the first principal components.
+#' 
+#' @param network network
+#' @param delta associated cost function value changes for each node merge
+#' @param datamatrix datamatrix
+#' @param params parameters
+#' @return Filtered network
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords internal
+#' @examples
+#' 
+#' # TBA
+#' 
 filter.network <- function (network, delta, datamatrix, params) {
 
   # Include at maximum speedup.max.edges for each node in the network
@@ -444,43 +636,32 @@ filter.network <- function (network, delta, datamatrix, params) {
 
 }
 
-edge.delta <- function (edge, network, network.nodes, datamatrix, 
-			implicit.noise, prior.alpha, prior.alphaKsi,
-			prior.betaKsi, threshold, initial.K, ite,
-			c.max, speedup, model.nodes, Nlog, model, 
-			information.criterion, verbose, vdp.threshold,
-			max.responses, merging.threshold) {
+edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.nodes, model) {
 
-    if ( verbose ) { cat(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
-
+    if ( params$verbose ) { message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
     a <- network[1, edge]
     b <- network[2, edge]
-    vars            <- network.nodes[c(a, b)]
-    model           <- vdp.mixt(matrix(datamatrix[, vars], nrow( datamatrix )),
-                                implicit.noise = implicit.noise,
-			        prior.alpha = prior.alpha,
-                                prior.alphaKsi = prior.alphaKsi,
-			        prior.betaKsi = prior.betaKsi,
-                                threshold = vdp.threshold,
-			        initial.K = initial.K,
-				ite = ite,
-		                c.max = max.responses - 1,
-				speedup = speedup)
-    
+    vars <- network.nodes[c(a, b)]
+
+    tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), vars, params) 
+    model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
+    model.params <- tmp$params
+
     # Compute COST-value for two independent subnets vs. joint model
     # Negative free energy (-cost) is (variational) lower bound for P(D|H)
     # Use it as an approximation for P(D|H)
     # Cost for the indpendent and joint models
     # -cost is sum of two independent models (cost: appr. log-likelihoods)
-    costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy))
-    costjoint.ab   <-  info.criterion(model$posterior$Nparams, Nlog, -model$free.energy, criterion = information.criterion)
+    costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
+    costjoint.ab   <-  info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion)
 
     # NOTE: COST is additive so summing is ok
     # change (increase) of the total COST / cost
     delt <- as.numeric(costjoint.ab - costind.ab)
+
     # Store these only if it would improve the cost; otherwise never needed
-    if (-delt > merging.threshold) {
-      mod.pair <- pick.model.parameters(model, vars)
+    if (-delt > params$merging.threshold) {
+      mod.pair <- model.params
     } else {
       mod.pair <- 0
     }

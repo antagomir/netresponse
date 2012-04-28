@@ -24,12 +24,11 @@ rv <- 1
 
 # Compute the model
 #res <- detect.responses(D, netw, verbose = TRUE, mc.cores = 2)
-res <- detect.responses(D, netw, verbose = TRUE, max.responses = 4)
-# FIXME: we only get the correct 3-mode solution with
-# max.responses <- 4; fix this.
+#res <- detect.responses(D, netw, verbose = TRUE, max.responses = 4)
+res <- detect.responses(D, netw, verbose = TRUE, max.responses = 3, mixture.method = "bic", information.criteria = "BIC", merging.threshold = 100)
 
 # Subnets (each is a list of nodes)
-subnet <- get.subnets(res)
+subnets <- get.subnets(res)
 
 # the correct subnet is retrieved in subnet number 2:
 #> subnet[[2]]
@@ -38,7 +37,8 @@ subnet <- get.subnets(res)
 # how about responses
 # Retrieve model for the subnetwork with lowest cost function value
 # means, standard devations and weights for the components
-m <- get.model.parameters(res, subnet.id = "Subnet-2")  
+if (!is.null(subnets)) {
+m <- get.model.parameters(res, subnet.id = "Subnet-2")
 
 # order retrieved and real response means by the first feature 
 # (to ensure responses are listed in the same order)
@@ -59,12 +59,8 @@ print("estimated and real mean matrices")
 print(m$mu[ord.obs,])
 print(mu.real[ord.real,])
 
+}
+
 # Test these later: some problems occur during build
-
 # sample-response assignments for given subnet
-# response.probabilities <- response2sample(res, subnet.id = 1)
-
-# Internal. Should this be visible?
-# means, standard devations and weights for the components
-# for one subnet
 # model <- get.model(res, subnet.id = 1) 

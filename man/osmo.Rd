@@ -1,34 +1,45 @@
+\docType{data}
 \name{osmo}
 \alias{osmo}
-\docType{data}
 \title{Osmoshock data set (PPI and expression)}
-\description{
-  A combined yeast data set with protein-protein interactions and gene expression (osmotick shock response). Gene expression profiles are transformed into links by computing a Pearson correlation for all pairs of genes and treating all correlations above 0.85 as additional links.
+\format{List of following objects: \describe{ \item{ppi}{PPI data matrix}
+\item{exp}{gene expression profiles data matrix} \item{gids}{Vector of gene
+ids corresponding to indices used in data matrices} \item{obs}{Gene
+expression observation details} \item{combined.links}{pooled matrix of PPI
+and expression links} }}
+\source{
+  PPI data pooled from yeast data sets of [1] and [2]. Dna
+  damage expression set of [3].
 }
-\usage{data(osmo)}
-\format{ List of following objects:
-  \describe{
-	\item{ppi}{PPI data matrix}
-	\item{exp}{gene expression profiles data matrix}
-	\item{gids}{Vector of gene ids corresponding to indices used in data matrices}
-	\item{obs}{Gene expression observation details}
-	\item{combined.links}{pooled matrix of PPI and expression links}
-  }
+\description{
+  A combined yeast data set with protein-protein
+  interactions and gene expression (osmotick shock
+  response). Gene expression profiles are transformed into
+  links by computing a Pearson correlation for all pairs of
+  genes and treating all correlations above 0.85 as
+  additional links.
 }
 \details{
-  Number of genes: 1711, number of interactions: 10250, number of gene expression observations: 133, number of total links with PPI and expression links: 14256.
-}
-\source{
-  PPI data pooled from yeast data sets of [1] and [2]. Dna damage expression set of [3].
-}
-\references{
-Ulitsky, I. and Shamir, R. \emph{Identification of functional modules using network topology and high-throughput data.} BMC Systems Biology 2007, 1:8.
-
-Nariai, N., Kolaczyk, E. D. and Kasif, S. \emph{Probabilistic Protein Function Predition from Heterogenous Genome-Wide Data}. PLoS ONE 2007, 2(3):e337.
-
-O'Rourke, S. and Herskowitz, I. \emph{Unique and redundant roles for Hog MAPK pathway components as revealed by whole-genome expression analysis.} Molecular Biology of the Cell 2004, 15:532-42.
+  Number of genes: 1711, number of interactions: 10250,
+  number of gene expression observations: 133, number of
+  total links with PPI and expression links: 14256.
 }
 \examples{
 data(osmo)
 }
+\references{
+  Ulitsky, I. and Shamir, R. \emph{Identification of
+  functional modules using network topology and
+  high-throughput data.} BMC Systems Biology 2007, 1:8.
+
+  Nariai, N., Kolaczyk, E. D. and Kasif, S.
+  \emph{Probabilistic Protein Function Predition from
+  Heterogenous Genome-Wide Data}. PLoS ONE 2007, 2(3):e337.
+
+  O'Rourke, S. and Herskowitz, I. \emph{Unique and
+  redundant roles for Hog MAPK pathway components as
+  revealed by whole-genome expression analysis.} Molecular
+  Biology of the Cell 2004, 15:532-42.
+}
 \keyword{datasets}
+

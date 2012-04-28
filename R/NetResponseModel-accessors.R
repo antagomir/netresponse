@@ -132,7 +132,7 @@ setMethod("sample.densities", "NetResponseModel", function (sample, model, subne
   pars <- get.model.parameters(model, subnet.id)
   dat <- get.dat(model, subnet.id, sample)  # dat is now features x samples matrix
   
-  psr <- P.sr(dat, pars, log = TRUE)
+  psr <- P.s.r(dat, pars, log = TRUE)
 
   # Density for the sample given the overall model
   ps <- P.s.individual(dat, pars, log = TRUE)
@@ -194,6 +194,27 @@ setMethod("get.P.rs", "NetResponseModel", function (model, subnet.id, log = FALS
 })
 
 
+#' Sample-to-response matrix of probabilities P(r|s).
+#' 
+#' Retrieve P(r|s) from NetResponseModel model.
+#' 
+#' Calculates probability density for each response on a given sample based on
+#' the estimated Gaussian mixture model.
+#' 
+#' @aliases getqofz getqofz,NetResponseModel-method
+#' @usage getqofz(model, subnet.id, log = FALSE)
+#' @param model NetResponseModel object.
+#' @param subnet.id Subnetwork to investigate.
+#' @param log Output in log probabilities.
+#' @return Samples x responses matrix. Each entry is a probability P(r|s).
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse").
+#' @keywords utilities internal
+#' @export
+#' @examples
+#' 
+#' # qofz <- getqofz(model, subnet.id, log = FALSE)
+#' 
 setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE) {
 
   # Retrieve P(r|s) from the model, given data and model parameters
@@ -208,6 +229,34 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 })
 
 
+
+
+#' get.dat
+#' 
+#' Retrieve data for a given subnetwork.
+#' 
+#' 
+#' @usage get.dat(model, subnet.id, sample = NULL)
+#' @param model Result from NetResponse (detect.responses function).
+#' @param subnet.id Subnet identifier. A natural number which specifies one of
+#' the subnetworks within the 'model' object.
+#' @param sample Specify samples for which the data will be retrieved.
+#' @return Data matrix features x samples.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @keywords utilities
+#' @export
+#' @examples
+#' 
+#' # Load toy data
+#' #data( toydata )          # Load toy data set
+#' #D     <- toydata$emat    # Response matrix (for example, gene expression)
+#' #model <- toydata$model   # Pre-calculated model
+#' # Get model parameters for a given subnet
+#' # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
+#' #get.dat(model, subnet.id = 1)
+#' 
+#' 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
   if (is.null(sample)) { sample <- rownames(model@datamatrix) }    
@@ -221,16 +270,52 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 })
 
 
+
+#' get.subnets
+#' 
+#' List the detected subnetworks (each is a list of nodes in the corresponding
+#' subnetwork).
+#' 
+#' 
+#' @aliases get.subnets get.subnets,NetResponseModel-method
+#' @usage get.subnets(model, get.names = TRUE, min.size = 2, max.size = Inf,
+#' min.responses = 2)
+#' @param model Output from the detect.responses function. An object of
+#' NetResponseModel class.
+#' @param get.names Logical. Indicate whether to return subnetwork nodes using
+#' node names (TRUE) or node indices (FALSE).
+#' @param min.size,max.size Numeric. Filter out subnetworks whose size is not
+#' within the limits specified here.
+#' @param min.responses Numeric. Filter out subnetworks with less responses
+#' (mixture components) than specified here.
+#' @return A list of subnetworks.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references Leo Lahti et al.: Global modeling of transcriptional responses
+#' in interaction networks. Bioinformatics (2010).  See citation("netresponse")
+#' for details.
+#' @keywords utilities
+#' @export
+#' @examples
+#' 
+#' 
+#' library(netresponse)
+#' 
+#' # Load a pre-calculated netresponse model obtained with 
+#' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
+#' data( toydata )        
+#' model <- toydata$model 
+#' 
+#' #List the detected subnetworks 
+#' #(each is a list of nodes for the given subnetwork):
+#' get.subnets(model)
+#' 
+#' 
 setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
 
-  #  Copyright (C) 2008-2012 Leo Lahti
-  #  Licence: GPL >=2
-                
   grouping <- model@last.grouping
   
   # Use feature names instead of indices
   if ( get.names ) {
-    #grouping <- lapply(grouping, function(x) {model@nodes[unlist(x)]})
     grouping <- lapply(grouping, function(x) {colnames(model@datamatrix)[unlist(x)]})    
   }
   

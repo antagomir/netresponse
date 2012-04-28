@@ -1,37 +1,36 @@
 \name{response2sample}
 \alias{response2sample}
 \title{response2sample}
-\description{List the most strongly associated response of a given
-  subnetwork for each sample.}
-\usage{response2sample(model, subnet.id, component.list = TRUE, verbose
-= FALSE)}
+\usage{
+  response2sample(model, subnet.id, component.list = TRUE,
+    verbose = FALSE)
+}
 \arguments{
+  \item{model}{A NetResponseModel object. Result from
+  NetResponse (detect.responses function).}
 
-  \item{model}{A NetResponseModel object. Result from NetResponse
-               (detect.responses function).}
+  \item{subnet.id}{Subnet id. A natural number which
+  specifies one of the subnetworks within the 'model'
+  object.}
 
-  \item{subnet.id}{Subnet id. A natural number which specifies one of
-  		   the subnetworks within the 'model' object.}
-
-  \item{component.list}{List samples separately for each mixture
-                        component (TRUE). Else list the most strongly
-                        associated component for each sample (FALSE).}
+  \item{component.list}{List samples separately for each
+  mixture component (TRUE). Else list the most strongly
+  associated component for each sample (FALSE).}
 
   \item{verbose}{Follow progress by intermediate messages.}
-} 
-
-\value{A list. Each element corresponds to one subnetwork response,
-and contains a list of samples that are associated with the response
-(samples for which this response has the highest probability
-P(response | sample)).}
-
-\references{Leo Lahti et al.: Global modeling of transcriptional
-responses in interaction networks. Bioinformatics (2010).  See
-citation("netresponse") for citation details.}
-
-\author{Leo Lahti \email{leo.lahti@iki.fi}}
-\examples{ 
-
+}
+\value{
+  A list. Each element corresponds to one subnetwork
+  response, and contains a list of samples that are
+  associated with the response (samples for which this
+  response has the highest probability P(response |
+  sample)).
+}
+\description{
+  List the most strongly associated response of a given
+  subnetwork for each sample.
+}
+\examples{
 library( netresponse )
 
 # Load example data
@@ -41,6 +40,14 @@ model <- toydata$model  # Pre-calculated model
 
 # Find the samples for each response (for a given subnetwork)
 response2sample(model, subnet.id = 1)
-
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  Leo Lahti et al.: Global modeling of transcriptional
+  responses in interaction networks. Bioinformatics (2010).
+  See citation("netresponse") for citation details.
 }
 \keyword{utilities}
+

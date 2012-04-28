@@ -12,9 +12,32 @@
 # GNU General Public License for more details.
 
 
-
-read.sif <- 
-function (sif.file, format = "graphNEL", directed = FALSE, header = TRUE, sep = "\t", ...) 
+#' Reading network files
+#' 
+#' Function to read network files.
+#' 
+#' Read in SIF network file, return R graph object in igraph or graphNEL
+#' format.
+#' 
+#' @aliases read.sif
+#' @usage read.sif(sif.file, format = "graphNEL", directed = FALSE, header =
+#' TRUE, sep = "\t", ...)
+#' @param sif.file Name of network file in SIF format.
+#' @param format Output format: igraph or graphNEL
+#' @param directed Logical. Directed/undirected graph. Not used in the current
+#' model.
+#' @param header Logical. Indicate whether the SIF file has header or not.
+#' @param sep Field separator.
+#' @param ... Further optional arguments to be passed for file reading.
+#' @return R graph object in igraph or graphNEL format.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @keywords utilities
+#' @export
+#' @examples
+#' 
+#' #net <- read.sif("network.sif")
+#' 
+read.sif <- function (sif.file, format = "graphNEL", directed = FALSE, header = TRUE, sep = "\t", ...) 
 {
 
     net <- read.csv(file = sif.file, sep = sep, colClasses = "character", header = header, ...)

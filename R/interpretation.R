@@ -11,9 +11,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-
 #' Description: List responses for each level of the given factor
-#'
+#' 
 #' Arguments:
 #'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
 #'   @param model NetResponse model object
@@ -22,15 +21,12 @@
 #'   @param qth q-value threshold
 #'
 #' Returns:
-#'   @return List with each element corresponding to one factor level and listing the responses according
-#'           to association strength
+#'   @return List with each element corresponding to one factor level and listing the responses according to association strength
 #'            
-#'
-#' @export
-#' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
 #' @keywords utilities
-
 factor.responses <- function (annotation.vector, model, method = "hypergeometric", min.size = 2, qth = Inf) {
 
   responses <- list()
@@ -49,25 +45,27 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 }
 
 
-#' Description: List responses for all factors and levels in the given annotation matrix
-#'
+#' Description: List responses for all factors and levels in the given
+#' annotation matrix
+#' 
 #' Arguments:
-#'   @param annotation.df annotation data.frame with discrete factor levels, rows named by the samples
-#'   @param model NetResponse model object
-#'   @param method method for enrichment calculation
-#'   @param min.size minimum sample size for a response 
-#'   @param qth q-value threshold
-#'   @param verbose verbose
-#' Returns:
-#'   @return Table listing all associations between the factor levels and responses
-#'            
-#'
-#' @export
-#' @references See citation("netresponse") 
+#' 
+#' 
+#' @usage list.responses(annotation.df, model, method = "hypergeometric",
+#' min.size = 2, qth = Inf, verbose = TRUE)
+#' @param annotation.df annotation data.frame with discrete factor levels, rows
+#' named by the samples
+#' @param model NetResponse model object
+#' @param method method for enrichment calculation
+#' @param min.size minimum sample size for a response
+#' @param qth q-value threshold
+#' @param verbose verbose Returns:
+#' @return Table listing all associations between the factor levels and
+#' responses
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
 #' @keywords utilities
-
-
 list.responses <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
 
   # Collect the tables from all factors and levels here

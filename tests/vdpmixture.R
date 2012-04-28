@@ -23,7 +23,7 @@ library(netresponse)
 
 set.seed(12346)
 
-dd <- 2   # Dimensionality of data
+dd <- 3   # Dimensionality of data
 Nc <- 5   # Number of components
 Ns <- 200 # Number of data points
 sd0 <- 3  # component spread
