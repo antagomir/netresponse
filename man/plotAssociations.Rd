@@ -1,0 +1,51 @@
+\name{plotAssociations}
+\alias{plotAssociations}
+\title{Association strength between category labels and responses.}
+\usage{
+  plotAssociations(x, subnet.id, labels,
+    method = "hypergeometric", mode = "group.by.classes",
+    ...)
+}
+\arguments{
+  \item{x}{NetResponseModel object}
+
+  \item{subnet.id}{Subnetwork.}
+
+  \item{labels}{Factor. Labels for the data samples. Name
+  by samples, or provide in the same order as in the
+  original data.}
+
+  \item{method}{Method to calculate association strength.}
+
+  \item{mode}{group.by.responses or group.by.classes:
+  indicate barplot grouping type.}
+
+  \item{...}{Other arguments to be passed for plot.}
+}
+\value{
+  Used for side effect (plotting).
+}
+\description{
+  Plot association strength between user-defined category
+  labels and responses in a selected subnetwork.
+}
+\details{
+  Associations are showm in terms -log10(p) enrichment
+  values for the annotation categories for the responses
+  within the specified subnetwork. No correction for
+  multiple testing.
+}
+\examples{
+#
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse").
+}
+\seealso{
+  plot.responses
+}
+\keyword{utilities}
+
