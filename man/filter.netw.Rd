@@ -1,0 +1,40 @@
+\name{filter.netw}
+\alias{filter.netw}
+\title{filter.netw}
+\usage{
+  filter.netw(network, delta, datamatrix, params)
+}
+\arguments{
+  \item{network}{network}
+
+  \item{delta}{associated cost function value changes for
+  each node merge}
+
+  \item{datamatrix}{datamatrix}
+
+  \item{params}{parameters}
+}
+\value{
+  Filtered network
+}
+\description{
+  Mostly for internal use. Prefilter edges if speedups
+  required.
+}
+\details{
+  Include to the network only the edges with the highest
+  mutual information, calculated based on the first
+  principal components.
+}
+\examples{
+#
+}
+\author{
+  Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
+  Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{internal}
+

@@ -1,0 +1,40 @@
+\name{list.significant.responses}
+\alias{list.significant.responses}
+\title{List responses with significant associations to a given sample group.}
+\usage{
+  list.significant.responses(model, sample, qth = 1,
+    method = "hypergeometric")
+}
+\arguments{
+  \item{model}{NetResponseModel object.}
+
+  \item{sample}{User-specified samples group for which the
+  enrichments are calculated. For instance, an annotation
+  category.}
+
+  \item{qth}{q-value threshold for enrichments}
+
+  \item{method}{Enrichment method.}
+}
+\value{
+  Table containing statistics of the significantly
+  associated responses.
+}
+\description{
+  List responses with significant associations to a given
+  sample group.
+}
+\examples{
+#
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\seealso{
+  response.enrichment
+}
+\keyword{utilities}
+
