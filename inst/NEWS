@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.9.10 (2012-04-30)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+  o added bic.threshold option in detect responses and downstream functions
+
+BUG FIXES
+  o Rd conflicts resolved
+
 CHANGES IN VERSION 1.9.07 (2012-04-25)
 
 SIGNIFICANT USER-VISIBLE CHANGES

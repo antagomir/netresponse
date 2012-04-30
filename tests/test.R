@@ -1,8 +1,15 @@
+
+skip <- TRUE
+
+if (!skip) {
 # 2. netresponse test
 # test later with varying parameters
 
 # Load the package
 library(netresponse)
+#fs <- list.files("~/Rpackages/netresponse/netresponse/R/independent.models.R", full.names = TRUE); for (f in fs) {source(f)};
+#source("~/Rpackages/netresponse/netresponse/R/independent.models.R")
+#source("~/Rpackages/netresponse/netresponse/R/mixtures.R")
 
 data(toydata)
 D <- toydata$emat
@@ -25,7 +32,7 @@ rv <- 1
 # Compute the model
 #res <- detect.responses(D, netw, verbose = TRUE, mc.cores = 2)
 #res <- detect.responses(D, netw, verbose = TRUE, max.responses = 4)
-res <- detect.responses(D, netw, verbose = TRUE, max.responses = 3, mixture.method = "bic", information.criteria = "BIC", merging.threshold = 100)
+res <- detect.responses(D, netw, verbose = TRUE, max.responses = 3, mixture.method = "bic", information.criterion = "BIC", merging.threshold = 1, bic.threshold = 10)
 
 # Subnets (each is a list of nodes)
 subnets <- get.subnets(res)
@@ -64,3 +71,4 @@ print(mu.real[ord.real,])
 # Test these later: some problems occur during build
 # sample-response assignments for given subnet
 # model <- get.model(res, subnet.id = 1) 
+}

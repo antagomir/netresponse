@@ -60,3 +60,4 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
   list(model.pairs = model.pairs, delta = delta)
   
 }
+

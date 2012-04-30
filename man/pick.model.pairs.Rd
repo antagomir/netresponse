@@ -3,7 +3,7 @@
 \title{pick.model.pairs}
 \usage{
   pick.model.pairs(network, network.nodes, model.nodes,
-    datamatrix, params, mixture.method = "vdp")
+    datamatrix, params)
 }
 \arguments{
   \item{network}{network}
@@ -15,12 +15,6 @@
   \item{datamatrix}{datamatrix}
 
   \item{params}{parameters}
-
-  \item{mixture.method}{Specify the approach to use in
-  mixture modeling. Options. vdp (nonparametric Variational
-  Dirichlet process mixture model); bic (based on Gaussian
-  mixture modeling with EM, using BIC to select the optimal
-  number of components)}
 }
 \value{
   \item{model.pairs}{joint models for each node pair}

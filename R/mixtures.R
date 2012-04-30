@@ -30,6 +30,8 @@
 
 mixture.model <- function (mat, vars, params, ...) {
 
+  #mat <- matrix(datamatrix[, vars], nrow( datamatrix ))
+
     if (params$mixture.method == "vdp") {
 
       model <- vdp.mixt(mat,
@@ -47,7 +49,7 @@ mixture.model <- function (mat, vars, params, ...) {
 
     } else if (params$mixture.method == "bic") { 	
 		   
-      model <- bic.mixture.multivariate(mat, max.modes = params$max.responses)  
+      model <- bic.mixture.multivariate(mat, max.modes = params$max.responses, bic.threshold = params$bic.threshold)  
       model.params <- list(mu = model$means, sd = model$sds, w = model$ws, free.energy = model$free.energy, Nparams = model$Nparams)
     } else {
       stop("Provide proper mixture.method argument.")
@@ -67,6 +69,7 @@ mixture.model <- function (mat, vars, params, ...) {
 #' Arguments:
 #'  @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
+#'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
 #'  @param ... Further optional arguments to be passed
 #'
 #' Returns:
@@ -75,10 +78,29 @@ mixture.model <- function (mat, vars, params, ...) {
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-bic.mixture.univariate <- function (x, max.modes, ...) { 
+bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) { 
+
+# x <- datamatrix[, node];  max.modes = params$max.responses; bic.threshold = params$bic.threshold
 
   library(mclust)
-  mcl <- Mclust(x, G = which.max(mclustBIC(x, G = 1:max.modes)[, "V"]))
+
+
+  # Try different numbers of mixture components. 
+  # Select with BIC, requiring bic.threshold decrease in BIC before a new component is added
+  #(mclustBIC returns the value for -BIC, to be exact)
+  m <- -mclustBIC(x, G = 1:max.modes)[, "V"] # BIC : smaller is better
+  bic.delta <- m[-1] - m[1:(length(m)-1)]
+
+  if (all((bic.delta) > 0)) {
+    best.mode <- 1
+  } else {
+    if (any(bic.delta > -bic.threshold)) {
+      best.mode <- match(TRUE, bic.delta > -bic.threshold)
+    } else {
+      best.mode <- length(m)
+    }
+  }
+  mcl <- Mclust(x, G = best.mode)
 
   means <- as.vector(mcl$parameters$mean)
   sds <- as.vector(sqrt(mcl$parameters$variance$sigmasq))
@@ -103,6 +125,7 @@ bic.mixture.univariate <- function (x, max.modes, ...) {
 #' Arguments:
 #'  @param x  matrix (for multivariate analysis)
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
+#'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
 #'  @param ... Further optional arguments to be passed
 #'
 #' Returns:
@@ -114,11 +137,28 @@ bic.mixture.univariate <- function (x, max.modes, ...) {
 #' @keywords utilities
 
 # FIXme add c.max option here as well
-bic.mixture.multivariate <- function (x, max.modes, ...) { 
+bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) { 
 
-  library(mclust) 			 
-  ncompest <-  which.max(mclustBIC(x, G = 1:max.modes)[, "VVV"])
-  mcl <- Mclust(x, G = ncompest)
+#x <- mat; max.modes = params$max.responses; bic.threshold = params$bic.threshold
+
+  library(mclust) 	
+
+  # Try different numbers of mixture components. 
+  # Select with BIC, requiring bic.threshold decrease in BIC before a new component is added
+  #(mclustBIC returns the value for -BIC, to be exact)
+  m <- -mclustBIC(x, G = 1:max.modes)[, "VVV"] # BIC : smaller is better
+  bic.delta <- m[-1] - m[1:(length(m)-1)]
+
+  if (all((bic.delta) > 0)) {
+    best.mode <- 1
+  } else {
+    if (any(bic.delta > -bic.threshold)) {
+      best.mode <- match(TRUE, bic.delta > -bic.threshold)
+    } else {
+      best.mode <- length(m)
+    }
+  }
+  mcl <- Mclust(x, G = best.mode)
 
   means <- t(mcl$parameters$mean)
   vars <- t(apply(mcl$parameters$variance$sigma,3, function(x){diag(x)}))
