@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.9.09
-Date: 2012-04-28
+Version: 1.9.10
+Date: 2012-04-30
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -58,3 +58,4 @@ Collate:
     'ICMg.get.comp.memberships.R'
     'independent.models.R'
     'update.model.pair.R'
+    'pick.model.pairs.R'

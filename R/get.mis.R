@@ -37,7 +37,7 @@ get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 }
 
 
-edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.nodes, model) {
+edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.nodes) {
 
     if ( params$verbose ) { message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
     a <- network[1, edge]
@@ -67,7 +67,7 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.
       mod.pair <- 0
     }
 			
-    return(list(c(mod.pair, delt = delt)))
+    return(list(model = mod.pair, delt = delt))
 }
 
 

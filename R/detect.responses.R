@@ -61,38 +61,30 @@
 #'  res.groupings holds the groupings at each level of the hierarchy
 #'  res.models has compressed representations of the models from each step
 #' 
-#' @usage detect.responses(datamatrix, network, initial.responses = 1,
-#' max.responses = 10, max.subnet.size = 10, verbose = TRUE, prior.alpha = 1,
-#' prior.alphaKsi = 0.01, prior.betaKsi = 0.01, update.hyperparams = 0,
-#' implicit.noise = 0, vdp.threshold = 1.0e-5, merging.threshold = 0, ite =
-#' Inf, information.criterion = "BIC", speedup = TRUE, speedup.max.edges = 10,
-#' mc.cores = 1, mixture.method = "vdp", ...)
 #' @param datamatrix Matrix of samples x features. For example, gene expression
-#' matrix with conditions on the rows, and genes on the columns. The matrix
-#' contains same features than the 'network' object, characterizing the network
-#' states across the different samples.
-#' 
-
+#'   matrix with conditions on the rows, and genes on the columns. The matrix
+#'   contains same features than the 'network' object, characterizing the network
+#'   states across the different samples.
 #' @param network Network describing undirected pairwise interactions between
-#' features of 'datamatrix'. The following formats are supported: binary
-#' matrix, graphNEL, igraph, graphAM, Matrix, dgCMatrix, dgeMatrix
+#'   features of 'datamatrix'. The following formats are supported: binary
+#'   matrix, graphNEL, igraph, graphAM, Matrix, dgCMatrix, dgeMatrix
 #' @param initial.responses Initial number of components for each subnetwork
-#' model. Used to initialize calculations.
+#'   model. Used to initialize calculations.
 #' @param max.responses Maximum number of responses for each subnetwork. Can be
-#' used to limit the potential number of network states.
+#'   used to limit the potential number of network states.
 #' @param max.subnet.size Numeric. Maximum allowed subnetwork size.
 #' @param verbose Logical. Verbose parameter.
 #' @param implicit.noise Implicit noise parameter. Add implicit noise to vdp
-#' mixture model. Can help to avoid overfitting to local optima, if this
-#' appears to be a problem.
+#'   mixture model. Can help to avoid overfitting to local optima, if this
+#'   appears to be a problem.
 #' @param update.hyperparams Logical. Indicate whether to update
-#' hyperparameters during modeling.
+#'   hyperparameters during modeling.
 #' @param prior.alpha,prior.alphaKsi,prior.betaKsi Prior parameters for
-#' Gaussian mixture model that is calculated for each subnetwork
-#' (normal-inverse-Gamma prior). alpha tunes the mean; alphaKsi and betaKsi are
-#' the shape and scale parameters of the inverse Gamma function, respectively.
+#'   Gaussian mixture model that is calculated for each subnetwork
+#'   (normal-inverse-Gamma prior). alpha tunes the mean; alphaKsi and betaKsi are
+#'   the shape and scale parameters of the inverse Gamma function, respectively.
 #' @param vdp.threshold Minimal free energy improvement after which the
-#' variational Gaussian mixture algorithm is deemed converged.
+#'   variational Gaussian mixture algorithm is deemed converged.
 #' @param merging.threshold Minimal cost value improvement required for merging
 #' two subnetworks.
 #' @param ite Defines maximum number of iterations on posterior update
@@ -120,6 +112,7 @@
 #' Options. vdp (nonparametric Variational Dirichlet process mixture model);
 #' bic (based on Gaussian mixture modeling with EM, using BIC to select the
 #' optimal number of components)
+#' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture with mixture.method = "bic"
 #' @param ... Further optional arguments to be passed.
 #' @return NetResponseModel object.
 #' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
@@ -134,8 +127,6 @@
 #' 
 #' # Run NetReponse algorithm
 #' model <- detect.responses(D, netw, verbose = FALSE)
-#' 
-#' 
 detect.responses <- function(datamatrix,
          network,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
@@ -155,11 +146,14 @@ detect.responses <- function(datamatrix,
          speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
 	 mc.cores = 1, # number of cores for parallelization
          mixture.method = "vdp", # Which approach to use for mixture estimation
+	 bic.threshold = 0,
 	 ... # Further arguments
 )
 
 {
 
+#fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = TRUE); for (f in fs) {source(f)}; datamatrix <- D; network <- netw; initial.responses = 1; max.responses = 3; max.subnet.size = 10; verbose = TRUE; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01;	update.hyperparams = 0; implicit.noise = 0; vdp.threshold = 1.0e-5; merging.threshold = 1; ite = Inf; information.criterion = "BIC"; speedup = TRUE; speedup.max.edges = 10; mc.cores = 1; mixture.method = "bic"; bic.threshold = 0          
+         
   datamatrix <- check.matrix(datamatrix)
 
   tmp <- check.network(network, datamatrix, verbose = verbose)
@@ -200,7 +194,8 @@ detect.responses <- function(datamatrix,
 		 Nlog = Nlog,
 		 nbins = nbins,
 		 mc.cores = mc.cores,
-		 mixture.method = mixture.method
+		 mixture.method = mixture.method,
+		 bic.threshold = bic.threshold
 		 )
 
   # Place each node in a singleton subnet
@@ -216,7 +211,8 @@ detect.responses <- function(datamatrix,
 
   ### INDEPENDENT MODEL FOR EACH VARIABLE ###
 
-  tmp <- independent.models(datamatrix, params, mixture.method)
+  tmp <- independent.models(datamatrix, params)
+
   node.models <- tmp$nodes # model parameters
   C <- sum(tmp$C)
 

@@ -2,14 +2,15 @@
 \alias{detect.responses}
 \title{detect.responses}
 \usage{
-  detect.responses(datamatrix, network, initial.responses =
-    1, max.responses = 10, max.subnet.size = 10, verbose =
-    TRUE, prior.alpha = 1, prior.alphaKsi = 0.01,
-    prior.betaKsi = 0.01, update.hyperparams = 0,
-    implicit.noise = 0, vdp.threshold = 1.0e-5,
-    merging.threshold = 0, ite = Inf, information.criterion
-    = "BIC", speedup = TRUE, speedup.max.edges = 10,
-    mc.cores = 1, mixture.method = "vdp", ...)
+  detect.responses(datamatrix, network,
+    initial.responses = 1, max.responses = 10,
+    max.subnet.size = 10, verbose = TRUE, prior.alpha = 1,
+    prior.alphaKsi = 0.01, prior.betaKsi = 0.01,
+    update.hyperparams = 0, implicit.noise = 0,
+    vdp.threshold = 1e-05, merging.threshold = 0,
+    ite = Inf, information.criterion = "BIC",
+    speedup = TRUE, speedup.max.edges = 10, mc.cores = 1,
+    mixture.method = "vdp", bic.threshold = 0, ...)
 }
 \arguments{
   \item{datamatrix}{Matrix of samples x features. For
@@ -93,6 +94,10 @@
   Dirichlet process mixture model); bic (based on Gaussian
   mixture modeling with EM, using BIC to select the optimal
   number of components)}
+
+  \item{bic.threshold}{BIC threshold which needs to be
+  exceeded before a new mode is added to the mixture with
+  mixture.method = "bic"}
 
   \item{...}{Further optional arguments to be passed.}
 }

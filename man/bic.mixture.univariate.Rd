@@ -5,7 +5,8 @@ model. If the input (dat) is data matrix, a multivariate model is fitted. If
 the input is a vector or a 1-dimensional matrix, a univariate model is
 fitted.}
 \usage{
-  bic.mixture.univariate(x, max.modes, ...)
+  bic.mixture.univariate(x, max.modes, bic.threshold = 0,
+    ...)
 }
 \arguments{
   \item{x}{dat vector (for univariate analysis) or a matrix
@@ -13,6 +14,9 @@ fitted.}
 
   \item{max.modes}{Maximum number of modes to be checked
   for mixture model selection}
+
+  \item{bic.threshold}{BIC threshold which needs to be
+  exceeded before a new mode is added to the mixture.}
 
   \item{...}{Further optional arguments to be passed
 
