@@ -2,6 +2,7 @@ CHANGES IN VERSION 1.9.10 (2012-04-30)
 
 SIGNIFICANT USER-VISIBLE CHANGES
   o added bic.threshold option in detect responses and downstream functions
+  o latent.class.analysis function replaced with mixture.model
 
 BUG FIXES
   o Rd conflicts resolved
