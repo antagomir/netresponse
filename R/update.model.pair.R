@@ -28,7 +28,7 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
   b <- network[2, edge]           
   vars  <- network.nodes[sort(c(G[[a]], G[[b]]))]          
 
-  tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), vars, params) 
+  tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold) 
   model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
   model.params <- tmp$params
 

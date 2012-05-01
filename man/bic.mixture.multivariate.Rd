@@ -1,6 +1,7 @@
 \name{bic.mixture.multivariate}
 \alias{bic.mixture.multivariate}
-\title{Description: Latent class analysis based on (infinite) Gaussian mixture model. If the input (dat) is data matrix, a multivariate model is fitted.}
+\title{Description: Latent class analysis based on (infinite) Gaussian mixture model.
+If the input (dat) is data matrix, a multivariate model is fitted.}
 \usage{
   bic.mixture.multivariate(x, max.modes, bic.threshold = 0,
     ...)

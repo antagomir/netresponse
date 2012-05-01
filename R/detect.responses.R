@@ -128,7 +128,7 @@
 #' # Run NetReponse algorithm
 #' model <- detect.responses(D, netw, verbose = FALSE)
 detect.responses <- function(datamatrix,
-         network,
+         network = NULL,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
          max.responses = 10,      
          max.subnet.size = 10,    # max. subnetwork size

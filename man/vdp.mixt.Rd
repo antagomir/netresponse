@@ -3,9 +3,10 @@
 \title{vdp.mixt}
 \usage{
   vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01,
-    prior.betaKsi = 0.01, do.sort = TRUE, threshold =
-    1e-05, initial.K = 1, ite = Inf, implicit.noise = 0,
-    c.max = 10, speedup = TRUE, min.size = 5)
+    prior.betaKsi = 0.01, do.sort = TRUE,
+    threshold = 1e-05, initial.K = 1, ite = Inf,
+    implicit.noise = 0, c.max = 10, speedup = TRUE,
+    min.size = 5)
 }
 \arguments{
   \item{dat}{Data matrix (samples x features).}
@@ -53,34 +54,23 @@
   potential splitting during mixture estimation.}
 }
 \value{
-  \item{ prior }{Prior parameters of the vdp-gm model.}
-  \item{ posterior }{Posterior estimates for the model
-  parameters and statistics.
-
-  weights: Mixture proportions, or weights, for the
-  Gaussian mixture components.
-
-  centroids: Centroids of the mixture components.
-
-  sds: Standard deviations for the mixture model components
-  (posterior modes of the covariance diagonals square
-  root). Calculated as sqrt(invgam.scale/(invgam.shape +
-  1)).
-
-  qOFz: Sample-to-cluster assigments (soft probabilistic
-  associations).
-
-  Nc: Component sizes
-
-  invgam.shape: Shape parameter (alpha) of the inverse
-  Gamma distribution
-
-  invgam.scale: Scale parameter (beta) of the inverse Gamma
-  distribution
-
-  Nparams: Number of model parameters
-
-  K: Number of components in the mixture model } \item{
+  \item{ prior }{Prior parameters of the vdp-gm model
+  (qofz: priors on observation lables; Mu: centroids; S2:
+  variance).} \item{ posterior }{Posterior estimates for
+  the model parameters and statistics.} \item{ weights
+  }{Mixture proportions, or weights, for the Gaussian
+  mixture components.} \item{ centroids }{Centroids of the
+  mixture components.} \item{ sds }{ Standard deviations
+  for the mixture model components (posterior modes of the
+  covariance diagonals square root). Calculated as
+  sqrt(invgam.scale/(invgam.shape + 1)). } \item{ qOFz }{
+  Sample-to-cluster assigments (soft probabilistic
+  associations).} \item{ Nc }{Component sizes} \item{
+  invgam.shape }{ Shape parameter (alpha) of the inverse
+  Gamma distribution } \item{ invgam.scale }{ Scale
+  parameter (beta) of the inverse Gamma distribution }
+  \item{ Nparams }{ Number of model parameters } \item{ K
+  }{ Number of components in the mixture model } \item{
   opts }{Model parameters that were used.} \item{
   free.energy }{Free energy of the model.}
 }
@@ -92,6 +82,31 @@
   Implementation of the Accelerated variational Dirichlet
   process Gaussian mixture model algorithm by Kenichi
   Kurihara et al., 2007.
+
+  ALGORITHM SUMMARY This code implements Gaussian mixture
+  models with diagonal covariance matrices. The following
+  greedy iterative approach is taken in order to obtain the
+  number of mixture models and their corresponding
+  parameters:
+
+  1. Start from one cluster, $T = 1$. 2. Select a number of
+  candidate clusters according to their values of "Nc" =
+  \\sum_{n=1}^N q_{z_n} (z_n = c) (larger is better). 3.
+  For each of the candidate clusters, c: 3a. Split c into
+  two clusters, c1 and c2, through the bisector of its
+  principal component. Initialise the responsibilities
+  q_{z_n}(z_n = c_1) and q_{z_n}(z_n = c_2).  3b. Update
+  only the parameters of c1 and c2 using the observations
+  that belonged to c, and determine the new value for the
+  free energy, F{T+1}.  3c. Reassign cluster labels so that
+  cluster 1 corresponds to the largest cluster, cluster 2
+  to the second largest, and so on. 4. Select the split
+  that lead to the maximal reduction of free energy,
+  F{T+1}. 5. Update the posterior using the newly split
+  data. 6. If FT - F{T+1} < \\epsilon then halt, else set T
+  := T +1 and go to step 2.
+
+  The loop is implemented in the function greedy(...)
 }
 \note{
   This implementation is based on the Variational Dirichlet

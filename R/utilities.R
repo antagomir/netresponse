@@ -27,12 +27,9 @@
 #' @return Used for side effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
-#' @keywords utilities
 #' @export
-#' @examples
-#' 
-#' #
-#' 
+#' @examples #
+#' @keywords utilities
 write.netresponse.results <- function (x, subnet.ids = NULL, filename) {
 
   #f <- file(description = filename, open = "rw")   

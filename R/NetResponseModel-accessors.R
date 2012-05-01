@@ -275,10 +275,7 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 #' List the detected subnetworks (each is a list of nodes in the corresponding
 #' subnetwork).
 #' 
-#' 
 #' @aliases get.subnets get.subnets,NetResponseModel-method
-#' @usage get.subnets(model, get.names = TRUE, min.size = 2, max.size = Inf,
-#' min.responses = 2)
 #' @param model Output from the detect.responses function. An object of
 #' NetResponseModel class.
 #' @param get.names Logical. Indicate whether to return subnetwork nodes using
@@ -295,20 +292,10 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 #' @keywords utilities
 #' @export
 #' @examples
-#' 
-#' 
-#' library(netresponse)
-#' 
-#' # Load a pre-calculated netresponse model obtained with 
+#' # library(netresponse)
+#' ## Load a pre-calculated netresponse model obtained with 
 #' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
-#' data( toydata )        
-#' model <- toydata$model 
-#' 
-#' #List the detected subnetworks 
-#' #(each is a list of nodes for the given subnetwork):
-#' get.subnets(model)
-#' 
-#' 
+#' # data( toydata ); get.subnets(toydata$model) 
 setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, min.size = 2, max.size = Inf, min.responses = 2) {
 
   grouping <- model@last.grouping
@@ -319,7 +306,7 @@ setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, 
   }
   
   # name the subnetworks
-  names(grouping) <- paste("Subnet", 1:length(grouping), sep = "-")
+  # names(grouping) <- paste("Subnet", 1:length(grouping), sep = "-")
         
   # If filters are given, apply them (stat needs to be specified)
 	    

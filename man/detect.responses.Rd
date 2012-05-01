@@ -2,7 +2,7 @@
 \alias{detect.responses}
 \title{detect.responses}
 \usage{
-  detect.responses(datamatrix, network,
+  detect.responses(datamatrix, network = NULL,
     initial.responses = 1, max.responses = 10,
     max.subnet.size = 10, verbose = TRUE, prior.alpha = 1,
     prior.alphaKsi = 0.01, prior.betaKsi = 0.01,
