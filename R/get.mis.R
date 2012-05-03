@@ -37,7 +37,7 @@ get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 }
 
 
-edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.nodes) {
+edge.delta <- function (edge, network, network.nodes, datamatrix, params, node.models) {
 
     if ( params$verbose ) { message(paste('Computing delta values for edge ', edge, '/', ncol(network), '\n')) }
     a <- network[1, edge]
@@ -45,7 +45,6 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.
     vars <- network.nodes[c(a, b)]
 
     tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold) 
-    model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
     model.params <- tmp$params
 
     # Compute COST-value for two independent subnets vs. joint model
@@ -53,12 +52,12 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, model.
     # Use it as an approximation for P(D|H)
     # Cost for the indpendent and joint models
     # -cost is sum of two independent models (cost: appr. log-likelihoods)
-    costind.ab     <-  info.criterion(model.nodes[[a]]$Nparams + model.nodes[[b]]$Nparams, params$Nlog, -(model.nodes[[a]]$free.energy + model.nodes[[b]]$free.energy), criterion = params$information.criterion)
-    costjoint.ab   <-  info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion)
+    costind     <-  info.criterion(node.models[[a]]$Nparams + node.models[[b]]$Nparams, params$Nlog, -(node.models[[a]]$free.energy + node.models[[b]]$free.energy), criterion = params$information.criterion)
+    costjoint   <-  info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion)
 
     # NOTE: COST is additive so summing is ok
     # change (increase) of the total COST / cost
-    delt <- as.numeric(costjoint.ab - costind.ab)
+    delt <- as.numeric(costjoint - costind)
 
     # Store these only if it would improve the cost; otherwise never needed
     if (-delt > params$merging.threshold) {

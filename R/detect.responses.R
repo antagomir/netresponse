@@ -222,7 +222,7 @@ detect.responses <- function(datamatrix,
 
   if (params$max.subnet.size > 1) {
 
-    ### compute costs for combined variable pairs  ###
+    ### compute costs for combined (singleton) variable pairs  ###
     tmp <- pick.model.pairs(network, network.nodes, node.models, datamatrix, params)
     model.pairs <- tmp$model.pairs
     delta <- tmp$delta
@@ -238,25 +238,21 @@ detect.responses <- function(datamatrix,
       # the new merged pair would not exceed the max allowed subnetwork
       # size)
 
-      tmp <- find.best.neighbor(G, max.subnet.size, network, delta)
+      tmp <- find.best.neighbor(G, params$max.subnet.size, network, delta)
       delta <- tmp$delta
+      best.edge <- tmp$best.edge
 
-      # If merging still possible
+      # If merging is still possible
       if (-tmp$mindelta > merging.threshold) {
 
         a <- tmp$a 
         b <- tmp$b
-        best.edge <- tmp$best.edge
-
-        # Store results                                        
         C <- C + tmp$mindelta
-        move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))
+        move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))      
 
         # put the new group to a's place only for those variables for
         # which this is needed.  For others, put Inf on the a neighborgs,
-
         # combine a and b in the network, remove self-link a-a, remove b (row and col)
-
         tmp.join <- join.subnets(network, delta, best.edge)
         network <- tmp.join$network
         delta <- tmp.join$delta
@@ -276,10 +272,14 @@ detect.responses <- function(datamatrix,
         # Skip the first b-1 elements as we only apply lower triangle here
         if ( ncol(network) == 1 ) {
           if ( verbose ) { message("All nodes have been merged.\n") }
-          delta <- Inf # indicating that no merging can be be done any more
+          delta <- Inf # indicates no merging can be be done any more
         } else {
           # Compute new joint models for the new merged subnet and its neighborghs
           merge.edges <- which(is.na(delta))
+	   
+	  # Remove edges that would exceed max.size
+	  new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+	  merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
 
           if (speedup && length(merge.edges) > speedup.max.edges) {
 
@@ -294,20 +294,34 @@ detect.responses <- function(datamatrix,
             # infomation candidates. This way we can avoid calculating
             # exhaustive many models on large network hubs at each
             # update.
-            merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
-
-	    # needs Inf although not calculated; NAs would be confused with other merges later; 
-	    # models to be calculated are taken from is.na(delta) at each step so we cannot leave NAs there
+            # merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
+            merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
+	    
+	    # Remove edges that would exceed max.size
+	    new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+	    keep <- (new.sizes <= params$max.subnet.size)
+	    merge.edges <- merge.edges[keep][1:speedup.max.edges]
+	    
+	    # Needs Inf: NAs would be confused with other merges later since
+	    # models to be calculated are taken from is.na(delta) at each step
             delta[setdiff(which(is.na(delta)), merge.edges)] <- Inf 
 
           }
       
-          # FIXME: lapply, or parallelize to speed up
+          # FIXME: parallelize to speed up
+
           for (edge in merge.edges) {
 	    tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
 	    model.pairs <- tmp$model.pairs
 	    delta <- tmp$delta
 	  }
+
+	  #tmp <- mclapply(merge.edges, function (edge) {
+	  #  update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
+	  #}, mc.cores = params$mc.cores)	  
+	  #model.pairs <- lapply(tmp, function (x) {x$model.pairs})
+	  #delta <- sapply(tmp, function (x) {x$delta})
+
        }
 
   } else {

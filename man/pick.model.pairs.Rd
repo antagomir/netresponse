@@ -2,7 +2,7 @@
 \alias{pick.model.pairs}
 \title{pick.model.pairs}
 \usage{
-  pick.model.pairs(network, network.nodes, model.nodes,
+  pick.model.pairs(network, network.nodes, node.models,
     datamatrix, params)
 }
 \arguments{
@@ -10,7 +10,7 @@
 
   \item{network.nodes}{network.nodes}
 
-  \item{model.nodes}{model.nodes}
+  \item{node.models}{node.models}
 
   \item{datamatrix}{datamatrix}
 
@@ -22,14 +22,13 @@
   function}
 }
 \description{
-  Mainly for internal use. Calculate joint models for each
+  Mainly for internal use. Calculate joint model for each
   node pair
 }
 \examples{
 #
 }
 \author{
-  Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.
   Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
 }
 \references{
