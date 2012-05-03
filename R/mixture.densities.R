@@ -42,15 +42,27 @@ P.rS <- function (dat, pars, log = TRUE) {
 
   # Probability of a response, given sample (group)
   # P(r|S) = P(S|r)P(r)/P(S) = P(S, r)/(sum_r P(S, r))
+  # P(r|S) = P(S|r)P(r)/sum_r(P(S|r)P(r)) = (a*P(S|r)P(r))/(a*sum_r(P(S|r)P(r)))
+  # -> log P(r|S) = log((a*P(S|r)P(r))/(a*sum_r(P(S|r)P(r)))) = log(a) + log(P(S|r)P(r)) - log(a) - log(sum_r(P(S|r)P(r)))
+  # = log(a*P(S, r)) - log(sum_r(a*P(S, r)))
+  # = log(a*psr) - log(sum_r(a*psr)) = log(a) + log(psr) - log(sum_r(exp(log(a) + log(psr))))
   # NOTE: unstable due to overflows in particular when multiple samples are used
-  
-  #psr <- get.P.rs.joint(sample, model, subnet.id, log = FALSE)  
-  # joint density P(S, r) for each component r
-  psr <- P.rs.joint(dat, pars, log = FALSE)
-  
   # Log P(r|S) = logP(S, r) - log(sumr(P(S, r)))
-  logp <- log(psr) - log(sum(psr))
+  #logp <- psr.log - log(sum(exp(psr.log)))
+  # psr <- get.P.rs.joint(sample, model, subnet.id, log = FALSE)  
+
+  # joint density P(S, r) for each component r
+  psr.log <- P.rs.joint(dat, pars, log = TRUE)
   
+  # density P(r|S), avoiding numerical overflows with log.a trick
+  log.a <- 10 - max(psr.log)
+  logp <- log.a + psr.log - log(sum(exp(log.a + psr.log)))
+
+  # Compared output in univariate case to the direct calculation:
+  #ps <- pars$w * dnorm(4.467782, mean = pars$mu, sd = pars$sd); ps/sum(ps)
+  #P.rS(matrix(4.467782), pars, log = FALSE)
+  # -> OK
+
   if (log) {
     logp
   } else {
@@ -168,9 +180,9 @@ P.rs.joint <- function (dat, pars, log = TRUE) {
   # logp.joint <- rowSums(get.P.rs.joint.individual(sample, model, pars, subnet.id, log = TRUE))
 
   if (log) {
-    logp.joint
+    return(logp.joint)
   } else {
-    exp(logp.joint)
+    return(exp(logp.joint))
   }  
   
 }

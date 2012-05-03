@@ -12,6 +12,16 @@
 # GNU General Public License for more details.
 #
 
+# Save the other half of yourselves and your lives for pleasure and
+# adventure. It is not enough to fight for natural land and the west;
+# it is even more important to enjoy it. While you can. While it's
+# still there... Enjoy yourselves, keep your brain in your head and
+# your head firmly attached to the body, the body active and alive,
+# and I promise you this much: I promise you this one sweet victory
+# over our enemies, over those desk-bound men with their hearts in a
+# safe deposit box, and their eyes hypnotized by desk calculators. I
+# promise you this: you will outlive the bastards. --Ed Abbey.
+
 #' Description: Fit Gaussian mixture model
 #'
 #' Arguments:
@@ -198,6 +208,10 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
       m.new <- -mclustBIC(x, G = nc)[, "VVV"] # BIC : smaller is better
     }
 
+    # FIXME: compressing data with PCA after dimensionality gets otherwise too high?
+    # with around ncol(x) = 30 the mclustBIC is starting to produce NAs
+    if (is.na(m.new)) {save(x, nc, file = "m.new.RData")}
+    
     bic.delta <- m.new - m
 
     if (bic.delta < -bic.threshold) { 

@@ -24,16 +24,10 @@
   the corresponding subnetwork).
 }
 \examples{
-library(netresponse)
-
-# Load a pre-calculated netresponse model obtained with
+# library(netresponse)
+## Load a pre-calculated netresponse model obtained with
 # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
-data( toydata )
-model <- toydata$model
-
-#List the detected subnetworks
-#(each is a list of nodes for the given subnetwork):
-get.subnets(model)
+# data( toydata ); get.subnets(toydata$model)
 }
 \author{
   Leo Lahti \email{leo.lahti@iki.fi}

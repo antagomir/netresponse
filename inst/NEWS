@@ -1,3 +1,14 @@
+CHANGES IN VERSION 1.9.12 (2012-05-03)
+
+
+USER-VISIBLE CHANGES
+
+  o added parallelization on update.model.pair step
+
+BUG FIXES
+  o removed merge updates for potential subnet merges that would exceed max size
+
+
 CHANGES IN VERSION 1.9.10 (2012-04-30)
 
 SIGNIFICANT USER-VISIBLE CHANGES

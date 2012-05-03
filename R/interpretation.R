@@ -11,6 +11,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+
+# "To invent, you need a good imagination and a pile of junk." 
+#     	      	       	      -- Thomas Edison
+
+
 #' Description: List responses for each level of the given factor
 #' 
 #' Arguments:
@@ -45,13 +50,65 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 }
 
 
+
+
+#' Description: Quantify association between modes and continuous variable
+#' 
+#' Arguments:
+#'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
+#'   @param model NetResponse model object
+#'   @param method method for enrichment calculation
+#'   @param min.size minimum sample size for a response 
+#'
+#' Returns:
+#'   @return List with each element corresponding to one factor level and listing the responses according to association strength
+#'            
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
+#' @keywords utilities
+continuous.responses <- function (annotation.vector, model, method = "t-test", min.size = 2) {
+
+  subnets <- get.subnets(model, min.size = min.size)
+
+  associations <- NULL  	 
+
+  for (sn in names(subnets)) {
+
+    # samples in each mode (hard assignment)
+    r2s <- response2sample(model, subnet.id = sn)
+
+    all.samples <- rownames(model@datamatrix)
+    ann.inds <- !is.na(annotation.vector)
+    annotation.samples <- all.samples[ann.inds]
+    annotation.data <- annotation.vector[ann.inds]
+    names(annotation.data) <- annotation.samples
+
+    pvals <- c()
+    for (mo in 1:length(r2s)) {
+      # Only consider annotated samples
+      s <- intersect(r2s[[mo]], annotation.samples)
+      sc <- setdiff(annotation.samples, s)
+      pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+    }
+
+    associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = paste("Mode-", 1:length(r2s), sep = ""), pvalue = pvals))
+
+  }
+
+  associations <- data.frame(list(subnet = associations[, "subnet"], mode = associations[, "mode"], pvalue = as.numeric(associations[, "pvalue"])))
+  associations$qvalue <- qvalue(associations$pvalue)$qvalue
+  associations <- associations[order(associations$qvalue), ]
+
+  associations
+
+}
+
+
 #' Description: List responses for all factors and levels in the given
 #' annotation matrix
 #' 
-#' Arguments:
-#'  
-#' @usage list.responses(annotation.df, model, method = "hypergeometric",
-#' min.size = 2, qth = Inf, verbose = TRUE)
+#' Arguments:  
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #' named by the samples
 #' @param model NetResponse model object
@@ -111,5 +168,50 @@ list.responses <- function (annotation.df, model, method = "hypergeometric", min
 
 }
 
+
+
+#' Description: Investigate association of a continuous variable and the modes
+#' 
+#' Arguments: 
+#' @param annotation.df annotation data.frame with discrete factor levels, rows
+#' named by the samples
+#' @param model NetResponse model object
+#' @param method method for quantifying the association
+#' @param min.size minimum sample size for a response
+#' @param qth q-value threshold
+#' @param verbose verbose Returns:
+#' @return Table listing all associations between the factor levels and
+#' responses
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
+#' @keywords utilities
+list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE) {
+
+  # Collect the tables from all factors and levels here
+  collected.table <- NULL
+
+  for (fnam in colnames(annotation.df)) { 
+
+    if (verbose) { message(fnam) }
+
+    annotation.vector <- annotation.df[[fnam]]
+    names(annotation.vector) <- rownames(annotation.df)
+
+    # quantify association to each response for the continuous variable
+    responses.per.cont <- continuous.responses(annotation.vector, model, method = method, min.size = min.size)
+    responses.per.cont$annotation <- rep(fnam, nrow(responses.per.cont))
+
+    collected.table <- rbind(collected.table, responses.per.cont)
+
+  }
+
+  
+  collected.table$qvalue <- qvalue(collected.table$pvalue)$qvalue
+  collected.table <- collected.table[order(collected.table$qvalue),]
+  
+  collected.table
+
+}
 
 

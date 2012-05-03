@@ -50,6 +50,7 @@ discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X)))
 
 
 
+
 #' pick.model.parameters
 #' 
 #' @param m vdp.mixt output
@@ -288,6 +289,7 @@ find.best.splitting <- function(data, hp.posterior, hp.prior, opts, min.size = 5
 
 
 
+
 find.best.neighbor <- function (G, max.subnet.size, network, delta) {
 
   # Order edges by delta values. The two subnets with the smallest delta are
@@ -299,13 +301,14 @@ find.best.neighbor <- function (G, max.subnet.size, network, delta) {
   cnt <- 0
   best.edge <- a <- b <- NULL
   mindelta <- Inf
+
   while (!best.found) {
     cnt <- cnt + 1
-    ind <- o[[cnt]]
+    ind <- o[[cnt]] # FIXME: could use the filtering for top neighborghs here as well
     z <- network[1, ind]
     i <- network[2, ind]    
 
-    # Finish when new merged subnetwork that does not exceed max size is found
+    # Finish when the new merged subnetwork, which does not exceed max size, is found
     if (length(c(G[[z]], G[[i]])) <= max.subnet.size){
       # Sort a and b
       a <- min(c(z, i))
@@ -313,8 +316,8 @@ find.best.neighbor <- function (G, max.subnet.size, network, delta) {
       best.edge <- ind
       mindelta <- delta[[best.edge]]
       best.found <- TRUE
-    }  else {
-      # Put infinite cost for merges that would exceed maximum size
+    } else {
+      # Infinite cost for merges that exceed maximum size
       delta[[ind]] <- Inf 
     }
   }
@@ -327,24 +330,26 @@ find.best.neighbor <- function (G, max.subnet.size, network, delta) {
 
 
 join.subnets <- function (network, delta, best.edge) {
-  # for edge matrices
+
+  # Pick the nodes to merge
   a <- network[1, best.edge]
   b <- network[2, best.edge]  
   
-  # replace b nodes by a: this in effect transfers b edges to a edges
-  # and removes b completely
+  # replace b nodes by a: this 
+  # replaces edges from other nodes pointing to b 
+  # to point into a
   network[network == b] <- a
   
-  # remove delta values for nodes associated with a node
+  # remove delta values for nodes associated with node a
   # since this node now has different (merged) set of features
-  # and model needs to be recalculated
+  # and the model needs to be recalculated
   inds <- apply(network == a, 2, any)
   delta[inds] <- NA
 
   # sort entries (row1 < row2)
-  network <- apply(network, 2, sort)
+  network <- matrix(apply(network, 2, sort), 2)
       
-  list(network = matrix(network, 2), delta = delta)
+  list(network = network, delta = delta)
 }
 
 
