@@ -324,12 +324,12 @@ detect.responses <- function(datamatrix,
 
        }
 
-  } else {
-    if ( verbose ) { message(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.')) }
-    break
+      } else {
+        if ( verbose ) { message(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.')) }
+        break
+      }
+    } 
   }
- }
-}
   
   # Remove left-out nodes (from the merges)
   nainds <- is.na(node.models)
@@ -347,7 +347,19 @@ detect.responses <- function(datamatrix,
   # Convert original network to graphNEL (not before, to save more memory for computation stage)
   network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
   nodes(network.orig) <- network.nodes
-  
+
+  # For one-dimensional subnets, 
+  # order the modes by magnitude to simplify interpretation
+  for (mi in 1:length(node.models)) {
+    if (ncol(node.models[[mi]]$mu) == 1 && length(node.models[[mi]]$w) > 1) {
+      o <- order(node.models[[mi]]$mu[,1])
+      node.models[[mi]]$mu <- matrix(node.models[[mi]]$mu[o,], nrow = length(o))
+      node.models[[mi]]$sd <- matrix(node.models[[mi]]$sd[o,], nrow = length(o))
+      node.models[[mi]]$w <- node.models[[mi]]$w[o]
+      rownames(node.models[[mi]]$mu) <- rownames(node.models[[mi]]$sd) <- names(node.models[[mi]]$w) <- paste("Mode-", 1:length(node.models[[mi]]$w), sep = "")
+    }
+  }
+
   model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
       last.grouping = G,     # network nodes given in indices
@@ -357,5 +369,9 @@ detect.responses <- function(datamatrix,
       network = network.orig,
       models = node.models
       )
+
+
+  model  
+
 }
 

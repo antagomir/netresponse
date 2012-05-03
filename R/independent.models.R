@@ -69,9 +69,9 @@ independent.models <- function (datamatrix, params) {
 
       model <- bic.mixture.univariate(datamatrix[, node], max.modes = params$max.responses, bic.threshold = params$bic.threshold)
 
-      means <- matrix(model$means, nrow = length(model$means))   
-      sds <- matrix(model$sds, nrow = length(model$sds))   
-      ws <- matrix(model$ws, nrow = length(model$ws))   
+      means <- matrix(model$means, nrow = length(model$ws))   
+      sds <- matrix(model$sds, nrow = length(model$ws))   
+      ws <- model$ws
 
       rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
       colnames(means) <- colnames(sds) <- node
@@ -82,9 +82,11 @@ independent.models <- function (datamatrix, params) {
       stop("Provide proper mixture.method")
     }
 
-    # COST for model
-
-    C[[k]] <- info.criterion(model.params$Nparams, params$Nlog, -model.params$free.energy, criterion = params$information.criterion) 
+    # Cost for model
+    C[[k]] <- info.criterion(model.params$Nparams, 
+    	      		params$Nlog, 
+			-model.params$free.energy, 
+			criterion = params$information.criterion) 
 
     model.nodes[[k]] <- model.params
 

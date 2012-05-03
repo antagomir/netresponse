@@ -24,14 +24,14 @@
   number of responses.}
 
   \item{subnet.ids}{Specify subnets for which the responses
-  shall be ordered. By default, use all subnets.}
+  shall be ordered.  By default, use all subnets.}
 
   \item{verbose}{Follow progress by intermediate messages.}
 }
 \value{
   A data frame with elements 'ordered.responses' which
   gives a data frame of responses ordered by enrichment
-  score for the investigated sample. The subnetwork,
+  score for the investigated sample.  The subnetwork,
   response id and enrichment score are shown. The method
   field indicates the enrichment calculation method. The
   sample field lists the samples et for which the
@@ -50,7 +50,6 @@
 }
 \examples{
 #
-
 # - for given sample/s (factor level), order responses (across all subnets) by association strength (enrichment score)
 #order.responses(model, sample, method  = "hypergeometric") # overrepresentation
 }

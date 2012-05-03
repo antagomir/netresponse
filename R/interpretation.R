@@ -110,19 +110,19 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 #' 
 #' Arguments:  
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
-#' named by the samples
+#'   named by the samples
 #' @param model NetResponse model object
 #' @param method method for enrichment calculation
 #' @param min.size minimum sample size for a response
 #' @param qth q-value threshold
 #' @param verbose verbose Returns:
 #' @return Table listing all associations between the factor levels and
-#' responses
+#'   responses
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-list.responses <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
+list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -142,7 +142,7 @@ list.responses <- function (annotation.df, model, method = "hypergeometric", min
     for (level in na.omit(names(responses.per.level))) {
       
       responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
-      				   rep(fnam, nrow(responses.per.level[[level]])), 
+      				   rep(fnam,  nrow(responses.per.level[[level]])), 
 				   rep(level, nrow(responses.per.level[[level]])))
 
       tmp <- responses.per.level[[level]]
@@ -163,9 +163,13 @@ list.responses <- function (annotation.df, model, method = "hypergeometric", min
 
   collected.table <- cbind(collected.table, qvalue(collected.table[, "pvalue"])$qvalue)
   colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
-  
-  collected.table
 
+  # Order by qvalue
+  collected.table <- collected.table[order(collected.table$qvalue), ]
+
+  # Filtering based on qvalues
+  collected.table[collected.table$qvalue < qth, ]
+  
 }
 
 
@@ -206,11 +210,13 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
   }
 
-  
   collected.table$qvalue <- qvalue(collected.table$pvalue)$qvalue
+
+  # Order by qvalues
   collected.table <- collected.table[order(collected.table$qvalue),]
-  
-  collected.table
+
+  # Filtering based on qvalues
+  collected.table[collected.table$qvalue < qth, ]
 
 }
 
