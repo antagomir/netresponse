@@ -217,11 +217,14 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
     if (is.vector(x)) { # univariate
       m.new <- -mclustBIC(x, G = nc)[, "V"] 
     } else { # multivariate
-      m.new <- -mclustBIC(x, G = nc)[, "VVV"] # BIC : smaller is better
+      m.new <- try(-mclustBIC(x, G = nc)[, "VVV"]) # BIC : smaller is better
+      if ( is.na(m.new) ) { m.new <- Inf } # infinitely bad = Inf
     }
 
     # FIXME: compressing data with PCA after dimensionality gets otherwise too high?
     # with around ncol(x) = 30 the mclustBIC is starting to produce NAs
+
+    # FIXME: remove this when code works ok
     if (is.na(m.new)) {save(x, nc, file = "m.new.RData")}
     
     bic.delta <- m.new - m
