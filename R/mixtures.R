@@ -80,7 +80,19 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 
   } else if (mixture.method == "bic") { 	
     model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold)  
-    model.params <- list(mu = model$means, sd = model$sds, w = model$ws, free.energy = model$free.energy, Nparams = model$Nparams)
+    mu <- matrix(model$means, nrow = length(model$ws))
+    sd <- matrix(model$sds, nrow = length(model$ws))
+    ws <- matrix(model$ws)
+
+    rownames(mu) <- rownames(sd) <- names(ws)
+    colnames(mu) <- colnames(sd) <- colnames(x)        
+   
+    model.params <- list(mu = mu,
+    		         sd = sd,
+			 w = ws, 
+			 free.energy = model$free.energy, 
+			 Nparams = model$Nparams)
+
   } else {
     stop("Provide proper mixture.method argument.")
   }    
