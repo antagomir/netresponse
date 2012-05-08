@@ -214,12 +214,13 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
 
     nc <- nc + 1
 
+    # BIC : smaller is better
     if (is.vector(x)) { # univariate
-      m.new <- -mclustBIC(x, G = nc)[, "V"] 
+      m.new <- try(-mclustBIC(x, G = nc)[, "V"]) 
     } else { # multivariate
-      m.new <- try(-mclustBIC(x, G = nc)[, "VVV"]) # BIC : smaller is better
-      if ( is.na(m.new) ) { m.new <- Inf } # infinitely bad = Inf
+      m.new <- try(-mclustBIC(x, G = nc)[, "VVV"]) 
     }
+    if ( is.na(m.new) ) { m.new <- Inf } # infinitely bad = Inf
 
     # FIXME: compressing data with PCA after dimensionality gets otherwise too high?
     # with around ncol(x) = 30 the mclustBIC is starting to produce NAs
