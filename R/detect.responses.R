@@ -270,7 +270,7 @@ detect.responses <- function(datamatrix,
         G[[b]] <- NA
 
         # Skip the first b-1 elements as we only apply lower triangle here
-        if ( ncol(network) == 1 ) {
+        if ( ncol(network) <= 1 ) {
           if ( verbose ) { message("All nodes have been merged.\n") }
           delta <- Inf # indicates no merging can be be done any more
         } else {
@@ -360,6 +360,8 @@ detect.responses <- function(datamatrix,
     }
   }
 
+  # FIXME: if all nodes will be combined (merging.threshold = -Inf), there will be an error. Fix.
+
   model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
       last.grouping = G,     # network nodes given in indices
@@ -370,8 +372,6 @@ detect.responses <- function(datamatrix,
       models = node.models
       )
 
-
-  model  
 
 }
 

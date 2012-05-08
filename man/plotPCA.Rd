@@ -31,8 +31,6 @@
   color the samples according to annotations labels.
 }
 \examples{
-#
-
 #plotPCA(x, subnet.id)
 }
 \author{
