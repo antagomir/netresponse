@@ -23,7 +23,6 @@
 #'   @param model NetResponse model object
 #'   @param method method for enrichment calculation
 #'   @param min.size minimum sample size for a response 
-#'   @param qth q-value threshold
 #'
 #' Returns:
 #'   @return List with each element corresponding to one factor level and listing the responses according to association strength
@@ -32,17 +31,19 @@
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-factor.responses <- function (annotation.vector, model, method = "hypergeometric", min.size = 2, qth = Inf) {
+factor.responses <- function (annotation.vector, model, method = "hypergeometric", min.size = 2) {
 
   responses <- list()
   levels <- unique(annotation.vector)
   for (lev in levels) {
     sample <- names(annotation.vector)[annotation.vector == lev]
     responses[[lev]] <- order.responses(model, sample, method = method, min.size = min.size) 
+
   }
 
   # Pick top responses for each factor level
-  responses.per.level <- lapply(responses, function (dr) { subset(dr$ordered.responses, qvalue < qth) })
+
+  responses.per.level <- lapply(responses, function (dr) { dr$ordered.responses })
   responses.per.level <- responses.per.level[sapply(responses.per.level, nrow) > 0]
 
   responses.per.level
@@ -135,12 +136,12 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     names(annotation.vector) <- rownames(annotation.df)
 
     # Order responses for each level of this factor
-    responses.per.level <- factor.responses(annotation.vector, model, method = method, min.size = min.size, qth = Inf) 
+    responses.per.level <- factor.responses(annotation.vector, model, method = method, min.size = min.size) 
     responses.per.level <- responses.per.level[na.omit(names(responses.per.level))]
 
     # Add factor/level information
     for (level in na.omit(names(responses.per.level))) {
-      
+
       responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
       				   rep(fnam,  nrow(responses.per.level[[level]])), 
 				   rep(level, nrow(responses.per.level[[level]])))
@@ -156,9 +157,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
     # FIXME: do.call(rbind, l) tai do.call(cbind, l)
     # is a neater way to implement this
-
     collected.table <- rbind(collected.table, mat)
-
   }
 
   collected.table <- cbind(collected.table, qvalue(collected.table[, "pvalue"])$qvalue)

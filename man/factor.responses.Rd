@@ -3,7 +3,7 @@
 \title{Description: List responses for each level of the given factor}
 \usage{
   factor.responses(annotation.vector, model,
-    method = "hypergeometric", min.size = 2, qth = Inf)
+    method = "hypergeometric", min.size = 2)
 }
 \arguments{
   \item{annotation.vector}{annotation vector with discrete
@@ -13,9 +13,7 @@
 
   \item{method}{method for enrichment calculation}
 
-  \item{min.size}{minimum sample size for a response}
-
-  \item{qth}{q-value threshold
+  \item{min.size}{minimum sample size for a response
 
   Returns:}
 }

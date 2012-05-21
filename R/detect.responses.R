@@ -34,8 +34,6 @@
 
   ######################################################################
 
-
-
 #' detect.responses
 #' 
 #' Main function of the NetResponse algorithm. Detecting network responses
