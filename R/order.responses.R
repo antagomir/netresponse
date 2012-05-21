@@ -64,6 +64,7 @@
 
 order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
 
+
   # Given sample (for instance set of samples associated with a given factor level)
   # order the responses across all subnetworks based on their association strength
 
@@ -74,7 +75,7 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
   # Get model statistics
   stat <- model.stats(model)
-  
+
   # Filter the results
   sn <- get.subnets(model, get.names = TRUE, min.size, max.size, min.responses)
   stat <- stat[names(sn),]
@@ -86,13 +87,13 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     if ( verbose ) { message(subnet.id) }
     
     for (response in 1:length(model@models[[subnet.id]]$w)) {
-  
+
       enr <- response.enrichment(subnet.id, model, sample, response, method)
 
       # add further info about enrichments
       cnt <- cnt + 1
 
-      # response -> mode / LL was here 2.5.2012
+      # response -> mode / 2.5.2012
       #enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enrichment.score = enr$score, enr$info) 
       enrichment.info[[cnt]] <- c(subnet = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 
 
@@ -105,9 +106,14 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     enr <- as.data.frame(t(sapply(enrichment.info, identity)))
 
     if ("pvalue" %in% colnames(enr)) {
-      # calculate q-values
-      library(qvalue)
-      enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+      if (length(enr$pvalue) > 50) {
+        # calculate q-values
+        library(qvalue)
+        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+      } else {
+        message("Not enough p-values for q-value estimation")
+        enr$qvalue <- NA
+      }
     }
 
     enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)

@@ -11,6 +11,10 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+
+# "The language of science is the language of probability, and not of
+#  p-values." -- Luis Pericchi
+
 #' set.breaks
 #' 
 #' Set breakpoints for two-way color palette.
