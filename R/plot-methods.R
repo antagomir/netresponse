@@ -9,7 +9,7 @@
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# GNU General Public License for more detail.
 
 # FIXME: make general plot.associations function
 
@@ -387,7 +387,7 @@ plot.expression <- function (x, maintext, ...) { # was: plot.matrix
 plot.subnet <- function (x, subnet.id, network, plot.names = TRUE, ...) {
 
   require(Rgraphviz)
-  require(igraph)
+  require(igraph0)
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -510,7 +510,7 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 plot.responses <-
 function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, ...) {
 
-  require(igraph)
+  require(igraph0)
   require(Rgraphviz)
 
   tmp <- NULL
@@ -670,7 +670,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 #' @param Nlab Number of labels to plot.
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
-#' @note Depends on Rgraphviz and igraph packages.
+#' @note Depends on Rgraphviz and igraph0 packages.
 #' @author Leo Lahti <leo.lahti@@iki.fi>
 #' @references See citation("netresponse")
 #' @keywords utilities
@@ -683,7 +683,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = .1, two.sided = TRUE, label.start = 1, Nlab = 3, ...) {
 
   require(Rgraphviz)
-  #require(igraph)
+  #require(igraph0)
   
   if (two.sided) {
     

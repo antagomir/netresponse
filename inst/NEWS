@@ -1,7 +1,10 @@
+CHANGES IN VERSION 1.9.15 (2012-05-23)
+
+  o igraph dependency moved to igraph0
+
 CHANGES IN VERSION 1.9.14 (2012-05-14)
 
   o dmt added to dependencies
-  
 
 CHANGES IN VERSION 1.9.13 (2012-05-04)
 

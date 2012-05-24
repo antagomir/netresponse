@@ -12,7 +12,7 @@ License: GPL (>=2)
 Depends:
     R (>= 2.15.0),
     dmt,
-    igraph,
+    igraph0,
     ggplot2,
     graph,
     mclust,
