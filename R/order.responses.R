@@ -64,9 +64,9 @@
 
 order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
 
-
-  # Given sample (for instance set of samples associated with a given factor level)
-  # order the responses across all subnetworks based on their association strength
+  # Given sample (for instance set of samples associated with a given factor 
+  # level) order the responses across all subnetworks based on their 
+  # association strength
 
   # For a given sample, calculate enrichment values in each response
   subnets <- responses <- scores <- pvals <- c()
@@ -93,8 +93,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
       # add further info about enrichments
       cnt <- cnt + 1
 
-      # response -> mode / 2.5.2012
-      #enrichment.info[[cnt]] <- c(subnet = subnet.id, response = response, enrichment.score = enr$score, enr$info) 
       enrichment.info[[cnt]] <- c(subnet = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 
 
     }
@@ -111,8 +109,7 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
         library(qvalue)
         enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
       } else {
-        message("Not enough p-values for q-value estimation")
-        enr$qvalue <- NA
+        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
       }
     }
 
@@ -152,7 +149,7 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @export
-#' @examples #
+#' @examples #enr <- response.enrichment(subnet.id, model, sample, response, method)
 #' 
 response.enrichment <- function (subnet.id, model, s, response, method = "hypergeometric") {
 

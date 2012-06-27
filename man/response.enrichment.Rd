@@ -26,7 +26,7 @@
   in the given response.
 }
 \examples{
-#
+#enr <- response.enrichment(subnet.id, model, sample, response, method)
 }
 \author{
   Leo Lahti \email{leo.lahti@iki.fi}
