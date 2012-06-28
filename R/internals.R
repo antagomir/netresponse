@@ -17,9 +17,6 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-
-
-
 discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X))) 
 {
     # This function is licensed under cc-by-sa 3.0
@@ -327,8 +324,6 @@ find.best.neighbor <- function (G, max.subnet.size, network, delta) {
 }
 
 
-
-
 join.subnets <- function (network, delta, best.edge) {
 
   # Pick the nodes to merge
@@ -350,6 +345,7 @@ join.subnets <- function (network, delta, best.edge) {
   network <- matrix(apply(network, 2, sort), 2)
       
   list(network = network, delta = delta)
+
 }
 
 

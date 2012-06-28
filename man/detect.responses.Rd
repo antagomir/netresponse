@@ -9,7 +9,8 @@
     update.hyperparams = 0, implicit.noise = 0,
     vdp.threshold = 1e-05, merging.threshold = 0,
     ite = Inf, information.criterion = "BIC",
-    speedup = TRUE, speedup.max.edges = 10, mc.cores = 1,
+    speedup = TRUE, speedup.max.edges = 10,
+    positive.edges = FALSE, mc.cores = 1,
     mixture.method = "vdp", bic.threshold = 0, ...)
 }
 \arguments{
@@ -19,10 +20,10 @@
   features than the 'network' object, characterizing the
   network states across the different samples.}
 
-  \item{network}{Network describing undirected pairwise
-  interactions between features of 'datamatrix'. The
-  following formats are supported: binary matrix, graphNEL,
-  igraph, graphAM, Matrix, dgCMatrix, dgeMatrix}
+  \item{network}{Binary network describing undirected
+  pairwise interactions between features of 'datamatrix'.
+  The following formats are supported: binary matrix,
+  graphNEL, igraph, graphAM, Matrix, dgCMatrix, dgeMatrix}
 
   \item{initial.responses}{Initial number of components for
   each subnetwork model. Used to initialize calculations.}
@@ -86,6 +87,10 @@
   is possible to avoid calculating exhaustive many models
   on the network hubs.}
 
+  \item{positive.edges}{Consider only the edges with
+  positive association. Currently measured with Spearman
+  correlation.}
+
   \item{mc.cores}{Number of cores to be used in
   parallelization. See help(mclapply) for details.}
 
@@ -105,29 +110,11 @@
   NetResponseModel object.
 }
 \description{
-  Main function of the NetResponse algorithm. Detecting
-  network responses across the conditions.
-}
-\details{
-  NetResponse: Detect condition-specific network responses,
-  given network and a set of measurements of node activity
-  in a set of conditions.
-
-  res <- netresponse(dataset, network)
-
-  INPUT:
-
-  datamatrix: 'samples x features' matrix network: binary
-  matrix defining network between the features
-
-  OUTPUT: Returns a set of subnetworks and their estimated
-  context-specific responses.
-
-  res.costs are the cost function values at each state
-  res.moves has the indices of groups joined at each state
-  in its columns res.groupings holds the groupings at each
-  level of the hierarchy res.models has compressed
-  representations of the models from each step
+  Main function of the NetResponse algorithm. Detect
+  condition-specific network responses, given network and a
+  set of measurements of node activity in a set of
+  conditions. Returns a set of subnetworks and their
+  estimated context-specific responses.
 }
 \examples{
 library(netresponse)

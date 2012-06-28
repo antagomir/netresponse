@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.9.17 (2012-06-28)
+
+  o added remove.negative.edges function 
+  o added positive.edges argument to detect.responses
+
 CHANGES IN VERSION 1.9.15 (2012-05-23)
 
   o igraph dependency moved to igraph0
