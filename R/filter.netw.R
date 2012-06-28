@@ -52,14 +52,13 @@ filter.netw <- function (network, delta, datamatrix, params) {
 #' @param network network
 #' @param delta associated cost function value changes for each node merge
 #' @param datamatrix datamatrix
-#' @param params parameters
 #' @return Filtered network
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @keywords internal
 #' @examples #
 
-remove.negative.edges <- function (network, delta, datamatrix, params) {
+remove.negative.edges <- function (network, delta, datamatrix) {
 
   message("Filtering out negative edges..")		      
  
