@@ -22,9 +22,8 @@
   required.
 }
 \details{
-  Include to the network only the edges with the highest
-  mutual information, calculated based on the first
-  principal components.
+  Include only edges with the highest mutual information,
+  calculated based on the first principal components.
 }
 \examples{
 #

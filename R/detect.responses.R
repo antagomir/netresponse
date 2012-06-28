@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
+# Copyright (C) 2008-2012 Leo Lahti and Olli-Pekka Huovilainen
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -36,34 +36,17 @@
 
 #' detect.responses
 #' 
-#' Main function of the NetResponse algorithm. Detecting network responses
-#' across the conditions.
+#' Main function of the NetResponse algorithm. 
+#' Detect condition-specific network responses, given
+#' network and a set of measurements of node activity in a set of
+#' conditions. Returns a set of subnetworks and their estimated
+#' context-specific responses.
 #'
-#'  NetResponse: Detect condition-specific network responses, given
-#'  network and a set of measurements of node activity in a set of
-#'  conditions.
-#'          
-#'  res <- netresponse(dataset, network)
-#'  
-#'  INPUT:
-#'
-#'  datamatrix: 'samples x features' matrix
-#'  network: binary matrix defining network between the features
-#'
-#'  OUTPUT:
-#'  Returns a set of subnetworks and their estimated
-#'  context-specific responses.
-#' 
-#'  res.costs are the cost function values at each state
-#'  res.moves has the indices of groups joined at each state in its columns
-#'  res.groupings holds the groupings at each level of the hierarchy
-#'  res.models has compressed representations of the models from each step
-#' 
 #' @param datamatrix Matrix of samples x features. For example, gene expression
 #'   matrix with conditions on the rows, and genes on the columns. The matrix
 #'   contains same features than the 'network' object, characterizing the network
 #'   states across the different samples.
-#' @param network Network describing undirected pairwise interactions between
+#' @param network Binary network describing undirected pairwise interactions between
 #'   features of 'datamatrix'. The following formats are supported: binary
 #'   matrix, graphNEL, igraph, graphAM, Matrix, dgCMatrix, dgeMatrix
 #' @param initial.responses Initial number of components for each subnetwork
@@ -104,6 +87,7 @@
 #' will benefit most from joint modeling will be among the top mutual
 #' infomation candidates. This way it is possible to avoid calculating
 #' exhaustive many models on the network hubs.
+#' @param positive.edges Consider only the edges with positive association. Currently measured with Spearman correlation.
 #' @param mc.cores Number of cores to be used in parallelization. See
 #' help(mclapply) for details.
 #' @param mixture.method Specify the approach to use in mixture modeling.
@@ -142,6 +126,7 @@ detect.responses <- function(datamatrix,
          information.criterion = "BIC", # information criterion for model selection
          speedup = TRUE,                 # speed up calculations by approximations
          speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
+	 positive.edges = FALSE, # If TRUE, consider positive edges only	 
 	 mc.cores = 1, # number of cores for parallelization
          mixture.method = "vdp", # Which approach to use for mixture estimation
 	 bic.threshold = 0,
@@ -151,9 +136,11 @@ detect.responses <- function(datamatrix,
 {
 
 #fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = TRUE); for (f in fs) {source(f)}; datamatrix <- D; network <- netw; initial.responses = 1; max.responses = 3; max.subnet.size = 10; verbose = TRUE; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01;	update.hyperparams = 0; implicit.noise = 0; vdp.threshold = 1.0e-5; merging.threshold = 1; ite = Inf; information.criterion = "BIC"; speedup = TRUE; speedup.max.edges = 10; mc.cores = 1; mixture.method = "bic"; bic.threshold = 0          
-         
+
+  # Check data matrix validity         
   datamatrix <- check.matrix(datamatrix)
 
+  # Check network validity and polish
   tmp <- check.network(network, datamatrix, verbose = verbose)
   network <- tmp$formatted
   network.orig <- tmp$original
@@ -161,17 +148,13 @@ detect.responses <- function(datamatrix,
   network.nodes <- tmp$nodes
   rm(tmp)
   
-  ### INITIALIZE ###
-  
+  ### INITIALIZE ###  
   if (verbose) message("matching the features between network and datamatrix")  
   samples <- rownames(datamatrix)
   datamatrix   <- matrix(datamatrix[, network.nodes], nrow(datamatrix))
   colnames(datamatrix) <- network.nodes
   rownames(datamatrix) <- samples
   rm(samples)
-
-  Nlog  <- log( nrow( datamatrix ) ) # FIXME move this to params from all places
-  nbins <- floor(sqrt(nrow(datamatrix))) # FIXME move this to params from all places
 
   # Store here all params used in the model (defined in function call)
   params <- list(initial.responses = initial.responses, 
@@ -189,33 +172,36 @@ detect.responses <- function(datamatrix,
 		 information.criterion = information.criterion,
 		 speedup = speedup,
 		 speedup.max.edges = speedup.max.edges,
-		 Nlog = Nlog,
-		 nbins = nbins,
+		 Nlog = log( nrow( datamatrix ) ),
+		 nbins = floor(sqrt(nrow(datamatrix))),
 		 mc.cores = mc.cores,
 		 mixture.method = mixture.method,
-		 bic.threshold = bic.threshold
+		 bic.threshold = bic.threshold,
+		 positive.edges = positive.edges
 		 )
 
   # Place each node in a singleton subnet
   G <- lapply(1:ncol( datamatrix ), function( x ){ x }) 
 
+  # Filter network
   tmp <- filter.netw(network, delta, datamatrix, params)
   network <- tmp$network      
   delta <- tmp$delta
+  # FIXME: for more efficient memory usage, remove from the datamatrix those nodes which are
+  # not in the network. But check that the indices are not confused.
 
   gc()
 
   ########################################################################
 
   ### INDEPENDENT MODEL FOR EACH VARIABLE ###
-
   tmp <- independent.models(datamatrix, params)
-
   node.models <- tmp$nodes # model parameters
   C <- sum(tmp$C)
 
   ### MERGE VARIABLES ###
 
+  # Store agglomeration steps
   move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
 
   if (params$max.subnet.size > 1) {
@@ -250,7 +236,8 @@ detect.responses <- function(datamatrix,
 
         # put the new group to a's place only for those variables for
         # which this is needed.  For others, put Inf on the a neighborgs,
-        # combine a and b in the network, remove self-link a-a, remove b (row and col)
+        # combine a and b in the network, remove self-link a-a, 
+	# remove b (row and col)
         tmp.join <- join.subnets(network, delta, best.edge)
         network <- tmp.join$network
         delta <- tmp.join$delta
@@ -276,6 +263,7 @@ detect.responses <- function(datamatrix,
           merge.edges <- which(is.na(delta))
 	   
 	  # Remove edges that would exceed max.size
+	  # FIXME: include as part of cost function?
 	  new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
 	  merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
 
@@ -307,7 +295,6 @@ detect.responses <- function(datamatrix,
           }
       
           # FIXME: parallelize to speed up
-
           for (edge in merge.edges) {
 	    tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
 	    model.pairs <- tmp$model.pairs
@@ -359,6 +346,10 @@ detect.responses <- function(datamatrix,
   }
 
   # FIXME: if all nodes will be combined (merging.threshold = -Inf), there will be an error. Fix.
+  #'  costs: cost function values at each state
+  #'  moves: indices of groups joined at each state in its columns
+  #'  groupings: groupings at each level of the hierarchy
+  #'  models: compressed representations of the models from each step
 
   model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),
@@ -369,7 +360,5 @@ detect.responses <- function(datamatrix,
       network = network.orig,
       models = node.models
       )
-
-
 }
 
