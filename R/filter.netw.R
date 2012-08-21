@@ -21,7 +21,7 @@ filter.netw <- function (network, delta, datamatrix, params) {
   if (params$max.subnet.size > 1) {
 
     if (params$positive.edges) {
-      tmp <- remove.negative.edges(network, delta, datamatrix, params)
+      tmp <- remove.negative.edges(network, delta, datamatrix)
       network <- tmp$network
       delta <- tmp$delta
     }

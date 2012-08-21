@@ -2,7 +2,7 @@
 \alias{remove.negative.edges}
 \title{remove.negative.edges}
 \usage{
-  remove.negative.edges(network, delta, datamatrix, params)
+  remove.negative.edges(network, delta, datamatrix)
 }
 \arguments{
   \item{network}{network}
@@ -11,8 +11,6 @@
   each node merge}
 
   \item{datamatrix}{datamatrix}
-
-  \item{params}{parameters}
 }
 \value{
   Filtered network
