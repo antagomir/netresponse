@@ -1,8 +1,8 @@
 \docType{class}
 \name{NetResponseModel-class}
-\alias{get.dat,NetResponseModel-method}
 \alias{NetResponseModel-class}
 \alias{[[,NetResponseModel-method}
+\alias{get.dat,NetResponseModel-method}
 \alias{show,NetResponseModel-method}
 \title{Class "NetResponseModel"}
 \description{
