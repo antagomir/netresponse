@@ -98,7 +98,12 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     }
   }
 
+  if (verbose) {message("Subnets checked.")}
+
   if (length(enrichment.info) > 0) {
+
+    if (verbose) {message("Calculating enrichments..")}
+
     enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
 
     enr <- as.data.frame(t(sapply(enrichment.info, identity)))
@@ -116,18 +121,30 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
 
     if ("enrichment.score" %in% names(enr)) {
+
+      if (verbose) {message("Checking enrichments..")}
+
       enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
+
       enr[["subnet"]] <- as.character(enr[["subnet"]])
+
       # Add subnet info in the result table
       enr <- cbind(enr, stat[enr$subnet,])
-      return(list(ordered.responses = enr, method = method, sample = sample))
+
+      tmp <- list(ordered.responses = enr, method = method, sample = sample)
+
+      return(tmp)
+
     } else {
+
       return(NULL)
+
     }
+
   } else {
     return(NULL)
-  }
-		
+  }	
+
 }
 			    
 

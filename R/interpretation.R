@@ -35,7 +35,7 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 
   responses <- list()
   levels <- unique(annotation.vector)
-  for (lev in levels) {
+  for (lev in na.omit(levels)) {
     sample <- names(annotation.vector)[annotation.vector == lev]
     responses[[lev]] <- order.responses(model, sample, method = method, min.size = min.size) 
 
