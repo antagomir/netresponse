@@ -109,12 +109,15 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     enr <- as.data.frame(t(sapply(enrichment.info, identity)))
 
     if ("pvalue" %in% colnames(enr)) {
+       
       if (length(enr$pvalue) > 50) {
         # calculate q-values
-        library(qvalue)
-        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+      } else if (length(enr$pvalue) > 10) {
+        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
       } else {
-        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
+        warning("Not enough p-values for q-value estimation")
+        enr$qvalue <- rep(NA, length(enr$pvalue))
       }
     }
 
