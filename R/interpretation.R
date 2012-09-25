@@ -36,8 +36,8 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
   responses <- list()
   levels <- unique(annotation.vector)
   for (lev in na.omit(levels)) {
-    sample <- names(annotation.vector)[annotation.vector == lev]
-    responses[[lev]] <- order.responses(model, sample, method = method, min.size = min.size) 
+    s <- names(annotation.vector)[annotation.vector == lev]
+    responses[[lev]] <- order.responses(model, s, method = method, min.size = min.size) 
 
   }
 
@@ -124,6 +124,8 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 #' @export
 #' @keywords utilities
 list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
+
+  # method = "hypergeometric"; min.size = 1; annotation.df <- atlas.metadata[rownames(atlas.metadata)[adult.samples], factor.vars]; qth = Inf, verbose = TRUE
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
