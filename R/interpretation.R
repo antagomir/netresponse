@@ -33,12 +33,20 @@
 #' @keywords utilities
 factor.responses <- function (annotation.vector, model, method = "hypergeometric", min.size = 2) {
 
-  responses <- list()
-  levels <- unique(annotation.vector)
-  for (lev in na.omit(levels)) {
-    s <- names(annotation.vector)[annotation.vector == lev]
-    responses[[lev]] <- order.responses(model, s, method = method, min.size = min.size) 
+  # annotation.vector, model, method = method, min.size = min.size
 
+  responses <- list()
+
+  levels <- as.character(na.omit(unique(droplevels(annotation.vector))))
+
+  for (lev in levels) {
+    level.samples <- names(annotation.vector)[which(annotation.vector == lev)]
+    ors <- order.responses(model, level.samples, method = method, min.size = min.size) 
+    if (is.null(ors)) { 
+      ors <- NA 
+      warning(paste("No significant responses for level", lev))
+    }
+    responses[[as.character(lev)]] <- ors
   }
 
   # Pick top responses for each factor level
@@ -70,6 +78,8 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 #' @keywords utilities
 continuous.responses <- function (annotation.vector, model, method = "t-test", min.size = 2) {
 
+  # annotation.vector, model, method = method, min.size = min.size
+
   subnets <- get.subnets(model, min.size = min.size)
 
   associations <- NULL  	 
@@ -90,7 +100,12 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
       # Only consider annotated samples
       s <- intersect(r2s[[mo]], annotation.samples)
       sc <- setdiff(annotation.samples, s)
-      pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+      if (length(s) > 1 && length(sc) > 1) {      
+        pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+      } else {
+         warning(paste("Not enough annotated observations for response", mo))
+        pvals[[mo]] <- NA
+      }
     }
 
     associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = paste("Mode-", 1:length(r2s), sep = ""), pvalue = pvals))
@@ -98,7 +113,16 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
   }
 
   associations <- data.frame(list(subnet = associations[, "subnet"], mode = associations[, "mode"], pvalue = as.numeric(associations[, "pvalue"])))
-  associations$qvalue <- qvalue(associations$pvalue)$qvalue
+
+  nainds <- is.na(associations$pvalue)
+
+  associations$qvalue <- rep(NA, nrow(associations))
+  if (sum(!nainds) > 20) {
+    associations$qvalue[!nainds] <- qvalue(associations$pvalue[!nainds])$qvalue
+  } else {
+    warning("Not enough pvalues for qvalue estimation, skipping.")
+  }
+
   associations <- associations[order(associations$qvalue), ]
 
   associations
@@ -123,9 +147,12 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
+
 list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
 
-  # method = "hypergeometric"; min.size = 1; annotation.df <- atlas.metadata[rownames(atlas.metadata)[adult.samples], factor.vars]; qth = Inf, verbose = TRUE
+  if (!is.data.frame(annotation.df)) {
+    stop("Provide data.frame for the annotation.df argument!")
+  }
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -156,20 +183,29 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 
     # Combine the level-wise matrices
     mat <- responses.per.level[[1]]; 
-    for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
+
+    if (length(responses.per.level) > 1) {
+      for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
+    }
+
     # FIXME: do.call(rbind, l) tai do.call(cbind, l)
     # is a neater way to implement this
     collected.table <- rbind(collected.table, mat)
+
   }
 
-  collected.table <- cbind(collected.table, qvalue(collected.table[, "pvalue"])$qvalue)
-  colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
+  if (!is.null(collected.table)) {
 
-  # Order by qvalue
-  collected.table <- collected.table[order(collected.table$qvalue), ]
+    collected.table <- cbind(collected.table, qvalue::qvalue(collected.table[, "pvalue"], gui = FALSE)$qvalue)
+    colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
 
-  # Filtering based on qvalues
-  collected.table[collected.table$qvalue < qth, ]
+    # Order by qvalue
+    collected.table <- collected.table[order(collected.table$qvalue), ]
+
+    # Filtering based on qvalues
+    collected.table[collected.table$qvalue < qth, ]
+
+  }
   
 }
 
@@ -191,7 +227,10 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
+
 list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE) {
+
+  # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -211,13 +250,21 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
   }
 
-  collected.table$qvalue <- qvalue(collected.table$pvalue)$qvalue
+  collected.table$qvalue <- rep(NA, nrow(collected.table))
+  nainds <- is.na(collected.table$pvalue)
+  collected.table$qvalue[!nainds] <- qvalue(collected.table$pvalue[!nainds])$qvalue
+  
+  if (sum(nainds) > 0) {
+    warning("Removing entries where p/q values could not be calculated due to small sample size and/or missing values")
+    collected.table <- collected.table[!nainds,]
+  }
 
   # Order by qvalues
   collected.table <- collected.table[order(collected.table$qvalue),]
 
   # Filtering based on qvalues
   collected.table[collected.table$qvalue < qth, ]
+
 
 }
 
