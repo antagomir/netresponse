@@ -98,7 +98,8 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     }
   }
 
-  if (verbose) {message("Subnets checked.")}
+
+  if (verbose) { message("Subnets checked.") }
 
   if (length(enrichment.info) > 0) {
 
@@ -116,8 +117,10 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
       } else if (length(enr$pvalue) > 10) {
         enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
       } else {
+
         warning("Not enough p-values for q-value estimation")
         enr$qvalue <- rep(NA, length(enr$pvalue))
+
       }
     }
 
