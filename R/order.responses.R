@@ -98,7 +98,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     }
   }
 
-
   if (verbose) { message("Subnets checked.") }
 
   if (length(enrichment.info) > 0) {

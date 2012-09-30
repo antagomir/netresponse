@@ -37,6 +37,8 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 
   responses <- list()
 
+  annotation.vector <- factor(annotation.vector)
+
   levels <- as.character(na.omit(unique(droplevels(annotation.vector))))
 
   for (lev in levels) {
@@ -150,6 +152,8 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
 list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE) {
 
+  # annotation.df <- atlas.metadata[sample.set, factor.vars]; model <- res$model; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = TRUE
+
   if (!is.data.frame(annotation.df)) {
     stop("Provide data.frame for the annotation.df argument!")
   }
@@ -169,23 +173,27 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     responses.per.level <- responses.per.level[na.omit(names(responses.per.level))]
 
     # Add factor/level information
-    for (level in na.omit(names(responses.per.level))) {
+    mat <- NULL
+    if (length(responses.per.level) > 0 && !is.null(na.omit(names(responses.per.level)))) {
+      for (level in na.omit(names(responses.per.level))) {
 
-      responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
+        responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
       				   rep(fnam,  nrow(responses.per.level[[level]])), 
 				   rep(level, nrow(responses.per.level[[level]])))
 
-      tmp <- responses.per.level[[level]]
-      colnames(responses.per.level[[level]]) <- c(colnames(tmp)[1:(ncol(tmp)-2)], "Factor", "Level")
-      responses.per.level[[level]][, "qvalue"] <- NULL
+        tmp <- responses.per.level[[level]]
+        colnames(responses.per.level[[level]]) <- c(colnames(tmp)[1:(ncol(tmp)-2)], "Factor", "Level")
+        responses.per.level[[level]][, "qvalue"] <- NULL
+      }
+    
 
-    }
+      # Combine the level-wise matrices
+      mat <- responses.per.level[[1]]; 
 
-    # Combine the level-wise matrices
-    mat <- responses.per.level[[1]]; 
+      if (length(responses.per.level) > 1) {
+        for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
+      }
 
-    if (length(responses.per.level) > 1) {
-      for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
     }
 
     # FIXME: do.call(rbind, l) tai do.call(cbind, l)

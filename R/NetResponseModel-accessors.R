@@ -258,7 +258,7 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 #' 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
-  if (is.null(sample)) { sample <- rownames(model@datamatrix) }    
+  if (is.null(sample)) { sample <- 1:nrow(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
   
   dat <- t(matrix(model@datamatrix[sample, nodes], length(sample)))
