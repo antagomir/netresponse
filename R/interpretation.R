@@ -52,9 +52,15 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
   }
 
   # Pick top responses for each factor level
+  responses <- responses[!is.na( responses)]
 
-  responses.per.level <- lapply(responses, function (dr) { dr$ordered.responses })
-  responses.per.level <- responses.per.level[sapply(responses.per.level, nrow) > 0]
+  responses.per.level <- NULL
+  if (length(responses) > 0) {
+
+    responses.per.level <- lapply(responses, function (dr) { dr$ordered.responses })
+    responses.per.level <- responses.per.level[sapply(responses.per.level, nrow) > 0]
+
+  }
 
   responses.per.level
 
