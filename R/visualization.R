@@ -112,4 +112,3 @@ add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col
 }
 
 
-
