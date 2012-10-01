@@ -88,6 +88,8 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
   # annotation.vector, model, method = method, min.size = min.size
 
+  # annotation.vector, model, method = method, min.size = min.size
+
   subnets <- get.subnets(model, min.size = min.size)
 
   associations <- NULL  	 
@@ -108,7 +110,7 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
       # Only consider annotated samples
       s <- intersect(r2s[[mo]], annotation.samples)
       sc <- setdiff(annotation.samples, s)
-      if (length(s) > 1 && length(sc) > 1) {      
+      if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
         pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
       } else {
          warning(paste("Not enough annotated observations for response", mo))
@@ -246,6 +248,7 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
   # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
   # annotation.df <- atlas.metadata[sample.set, continuous.vars]; method <- "t-test"; model <- res$model; min.size = 1; qth = 0.2; verbose = TRUE
+  # annotation.df <- annot[, continuous.vars];  method <- "t-test"; min.size = 1; qth = 0.2; verbose = TRUE
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
