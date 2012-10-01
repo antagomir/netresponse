@@ -245,6 +245,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE) {
 
   # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
+  # annotation.df <- atlas.metadata[sample.set, continuous.vars]; method <- "t-test"; model <- res$model; min.size = 1; qth = 0.2; verbose = TRUE
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -264,21 +265,36 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
   }
 
-  collected.table$qvalue <- rep(NA, nrow(collected.table))
-  nainds <- is.na(collected.table$pvalue)
-  collected.table$qvalue[!nainds] <- qvalue(collected.table$pvalue[!nainds])$qvalue
-  
-  if (sum(nainds) > 0) {
-    warning("Removing entries where p/q values could not be calculated due to small sample size and/or missing values")
-    collected.table <- collected.table[!nainds,]
+  if (nrow(collected.table) > 0) {
+
+    collected.table$qvalue <- rep(NA, nrow(collected.table))
+    nainds <- is.na(collected.table$pvalue)
+    if (sum(!nainds) > 0) {
+      qv <- qvalue(collected.table$pvalue[!nainds], pi0.method = "bootstrap")
+      if (("qvalues" %in% names(qv)) && sum(!nainds) > 0) {
+        collected.table$qvalue[!nainds] <- qv$qvalues
+      }
+    } 
+
+    if (sum(nainds) > 0) {
+      warning("Removing entries where p/q values could not be calculated due to small sample size and/or missing values")
+      collected.table <- collected.table[!nainds,]
+    }
+
+    # Order by qvalues
+    collected.table <- collected.table[order(collected.table$pvalue),]
+
+    # Filtering based on qvalues
+    if (any(!is.na(collected.table$qvalue)) && !is.null(qth)) {
+      collected.table <- collected.table[collected.table$qvalue < qth, ]
+    } 
+  } else {
+    collected.table <- NULL
   }
 
-  # Order by qvalues
-  collected.table <- collected.table[order(collected.table$qvalue),]
+  if (length(collected.table) == 0) { collected.table <- NULL} 
 
-  # Filtering based on qvalues
-  collected.table[collected.table$qvalue < qth, ]
-
+  collected.table
 
 }
 
