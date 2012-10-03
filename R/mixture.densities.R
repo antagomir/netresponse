@@ -1,4 +1,3 @@
-
 # Copyright (C) 2008-2012 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
@@ -91,13 +90,22 @@ P.rS <- function (dat, pars, log = TRUE) {
 #' @keywords internal utilities
 
 P.r.s <- function (dat, pars, log = TRUE) {
+
   # P(r|s) for each response r and sample s
 
-  qofz <- t(apply(P.rs.joint.individual(dat, pars, log = FALSE), 2, function (x) {x/sum(x)}))
+  
+  if (length(pars$w) == 1) {
+    # If there is only one mode, its likelihood is 1 for all samples
+    qofz <- array(1, dim = dim(dat))
+    colnames(qofz) <- colnames(dat)
+  } else {
+    qofz <- t(apply(P.rs.joint.individual(dat, pars, log = FALSE), 2, function (x) {x/sum(x)}))
+  }
 
   if ( log ) { qofz <- log(qofz) }
 
   matrix(qofz, ncol(dat))
+
 }
 
 

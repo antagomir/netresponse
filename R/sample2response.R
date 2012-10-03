@@ -58,7 +58,7 @@ sample2response <- function (model, subnet.id, mode = "soft") {
   
   if (mode == "hard") {
     sample.names <- rownames(assignment.matrix)
-    assignment.matrix <- colnames(assignment.matrix)[apply(assignment.matrix, 1, which.max)]
+    assignment.matrix <- colnames(assignment.matrix)[unname(apply(assignment.matrix, 1, which.max))]
     names(assignment.matrix) <- sample.names
   }
 
