@@ -246,9 +246,9 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 
 list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE) {
 
-  # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
   # annotation.df <- atlas.metadata[sample.set, continuous.vars]; method <- "t-test"; model <- res$model; min.size = 1; qth = 0.2; verbose = TRUE
   # annotation.df <- annot[, continuous.vars];  method <- "t-test"; min.size = 1; qth = 0.2; verbose = TRUE
+  # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -272,10 +272,13 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
     collected.table$qvalue <- rep(NA, nrow(collected.table))
     nainds <- is.na(collected.table$pvalue)
-    if (sum(!nainds) > 0) {
+    if (sum(!nainds) > 100) {
       qv <- qvalue(collected.table$pvalue[!nainds], pi0.method = "bootstrap")
       if (("qvalues" %in% names(qv)) && sum(!nainds) > 0) {
         collected.table$qvalue[!nainds] <- qv$qvalues
+      } else {
+        warning("Too few values for qvalue estimation, skipped")
+        collected.table$qvalue[!nainds] <- rep(NA, sum(!nainds))
       }
     } 
 
