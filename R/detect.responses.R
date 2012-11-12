@@ -114,7 +114,7 @@ detect.responses <- function(datamatrix,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
          max.responses = 10,      
          max.subnet.size = 10,    # max. subnetwork size
-         verbose = TRUE,          # print proc. information
+         verbose = TRUE,          # print intermediate messages
          prior.alpha    = 1,      # Prior parameters
          prior.alphaKsi = 0.01,   # for VDP mixture
          prior.betaKsi  = 0.01,   # scale parameter for inverse Gamma
@@ -122,13 +122,13 @@ detect.responses <- function(datamatrix,
          implicit.noise = 0,      # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
          vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
          merging.threshold = 0,   # min. cost improvement for merging
-         ite = Inf,                # max. iterations in updatePosterior
-         information.criterion = "BIC", # information criterion for model selection
-         speedup = TRUE,                 # speed up calculations by approximations
+         ite = Inf,               # max. iterations in updatePosterior
+         information.criterion = "BIC", # information criterion for node merging
+         speedup = TRUE,          # speed up calculations by approximations
          speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
 	 positive.edges = FALSE, # If TRUE, consider positive edges only	 
 	 mc.cores = 1, # number of cores for parallelization
-         mixture.method = "vdp", # Which approach to use for mixture estimation
+         mixture.method = "vdp", # Which approach to use for sample mixture estimation within given subnet. Options: bic/vdp
 	 bic.threshold = 0,
 	 ... # Further arguments
 )
