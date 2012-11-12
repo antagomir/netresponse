@@ -17,17 +17,24 @@
 #' Visualize data, centroids and stds for a given univariate
 #' Gaussian mixture model with PCA.
 #'
+#' Arguments:
 #' @param x data vector
 #' @param means mode centroids
 #' @param sds mode standard deviations
 #' @param ws weight for each mode
-#' @param title Plot title
+#' @param title.text Plot title
+#' @param xlab.text xlab.text
+#' @param ylab.text ylab.text
 #' @param binwidth binwidth for histogram
 #' @param ... Further arguments for plot function.
-#' @return Used for its side-effects.
+#'
+#' Return:
+#' @return Used for its side-effects
+#'
+#' @export
+#'
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
-#' @export
 #' @keywords utilities
 #' @examples #plotMixtureUnivariate(dat, means, sds, ws)
 PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, ...) {
