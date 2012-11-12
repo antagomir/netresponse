@@ -27,6 +27,7 @@
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
+#' @export
 #' @keywords utilities
 #' @examples #plotMixtureUnivariate(dat, means, sds, ws)
 PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, ...) {
