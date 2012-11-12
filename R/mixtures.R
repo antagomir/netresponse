@@ -79,6 +79,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     model.params <- pick.model.parameters(model, colnames(x))      
 
   } else if (mixture.method == "bic") { 	
+
     model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold)  
     mu <- matrix(model$means, nrow = length(model$ws))
     sd <- matrix(model$sds, nrow = length(model$ws))
@@ -174,6 +175,49 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
 
 }
 
+#' Description: Latent class analysis based on (infinite) Gaussian mixture
+#' model. If the input (dat) is data matrix, a multivariate model is fitted. If
+#' the input is a vector or a 1-dimensional matrix, a univariate model is
+#' fitted.
+#'
+#' Arguments:
+#'  @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
+#'  @param max.modes Maximum number of modes to be checked for mixture model selection
+#'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
+#'  @param ... Further optional arguments to be passed
+#'
+#' Returns:
+#' @return Fitted latent class model (parameters and free energy)
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
+#' @keywords utilities
+bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) { 
+
+  # x <- datamatrix[, node];  max.modes = params$max.responses; bic.threshold = params$bic.threshold
+
+  require(mclust)
+
+  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold) 
+  mcl <- Mclust(x, G = best.mode)
+
+  means <- as.vector(mcl$parameters$mean)
+  sds <- as.vector(sqrt(mcl$parameters$variance$sigmasq))
+  if (length(sds) == 1) {sds <- rep(sds, length(means))} 
+  ws <- as.vector(mcl$parameters$pro)
+  if (is.null(ws)) {warning("NULL weights, replacing with 1"); ws <- 1} 
+  if (is.null(means)) {warning("NULL means, replacing with 1"); means <- 1} 
+  if (is.null(sds)) {warning("NULL sds, replacing with 1"); sds <- 1} 
+
+  Nparams <- length(means) + length(sds) + length(ws) 
+
+  names(means) <- names(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
+
+  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik)
+
+}
+
+
 
 
 #' Description: Select optimal number of mixture components by adding components until 
@@ -226,7 +270,7 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
     # with around ncol(x) = 30 the mclustBIC is starting to produce NAs
 
     # FIXME: remove this when code works ok
-    if (is.na(m.new)) {save(x, nc, file = "m.new.RData")}
+    # if (is.na(m.new)) {save(x, nc, file = "m.new.RData")}
     
     bic.delta <- m.new - m
 
@@ -242,47 +286,4 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
 
 }
 
-
-
-#' Description: Latent class analysis based on (infinite) Gaussian mixture
-#' model. If the input (dat) is data matrix, a multivariate model is fitted. If
-#' the input is a vector or a 1-dimensional matrix, a univariate model is
-#' fitted.
-#'
-#' Arguments:
-#'  @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
-#'  @param max.modes Maximum number of modes to be checked for mixture model selection
-#'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
-#'  @param ... Further optional arguments to be passed
-#'
-#' Returns:
-#' @return Fitted latent class model (parameters and free energy)
-#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse")
-#' @export
-#' @keywords utilities
-bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) { 
-
-  # x <- datamatrix[, node];  max.modes = params$max.responses; bic.threshold = params$bic.threshold
-
-  library(mclust)
-
-  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold) 
-  mcl <- Mclust(x, G = best.mode)
-
-  means <- as.vector(mcl$parameters$mean)
-  sds <- as.vector(sqrt(mcl$parameters$variance$sigmasq))
-  if (length(sds) == 1) {sds <- rep(sds, length(means))} 
-  ws <- as.vector(mcl$parameters$pro)
-  if (is.null(ws)) {warning("NULL weights, replacing with 1"); ws <- 1} 
-  if (is.null(means)) {warning("NULL means, replacing with 1"); means <- 1} 
-  if (is.null(sds)) {warning("NULL sds, replacing with 1"); sds <- 1} 
-
-  Nparams <- length(means) + length(sds) + length(ws) 
-
-  names(means) <- names(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
-
-  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik)
-
-}
 
