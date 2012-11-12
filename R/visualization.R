@@ -12,6 +12,53 @@
 # GNU General Public License for more details.
 
 
+#' PlotMixtureUnivariate
+#' 
+#' Visualize data, centroids and stds for a given univariate
+#' Gaussian mixture model with PCA.
+#'
+#' @param x data vector
+#' @param means mode centroids
+#' @param sds mode standard deviations
+#' @param ws weight for each mode
+#' @param title Plot title
+#' @param binwidth binwidth for histogram
+#' @param ... Further arguments for plot function.
+#' @return Used for its side-effects.
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse") for citation details.
+#' @keywords utilities
+#' @examples #plotMixtureUnivariate(dat, means, sds, ws)
+PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, ...) {
+
+  # Circumvent warnings
+  ..density.. <- NULL
+  vals <- NULL
+  varname <- NULL
+		      
+  df <- data.frame(list(x = x))
+  df$vals <- seq(min(df$x), max(df$x), length=nrow(df)) # estimation points for fitted Gaussians
+
+  # Histogram and density plot
+  pg <- ggplot2::ggplot(df, aes(x=x)) 
+  pg <- pg + geom_histogram(aes(y = ..density..), binwidth=binwidth, fill = "gray") 
+  pg <- pg + geom_density(fill="gray", alpha = 0.1) 
+  pg <- pg + theme_bw() + xlab(xlab.text) + ylab(ylab.text) 
+  pg <- pg + ggtitle(title.text)
+
+  # Estimated normal distributions from the mixture model
+  for(comp in 1:length(means)){
+    df2 <- data.frame(list(vals = df$vals, varname = ws[[comp]]*dnorm(df$vals, mean = means[[comp]], sd = sds[[comp]])))
+    pg <- pg + geom_line(aes(x=vals, y=varname), colour="red", data = df2) # Add in normal distribution
+  }
+
+  pg
+
+}
+
+
+
+
 # "The language of science is the language of probability, and not of
 #  p-values." -- Luis Pericchi
 

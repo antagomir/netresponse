@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.11.01
-Date: 2012-10-03
+Version: 1.11.02
+Date: 2012-11-12
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -13,6 +13,7 @@ Depends:
     R (>= 2.15.0),
     dmt,
     igraph0,
+    infotheo,
     ggplot2,
     graph,
     mclust,

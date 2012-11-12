@@ -17,35 +17,6 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-discretize  <- function (X, disc = "equalfreq", nbins = sqrt(NROW(X))) 
-{
-    # This function is licensed under cc-by-sa 3.0
-    # Modified from minet 3.6.0 internal function
-
-    X <- as.data.frame(X)
-    varnames <- names(X)
-    dimensions <- dim(X)
-    X <- data.matrix(X)
-    dim(X) <- dimensions
-    res <- NULL
-    if (disc == "equalfreq") 
-        res <- .Call("discEF", X, NROW(X), NCOL(X), as.integer(nbins), 
-            DUP = FALSE, PACKAGE = "infotheo")
-    else if (disc == "equalwidth") 
-        res <- .Call("discEW", X, NROW(X), NCOL(X), as.integer(nbins), 
-            DUP = FALSE, PACKAGE = "infotheo")
-    else if (disc == "globalequalwidth") 
-        res <- as.vector(cut(X, nbins, labels = FALSE))
-    else stop("unknown discretization method")
-    dim(res) <- dimensions
-    res <- as.data.frame(res)
-    names(res) <- varnames
-    res
-}
-
-
-
-
 
 
 #' pick.model.parameters

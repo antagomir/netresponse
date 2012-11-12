@@ -46,7 +46,7 @@ build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = s
 
     if (disc == "equalfreq" || disc == "equalwidth" || disc == 
         "globalequalwidth") 
-        dataset <- discretize(dataset, disc, nbins)
+        dataset <- infotheo::discretize(dataset, disc, nbins)
     if (estimator == "pearson" || estimator == "spearman" || 
         estimator == "kendall") {
         mim <- cor(dataset, method = estimator, use = "complete.obs")^2
