@@ -291,6 +291,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @param sds mode standard deviations, assuming diagonal covariance matrices (modes x features, each row giving the sqrt of covariance diagonal for the corresponding mode)
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
+#' @param title title
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -298,7 +299,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, ...) {
 
   # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
 
@@ -328,13 +329,16 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, ...) {
 
     xtitle <- "PCA1"
     ytitle <- "PCA2"
-    title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")
+
+    if (is.null(title)) {title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")}
 
   } else {
+
     pld <- x
     xtitle <- colnames(x)[[1]]
     ytitle <- colnames(x)[[2]]
-    title <- "Cross-plot"
+    if (is.null(title)) { title <- "Cross-plot" } 
+
   }
 
   nlab <- length(unique(labels))
