@@ -99,6 +99,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 
   # annotation.df <- atlas.metadata[sample.set, factor.vars]; model <- res$model; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = TRUE
   # annotation.df <- annot[, factor.vars]; model; min.size = 1; qth = 1; method = "hypergeometric"; verbose = TRUE
+  # annotation.df <- annot[sample.set, factor.vars]; model; min.size = 1; qth = qth; data = t(X); method = "hypergeometric"; verbose = TRUE
 
   # samples x features
   if(is.vector(data)) {
@@ -166,7 +167,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
   
     # Filtering based on qvalues
-    collected.table[collected.table$qvalue < qth, ]
+    collected.table <- collected.table[collected.table$qvalue < qth, ]
   
   }
 
