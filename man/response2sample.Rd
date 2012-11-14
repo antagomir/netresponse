@@ -2,8 +2,8 @@
 \alias{response2sample}
 \title{response2sample}
 \usage{
-  response2sample(model, subnet.id, component.list = TRUE,
-    verbose = FALSE)
+  response2sample(model, subnet.id = NULL, component.list = TRUE,
+    verbose = FALSE, data = NULL)
 }
 \arguments{
   \item{model}{A NetResponseModel object. Result from
@@ -18,6 +18,8 @@
   associated component for each sample (FALSE).}
 
   \item{verbose}{Follow progress by intermediate messages.}
+
+  \item{data}{Data (features x samples; or a vector for univariate case) to predict response for given data points (currently implemented only for mixture.model output)}
 }
 \value{
   A list. Each element corresponds to one subnetwork

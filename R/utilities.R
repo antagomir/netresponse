@@ -106,7 +106,7 @@ centerData <- function (X, rm.na = TRUE, meanvalue = NULL) {
 #' Only the non-empty components are returned. Note: the original data matrix
 #' needs to be provided for function call separately.
 #' 
-#' @usage get.model.parameters(model, subnet.id)
+#' @usage get.model.parameters(model, subnet.id = NULL)
 #' @param model Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet identifier. A natural number which specifies one of
 #' the subnetworks within the 'model' object.
@@ -133,15 +133,26 @@ centerData <- function (X, rm.na = TRUE, meanvalue = NULL) {
 #' # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
 #' get.model.parameters(model, subnet.id = 1)
 #' 
-get.model.parameters <- function (model, subnet.id) {
+get.model.parameters <- function (model, subnet.id = NULL) {
             
-  if (is.numeric(subnet.id)) {
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")    
-    subnet.id <- paste("Subnet", subnet.id, sep = "-")
-  }
+  if (class(model) == "NetResponseModel") {
+
+    if (is.numeric(subnet.id)) {
+      warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")    
+      subnet.id <- paste("Subnet", subnet.id, sep = "-")
+    }
   
-  pars <- model@models[[subnet.id]]
-  pars[["nodes"]] <- model@subnets[[subnet.id]]
+    pars <- model@models[[subnet.id]]
+    pars[["nodes"]] <- model@subnets[[subnet.id]]
+
+  } else {
+
+    pars <- list()
+    pars$mu <- model$model$posterior$centroids
+    pars$sd <- model$model$posterior$sds
+    pars$w <- model$model$posterior$weights
+
+  }
 
   pars
 

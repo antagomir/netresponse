@@ -2,8 +2,8 @@
 \alias{response.enrichment}
 \title{Enrichment for a specified sample group in the given response.}
 \usage{
-  response.enrichment(subnet.id, model, s, response,
-    method = "hypergeometric")
+  response.enrichment(subnet.id = NULL, model, s, response,
+    method = "hypergeometric", data = NULL)
 }
 \arguments{
   \item{subnet.id}{Subnet.}
@@ -16,6 +16,9 @@
   \item{response}{Response id (integer) within the subnet.}
 
   \item{method}{Enrichment method.}
+
+  \item{data}{data (samples x features)}
+
 }
 \value{
   List with enrichment statistics, depending on enrichment

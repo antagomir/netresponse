@@ -154,6 +154,74 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
   }
 }
 
+#' PlotMixtureUnivariate
+#' 
+#' Visualize data, centroids and stds for a given univariate
+#' Gaussian mixture model with PCA.
+#'
+#' Arguments:
+#' @param x data vector
+#' @param means mode centroids
+#' @param sds mode standard deviations
+#' @param ws weight for each mode
+#' @param title.text Plot title
+#' @param xlab.text xlab.text
+#' @param ylab.text ylab.text
+#' @param binwidth binwidth for histogram
+#' @param ... Further arguments for plot function.
+#'
+#' Return:
+#' @return Used for its side-effects
+#'
+#' @export
+#'
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse") for citation details.
+#' @keywords utilities
+#' @examples #plotMixtureUnivariate(dat, means, sds, ws)
+PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, ...) {
+
+  # x <- z; means = model@models[[1]]$mu; sds = model@models[[1]]$sd; ws = model@models[[1]]$w; title.text = names(model@models)[[1]]; xlab.text = "Component score"; ylab.text = "Frequency"; binwidth = 0.1
+				 
+  # Circumvent warnings
+  ..density.. <- NULL
+  vals <- NULL
+  varname <- NULL
+		 
+  # Find cluster for each sample
+  qofz <- P.r.s(t(matrix(x)), list(mu = means, sd = sds, w = ws), log = TRUE)
+  sms <- apply(qofz, 1, which.max)
+     
+  df <- data.frame(list(x = x))
+  df$vals <- seq(min(df$x), max(df$x), length=nrow(df)) # estimation points for fitted Gaussians
+  df$mode <- factor(sms)
+
+  # Histogram and density plot
+  pg <- ggplot2::ggplot(df, aes(x=x)) 
+
+
+  # This shows all in the same scale but no colors for modes
+  #pg <- pg + geom_histogram(aes(y = ..density..), binwidth=binwidth, fill = "gray") 
+  
+  # This plots modes with different colors but densities are shown at
+  # different scale
+  pg <- pg + geom_histogram(aes(y = ..density.., fill = mode), binwidth=binwidth) 
+  pg <- pg + geom_density(fill="gray", alpha = 0.1) 
+  pg <- pg + theme_bw() + xlab(xlab.text) + ylab(ylab.text) 
+  pg <- pg + ggtitle(title.text)
+  pg <- pg + scale_fill_brewer(palette = "Greys") 
+
+  # Estimated normal distributions from the mixture model
+  for(comp in 1:length(means)){
+    df2 <- data.frame(list(vals = df$vals, varname = ws[[comp]]*dnorm(df$vals, mean = means[[comp]], sd = sds[[comp]])))
+    # Add in normal distribution
+    #pg <- pg + geom_area(aes(x=vals, y=varname), fill=comp, data = df2) 
+    pg <- pg + geom_line(aes(x=vals, y=varname), color="red", data = df2) 
+  }
+
+  pg
+
+}
 
 
 #' PlotMixtureBivariate
@@ -223,8 +291,6 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @param sds mode standard deviations, assuming diagonal covariance matrices (modes x features, each row giving the sqrt of covariance diagonal for the corresponding mode)
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
-#' @param confidence Confidence interval for the responses based on the
-#' covariances of each response. If NULL, no plotting.
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -232,29 +298,44 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, confidence = 0.95, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, ...) {
 
-  if (!is.null(labels)) {
-    if (is.null(names(labels))) {
-       names(labels) <- rownames(x)
-    }
+  # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
+
+  # Circumvent warnings
+  Comp.1 <- Comp.2 <- dat2 <- NULL
+
+  if (!is.null(labels) && is.null(names(labels))) {
+    names(labels) <- rownames(x)
   } 
 
-  # Add cluster centroids
-  dat2 <- rbind(x, means)  
+  if (ncol(x) > 2) {
 
-  # center the data
-  dat.mean <- colMeans(x)
-  dat.centered <- t(t(dat2) - dat.mean)
+    # center the data
+    dat.mean <- colMeans(x)
+    dat.centered <- t(t(x) - dat.mean)
 
-  # PCA, two principal components
-  pca <- princomp( dat.centered )
+    # PCA, two principal components
+    pca <- princomp( dat.centered )
 
-  # projection plane
-  v <- as.matrix( pca$loadings[, 1:2] )
+    # projection plane
+    v <- as.matrix( pca$loadings[, 1:2] )
   
-  # Projected centroids (in PC space) for the detected components
-  dat.pca <- dat.centered %*% v
+    # Projected centroids (in PC space) for the detected components
+    dat.pca <- dat.centered %*% v
+
+    pld <- dat.pca
+
+    xtitle <- "PCA1"
+    ytitle <- "PCA2"
+    title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")
+
+  } else {
+    pld <- x
+    xtitle <- colnames(x)[[1]]
+    ytitle <- colnames(x)[[2]]
+    title <- "Cross-plot"
+  }
 
   nlab <- length(unique(labels))
   if (nlab > 1) {
@@ -264,23 +345,23 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, confidenc
     cols <- "black"
   }
 
-  plot(dat.pca[1:nrow(x), ], main = paste("PCA plot"), xaxt = 'n', yaxt = 'n', xlab = "", ylab = "", col = cols, pch = 19)
+  # Determine the most likely cluster for each sample (-> hard clusters)
+  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+  rownames(qofz) <- rownames(x)
+  colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
+  sms <- paste("Mode", apply(qofz, 1, which.max), sep = "-")
 
-  if (nlab > 1) { legend("topleft", legend = as.character(unique(labels)), fill = unique(cols)) }
+  # Form data.fframe
+  df <- data.frame(list(Comp.1 = pld[, 1], Comp.2 = pld[, 2]))
+  df$mode <- factor(sms)
 
-  for (ri in 1:nrow(means)) { 
+  require(ggplot2)
+  theme_set(theme_bw(15))
+  p <- ggplot2::ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
+  print(p)
 
-    # Estimated covariance matrix for the response
-    cmat <- diag(sds[ri,]^2)
+  p
 
-    # Projection of the covariance matrix in the PCA projection space
-    cmat.projection <- diag(diag(t(v)%*%cmat%*%v)) # force it diagonal as it should be
-
-    # Indicate estimated responses by ellipses
-    if (!is.null(confidence)){
-      add.ellipse(centroid = dat.pca[ri, ], covmat = cmat.projection, confidence = confidence)
-    }
-  }
 }
 
 #' Plot observed data.

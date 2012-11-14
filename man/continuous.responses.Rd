@@ -3,7 +3,7 @@
 \title{Description: Quantify association between modes and continuous variable}
 \usage{
   continuous.responses(annotation.vector, model,
-    method = "t-test", min.size = 2)
+    method = "t-test", min.size = 2, data = NULL)
 }
 \arguments{
   \item{annotation.vector}{annotation vector with discrete
@@ -13,9 +13,11 @@
 
   \item{method}{method for enrichment calculation}
 
-  \item{min.size}{minimum sample size for a response
+  \item{min.size}{minimum sample size for a response}
 
-  Returns:}
+  \item{data}{data}
+
+
 }
 \value{
   List with each element corresponding to one factor level

@@ -5,7 +5,7 @@ annotation matrix}
 \usage{
   list.responses.factor(annotation.df, model,
     method = "hypergeometric", min.size = 2, qth = Inf,
-    verbose = TRUE)
+    verbose = TRUE, data = NULL)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete
@@ -19,7 +19,9 @@ annotation matrix}
 
   \item{qth}{q-value threshold}
 
-  \item{verbose}{verbose Returns:}
+  \item{verbose}{verbose}
+
+  \item{data}{data}
 }
 \value{
   Table listing all associations between the factor levels
