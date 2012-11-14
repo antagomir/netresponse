@@ -164,7 +164,12 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 
   if (!is.null(collected.table)) {
   
-    collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE)$qvalue
+    if (nrow(collected.table)>100) {
+      collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE)$qvalue
+    } else {
+      collected.table$qvalue <- rep(NA, nrow(collected.table))
+    }  
+
     colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
   
     # Filtering based on qvalues
@@ -250,7 +255,7 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 
     collected.table$qvalue <- rep(NA, nrow(collected.table))
     nainds <- is.na(collected.table$pvalue)
-    if (sum(!nainds) > 50) {
+    if (sum(!nainds) > 100) {
       qv <- qvalue(collected.table$pvalue[!nainds], pi0.method = "bootstrap")
       if (("qvalues" %in% names(qv)) && sum(!nainds) > 0) {
         collected.table$qvalue[!nainds] <- qv$qvalues
