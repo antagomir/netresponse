@@ -4,7 +4,7 @@
 \usage{
   list.responses.continuous(annotation.df, model,
     method = "t-test", min.size = 1, qth = Inf,
-    verbose = TRUE, data = NULL)
+    verbose = TRUE, data = NULL, rounding = NULL)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete
@@ -21,6 +21,8 @@
   \item{verbose}{verbose}
 
   \item{data}{data}
+
+  \item{rounding}{rounding digits}
 
 }
 \value{

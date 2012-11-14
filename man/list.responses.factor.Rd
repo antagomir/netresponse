@@ -5,7 +5,7 @@ annotation matrix}
 \usage{
   list.responses.factor(annotation.df, model,
     method = "hypergeometric", min.size = 2, qth = Inf,
-    verbose = TRUE, data = NULL)
+    verbose = TRUE, data = NULL, rounding = NULL)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete
@@ -22,6 +22,8 @@ annotation matrix}
   \item{verbose}{verbose}
 
   \item{data}{data}
+
+  \item{rounding}{rounding digits}
 }
 \value{
   Table listing all associations between the factor levels
