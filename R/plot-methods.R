@@ -209,7 +209,7 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
   pg <- pg + geom_density(fill="gray", alpha = 0.1) 
   pg <- pg + theme_bw() + xlab(xlab.text) + ylab(ylab.text) 
   pg <- pg + ggtitle(title.text)
-  pg <- pg + scale_fill_brewer(palette = "Greys") 
+  # pg <- pg + scale_fill_brewer(palette = "Greys") 
 
   # Estimated normal distributions from the mixture model
   for(comp in 1:length(means)){
