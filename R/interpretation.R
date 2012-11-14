@@ -86,7 +86,8 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 #' @param qth q-value threshold
 #' @param verbose verbose 
 #' @param data data (samples x features; or a vector in univariate case) 
-#' 
+#' @param rounding rounding digits 
+#'
 #' Returns:
 #' @return Table listing all associations between the factor levels and
 #'   responses
@@ -95,7 +96,7 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 #' @export
 #' @keywords utilities
 
-list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL) {
+list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
   # annotation.df <- atlas.metadata[sample.set, factor.vars]; model <- res$model; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = TRUE
   # annotation.df <- annot[, factor.vars]; model; min.size = 1; qth = 1; method = "hypergeometric"; verbose = TRUE
@@ -171,6 +172,26 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
   
   }
 
+
+  collected.table$mode <- as.character(collected.table$mode)
+  #collected.table$Factor <- collected.table$Factor
+  #collected.table$Level <- collected.table$Level
+  collected.table$mysamples.in.response <- as.numeric(as.character(collected.table$mysamples.in.response))
+  collected.table$fraction.in.response <- as.numeric(as.character(collected.table$fraction.in.response))
+  collected.table$fraction.in.data <- as.numeric(as.character(collected.table$fraction.in.data))
+  collected.table$pvalue <- as.numeric(as.character(collected.table$pvalue))
+  collected.table$qvalue <- as.numeric(as.character(collected.table$qvalue))
+ 
+
+  if (!is.null(rounding)) {
+
+    collected.table$fraction.in.response <- round(collected.table$fraction.in.response, rounding)
+    collected.table$fraction.in.data <- round(collected.table$fraction.in.data, rounding)
+    collected.table$pvalue <- round(collected.table$pvalue, rounding)
+    collected.table$qvalue <- round(collected.table$qvalue, rounding)
+ 
+  }
+ 
   collected.table
 
 }
@@ -189,6 +210,8 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 #' @param qth q-value threshold
 #' @param verbose verbose 
 #' @param data data (samples x features)
+#' @param rounding rounding digits
+#'
 #' Returns:
 #' @return Table listing all associations between the factor levels and
 #' responses
@@ -197,7 +220,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 #' @export
 #' @keywords utilities
 
-list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE, data = NULL) {
+list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
   # annotation.df <- atlas.metadata[sample.set, continuous.vars]; method <- "t-test"; model <- res$model; min.size = 1; qth = 0.2; verbose = TRUE
   # annotation.df <- annot[, continuous.vars];  method <- "t-test"; min.size = 1; qth = 0.2; verbose = TRUE
@@ -254,6 +277,13 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
   }
 
   if (length(collected.table) == 0) { collected.table <- NULL} 
+
+
+  if (!is.null(rounding)) {
+    collected.table$qvalue <- round(collected.table$qvalue, rounding)
+    collected.table$pvalue <- round(collected.table$pvalue, rounding)
+  }  
+
 
   collected.table
 
