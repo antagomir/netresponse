@@ -27,6 +27,9 @@
 #' (TRUE). Else list the most strongly associated component for each sample
 #' (FALSE).
 #' @param verbose Follow progress by intermediate messages.
+#' @param data Data (features x samples; or a vector for univariate case) to predict response for given data points (currently implemented only for mixture.model output)
+#'
+#' Return:
 #' @return A list. Each element corresponds to one subnetwork response, and
 #' contains a list of samples that are associated with the response (samples
 #' for which this response has the highest probability P(response | sample)).
@@ -49,15 +52,34 @@
 #' # Find the samples for each response (for a given subnetwork)
 #' response2sample(model, subnet.id = 1)
 #' 
-#' 
-response2sample <- function (model, subnet.id, component.list = TRUE, verbose = FALSE) {
+response2sample <- function (model, subnet.id = NULL, component.list = TRUE, verbose = FALSE, data = NULL) {
 
-  if (is.numeric(subnet.id)) {
-    subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
-  }
+  if (class(model) == "NetResponseModel") {
+
+    if (is.numeric(subnet.id)) {
+      subnet.id <- paste("Subnet", subnet.id, sep = "-")
+      warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
+    }
   
-  response.probabilities <- sample2response(model, subnet.id)
+    response.probabilities <- sample2response(model, subnet.id)
+
+  } else if (class(model) == "list") {
+
+    # For mixture.model output
+    if (is.vector(data)) { 
+      data2 <- t(matrix(data)) 
+      colnames(data2) <- names(data)
+      rownames(data2) <- "Mode-1"
+      data <- data2
+      data2 <- NULL
+    }
+
+    # Find cluster for each sample
+    response.probabilities <- P.r.s(data, model$params, log = TRUE)
+    rownames(response.probabilities) <- colnames(data)
+    colnames(response.probabilities) <- paste("Mode", 1:ncol(response.probabilities), sep = "-")
+    
+  }
 
   # For each sample, list the most strongly associated response (highest P(r|s))
   clusters <- apply(response.probabilities, 1, which.max)

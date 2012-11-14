@@ -4,7 +4,7 @@
 \usage{
   list.responses.continuous(annotation.df, model,
     method = "t-test", min.size = 1, qth = Inf,
-    verbose = TRUE)
+    verbose = TRUE, data = NULL)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete
@@ -18,7 +18,10 @@
 
   \item{qth}{q-value threshold}
 
-  \item{verbose}{verbose Returns:}
+  \item{verbose}{verbose}
+
+  \item{data}{data}
+
 }
 \value{
   Table listing all associations between the factor levels

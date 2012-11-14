@@ -47,6 +47,8 @@
 #' @param subnet.ids Specify subnets for which the responses shall be ordered.
 #'   By default, use all subnets.
 #' @param verbose Follow progress by intermediate messages.
+#' @param data data (samples x features; or a vector in univariate case)
+#'
 #' @return A data frame with elements 'ordered.responses' which gives a data
 #'   frame of responses ordered by enrichment score for the investigated sample.
 #'   The subnetwork, response id and enrichment score are shown. The method field
@@ -62,7 +64,9 @@
 #' # - for given sample/s (factor level), order responses (across all subnets) by association strength (enrichment score)
 #' #order.responses(model, sample, method  = "hypergeometric") # overrepresentation
 
-order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE) {
+order.responses <- function (model, sample, method = "hypergeometric", min.size = 2, max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE, data = NULL) {
+
+  if (class(model) == "NetResponseModel") {
 
   # Given sample (for instance set of samples associated with a given factor 
   # level) order the responses across all subnetworks based on their 
@@ -102,8 +106,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
   if (length(enrichment.info) > 0) {
 
-    if (verbose) {message("Calculating enrichments..")}
-
     enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
 
     enr <- as.data.frame(t(sapply(enrichment.info, identity)))
@@ -127,8 +129,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
     if ("enrichment.score" %in% names(enr)) {
 
-      if (verbose) {message("Checking enrichments..")}
-
       enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
 
       enr[["subnet"]] <- as.character(enr[["subnet"]])
@@ -150,6 +150,26 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
     return(NULL)
   }	
 
+  } else if (class(model) == "list") {
+
+    # For mixture.model output
+    enrichment.info <- list()
+    for (response in 1:model$model$posterior$K) {
+
+      enr <- response.enrichment(model = model, s = sample, response = response, method = method, data = data)
+      enr <- c(mode = response, enrichment.score = enr$score, enr$info) 
+      enrichment.info[[response]] <- enr
+
+    }
+
+    enr <- t(sapply(enrichment.info, identity))
+    enr <- enr[order(enr[, "enrichment.score"], decreasing = TRUE),]
+    enr <- list(ordered.responses = enr)
+
+    return(enr)
+
+  }
+
 }
 			    
 
@@ -161,10 +181,11 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 #'
 #' @param subnet.id Subnet.
 #' @param model NetResponseModel object.
-#' @param s User-defined sample group. For instance, samples belonging to a
-#' particular annotation class.
+#' @param s User-defined sample group. For instance, samples belonging to a particular annotation class.
 #' @param response Response id (integer) within the subnet.
 #' @param method Enrichment method.
+#' @param data data (samples x features)
+#'
 #' @return List with enrichment statistics, depending on enrichment method.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @seealso order.responses
@@ -173,14 +194,49 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 #' @export
 #' @examples #enr <- response.enrichment(subnet.id, model, sample, response, method)
 #' 
-response.enrichment <- function (subnet.id, model, s, response, method = "hypergeometric") {
+response.enrichment <- function (subnet.id = NULL, model, s, response, method = "hypergeometric", data = NULL) {
 
-  if (is.numeric(subnet.id)) {
-    subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
+  # samples x features
+  if(is.vector(data)) {
+    data2 <- matrix(data)
+    rownames(data2) <- names(data)
+    data <- data2
   }
 
-  response.samples <- response2sample(model, subnet.id, component.list = TRUE)
+  # pick sample data for the response and
+  # ensure this is a matrix also when a single sample is given
+  if (any(!s %in% rownames(data))) {
+    warning("Not all samples are in the original data matrix; these are removed from enrichment analysis.")
+    s <- intersect(s, rownames(data))
+    s.ann <- s
+  }
+
+  if (class(model) == "NetResponseModel") {
+
+    if (is.null(data)) {
+      data <- model@datamatrix
+    }
+
+    if (is.numeric(subnet.id)) {
+      subnet.id <- paste("Subnet", subnet.id, sep = "-")
+      warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
+    }
+ 
+     response.samples <- response2sample(model, subnet.id, component.list = TRUE)
+
+     # Subnetwork feature names
+     nodes <- model@subnets[[subnet.id]]
+     dat <- matrix(data[, nodes, drop = FALSE], ncol = length(nodes))
+     rownames(dat) <- rownames(data)
+     colnames(dat) <- nodes
+     # dat is now samples x features matrix
+
+   } else {
+     # For mixture.model output
+     dat <- data
+     response.samples <- response2sample(model, component.list = TRUE, data = t(dat))
+   }
+
   if (length(response.samples) == 0) { return(NULL) }
   response.sample <- response.samples[[response]]
   
@@ -188,29 +244,12 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
  
   pars <- get.model.parameters(model, subnet.id)
 
-  # All samples
-  s.ann <- rownames(model@datamatrix) # model@samples
-
-  # Subnetwork feature names
-  nodes <- pars$nodes
-
-  # pick sample data for the response and
-  # ensure this is a matrix also when a single sample is given
-  if (any(!s %in% rownames(model@datamatrix))) {
-    warning("Not all samples are in the original data matrix and removed from enrichment analysis.")
-    s <- intersect(s, rownames(model@datamatrix))
-  }
-  dat <- matrix(model@datamatrix[s, nodes], ncol = length(nodes))
-  rownames(dat) <- s
-  colnames(dat) <- nodes
-  # dat is now samples x features matrix
-      
   # Method indicates which test will be used
   # FIXME: add other methods; the higher the better
 
   if (method == "hypergeometric") {
 
-      N <- nrow(model@datamatrix)
+      N <- nrow(dat)
 
       # number of white balls in the urn
       m <- length(s) 
@@ -227,7 +266,7 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
       # hypergeometric enrichment (small p, high enrichment)
       # take 1-p to indicate high enrichment with high score
       # use q-1 since lower.tail = FALSE indicates X > x calculation, but we need X >=x
-      #enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
+      # enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
       pval <- phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
 
       temp <- c(sample.size.total = N,
@@ -235,7 +274,8 @@ response.enrichment <- function (subnet.id, model, s, response, method = "hyperg
 	     			   sample.size.mysample = m,
 	     			   mysamples.in.response = q, 
 				   fraction.in.data = m/N,
-				   fraction.in.response = q/k, pvalue = pval)
+				   fraction.in.response = q/k, 
+				   pvalue = pval)
 
       enr <- list(score = 1 - pval, info = temp)
 

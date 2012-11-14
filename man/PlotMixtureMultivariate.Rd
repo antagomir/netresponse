@@ -2,8 +2,7 @@
 \alias{PlotMixtureMultivariate}
 \title{PlotMixtureMultivariate}
 \usage{
-  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL,
-    confidence = 0.95, ...)
+  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, ...)
 }
 \arguments{
   \item{x}{data matrix (samples x features)}
@@ -19,10 +18,6 @@
 
   \item{labels}{Optional: sample class labels to be
   indicated in colors.}
-
-  \item{confidence}{Confidence interval for the responses
-  based on the covariances of each response. If NULL, no
-  plotting.}
 
   \item{...}{Further arguments for plot function.}
 }

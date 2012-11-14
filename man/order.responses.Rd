@@ -4,7 +4,7 @@
 \usage{
   order.responses(model, sample, method = "hypergeometric",
     min.size = 2, max.size = Inf, min.responses = 2,
-    subnet.ids = NULL, verbose = FALSE)
+    subnet.ids = NULL, verbose = FALSE, data = NULL)
 }
 \arguments{
   \item{model}{NetResponseModel object.}
@@ -27,6 +27,9 @@
   shall be ordered.  By default, use all subnets.}
 
   \item{verbose}{Follow progress by intermediate messages.}
+
+  \item{data}{data (samples x features; or a vector in univariate case)}
+
 }
 \value{
   A data frame with elements 'ordered.responses' which
