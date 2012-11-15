@@ -15,6 +15,8 @@
 #' @param params params
 #' @param model.nodes model.nodes
 #' @param model.pairs model.pairs
+#'
+#' Return:
 #' @return \item{model.pairs }{model.pairs} \item{delta }{delta}
 #' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
 #' Leo Lahti \email{leo.lahti@@iki.fi}
@@ -28,7 +30,9 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
   b <- network[2, edge]           
   vars  <- network.nodes[sort(c(G[[a]], G[[b]]))]          
   
-  tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold) 
+  dat <- matrix(datamatrix[, vars], nrow( datamatrix ))
+  
+  tmp <- mixture.model(dat, params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold, params$pca.basis)
   model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
   model.params <- tmp$params
 

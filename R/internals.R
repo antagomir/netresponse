@@ -35,12 +35,10 @@ pick.model.parameters <- function (m, nodes) {
   w    <- m$posterior$weights    # component weights
   mu   <- m$posterior$centroids  # component centroids
   sds  <- m$posterior$sds        # component standard devs
-
-  rownames(mu) <- rownames(sds) <- names(w) <- paste("Mode", 1:length(w), sep = "-")
-  colnames(mu) <- colnames(sds) <- nodes		       
+  qofz  <- m$posterior$qOFz      # soft mode assignmentd
 
   # For mu and std, rows correspond to the mixture components, in w the elements
-  list(mu = mu, sd = sds, w = w, free.energy = m$free.energy, Nparams = m$posterior$Nparams)
+  list(mu = mu, sd = sds, w = w, free.energy = m$free.energy, Nparams = m$posterior$Nparams, qofz = qofz)
 
 }
 

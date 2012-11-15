@@ -91,9 +91,8 @@ P.rS <- function (dat, pars, log = TRUE) {
 
 P.r.s <- function (dat, pars, log = TRUE) {
 
+  # FIXME rowmeans(qofz) is constant but not 1
   # P(r|s) for each response r and sample s
-
-  
   if (length(pars$w) == 1) {
     # If there is only one mode, its likelihood is 1 for all samples
     qofz <- array(1, dim = dim(dat))
@@ -130,9 +129,8 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
   # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
   # P(r, s) for all samples and responses. Should hold sum_r P(r, s) = P(s) -> OK
   #  Alternatively: logp.joint <- t(t(prs.log) + ps.log)
-  
+
   # FIXME: merge with P.rs.joint and/or P.rS to avoid redundancy
-  
   psr.log <- P.s.r(dat, pars, log = TRUE)
   pr.log <- as.vector(log(pars$w))
 
@@ -270,7 +268,7 @@ P.s.r <- function (dat, pars, log = TRUE) {
   # responses x samples matrix P(s|r)
   psr <- matrix(NA, nrow = length(pars$w), ncol = ncol(dat)) 
   if (!is.null(colnames(dat))) { colnames(psr) <- colnames(dat) }
-  
+
   for ( response in 1:length( pars$w ) ) {
     # Given the diagonal covariances, the density is product (log-sum)
     # over the densities for individual features (on each data point)

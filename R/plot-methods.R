@@ -292,6 +292,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param title title
+#' @param modes Optional: provide sample modes for visualization already in the input
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -299,7 +300,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, ...) {
 
   # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
 
@@ -310,7 +311,7 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
     names(labels) <- rownames(x)
   } 
 
-  if (ncol(x) > 2) {
+  if (ncol(x) > 1) {
 
     # center the data
     dat.mean <- colMeans(x)
@@ -349,15 +350,20 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
     cols <- "black"
   }
 
-  # Determine the most likely cluster for each sample (-> hard clusters)
-  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
-  rownames(qofz) <- rownames(x)
-  colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
-  sms <- paste("Mode", apply(qofz, 1, which.max), sep = "-")
+
+  if (is.null(modes)) {
+  
+    # Determine the most likely cluster for each sample (-> hard clusters)
+    qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+    rownames(qofz) <- rownames(x)
+    colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
+    modes <- paste("Mode", apply(qofz, 1, which.max), sep = "-")
+
+  }
 
   # Form data.fframe
   df <- data.frame(list(Comp.1 = pld[, 1], Comp.2 = pld[, 2]))
-  df$mode <- factor(sms)
+  df$mode <- factor(modes)
 
   require(ggplot2)
   theme_set(theme_bw(15))
@@ -580,6 +586,7 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' @param plot.type Network plot mode. For instance, 'neato' or 'twopi'.
 #' @param mar Figure margins.
 #' @param horiz Logical. Horizontal barplot.
+#' @param datamatrix datamatrix
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -593,7 +600,11 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' #vis <- plot.responses(res, subnet.id)
 #' 
 plot.responses <-
-function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, ...) {
+function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, ...) {
+
+  if (is.null(datamatrix)) {
+    datamatrix <- x@datamatrix
+  }
 
   require(igraph0)
   require(Rgraphviz)
@@ -607,6 +618,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 
   pars <- get.model.parameters(x, subnet.id)
   subnet.nodes <- get.subnets(x)[[subnet.id]]
+  datamatrix <- datamatrix[, subnet.nodes]
 
   if (class(x@network) %in% c("graphNEL", "igraph")) {
     # FIXME speedup by just converting the correct subset, not whole matrix
@@ -622,10 +634,14 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
   mypalette <- colorRampPalette(c("blue", "black", "red"), space = "rgb")
   
   # compute differential expression in nodes with respect to the mean expression level for each gene
-  ctrl.state <- colMeans(x@datamatrix[, subnet.nodes])
+  ctrl.state <- colMeans(datamatrix)
   centroids <- t(pars$mu)
   difexp <- apply(centroids, 2, function(x){ x - ctrl.state })
   rownames(difexp) <- rownames(centroids)
+
+  # Determine the most likely mode for each sample (-> hard clusters)
+  qofz <- x@models$qofz
+  modes <- apply(qofz, 1, which.max)
 
   if (plot.mode == "network") {
     par(mfrow = c(ceiling(length(pars$w)/nc), nc))
@@ -637,7 +653,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     # order samples according to responses
     ordered.samples <- unlist(response2sample(x, subnet.id))
 
-    dmat <- x@datamatrix[ordered.samples, subnet.nodes]
+    dmat <- datamatrix[ordered.samples, subnet.nodes]
     dmat <- t(t(dmat) - ctrl.state)
     par(mfrow = c())
 
@@ -649,6 +665,8 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     }
 
   } else if (plot.mode == "boxplot.data") {
+
+    stop("boxplot.data option todo")
 
     #r2s <- response2sample(x, subnet.id)
     label <- factor(apply(sample2response(x, subnet.id), 1, which.max))
@@ -671,6 +689,8 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     #ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": response boxplot", sep = ""))    
 
   } else if (plot.mode == "response.barplot") {
+
+    stop("response.barplot todo")
 
     # Plot cross-bars for estimated means and 95% intervals for each response for each node
     m <- get.model.parameters(x, subnet.id)
@@ -702,32 +722,31 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     }
   } else if (plot.mode == "pca") {
     
-    dmat <- x@datamatrix[, subnet.nodes]
+    dmat <- datamatrix[, subnet.nodes]
+
     if (length(subnet.nodes) == 1) {
-      warning("Subnetwork has only a single feature. Plotting histogram of the data instead of PCA crossplot.")
-      hist(dmat)
-#    } else if (length(subnet.nodes) == 2) {
-#
-#      warning("Subnetwork has two features. Plotting original data instead of PCA crossplot.")    #
-#
-#      # Project the data on the first two principal component ignoring centering of the data
-#      dmat.proj <- dmat
-#
-#      # Model parameters
-#      m <- get.model.parameters(x, subnet.id)
-#
-#      # Flip the responses and features for visualization
-#      means <- m$mu[rev(1:nrow(m$mu)), rev(1:ncol(m$mu))]
-#      sds <- m$sd[rev(1:nrow(m$sd)), rev(1:ncol(m$sd))]
-#
-#      # Plot  
-#      xran <- range(as.vector(dmat.proj[,1]))
-#      yran <- range(as.vector(dmat.proj[,2]))
-#      plot(dmat.proj, pch = 20, xlim = xran, ylim = yran) 
-#      for (ci in 1:nrow(means))  { add.ellipse(centroid = means[ci,], covmat = diag((sds^2)[ci,]), col = "blue") }#
-#
+
+     				 #means = model$params$mu, 
+				 #sds = model$params$sd, 
+				 #ws = model$params$w, 
+
+      pg <- PlotMixtureUnivariate(dmat, 
+      	    			 modes = modes,
+				 title.text = subnet.id,
+  				 xlab.text = "Component score", 
+  				 ylab.text = "Frequency", 
+  				 binwidth = 0.1)
+
+
     } else {
-      tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)
+
+      pg <- PlotMixtureMultivariate(dmat, 
+      	    			 modes = modes,
+				 title = subnet.id
+					  )
+
+      # tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)
+
     }
 
   }
