@@ -102,6 +102,8 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
   # annotation.df <- annot[, factor.vars]; model; min.size = 1; qth = 1; method = "hypergeometric"; verbose = TRUE
   # annotation.df <- annot[sample.set, factor.vars]; model; min.size = 1; qth = qth; data = t(X); method = "hypergeometric"; verbose = TRUE
 
+  pth <- NULL
+
   # samples x features
   if(is.vector(data)) {
     data2 <- matrix(data)
@@ -173,8 +175,11 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
   
     # Filtering based on qvalues
-    collected.table <- collected.table[collected.table$qvalue < qth, ]
-  
+    if (!all(is.na(collected.table$qvalue))) {
+      collected.table <- collected.table[collected.table$qvalue < qth, ]
+    } else {
+      collected.table <- collected.table[collected.table$pvalue < pth, ]
+    }
   }
 
 

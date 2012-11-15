@@ -130,12 +130,13 @@ detect.responses <- function(datamatrix,
 	 mc.cores = 1, # number of cores for parallelization
          mixture.method = "vdp", # Which approach to use for sample mixture estimation within given subnet. Options: bic/vdp
 	 bic.threshold = 0,
+	 pca.basis = FALSE,
 	 ... # Further arguments
 )
 
 {
 
-#fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = TRUE); for (f in fs) {source(f)}; datamatrix <- D; network <- netw; initial.responses = 1; max.responses = 3; max.subnet.size = 10; verbose = TRUE; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01;	update.hyperparams = 0; implicit.noise = 0; vdp.threshold = 1.0e-5; merging.threshold = 1; ite = Inf; information.criterion = "BIC"; speedup = TRUE; speedup.max.edges = 10; mc.cores = 1; mixture.method = "bic"; bic.threshold = 0          
+#fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = TRUE); for (f in fs) {source(f)}; datamatrix <- D; network <- netw; initial.responses = 1; max.responses = 3; max.subnet.size = 10; verbose = TRUE; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01;	update.hyperparams = 0; implicit.noise = 0; vdp.threshold = 1.0e-5; merging.threshold = 1; ite = Inf; information.criterion = "BIC"; speedup = TRUE; speedup.max.edges = 10; mc.cores = 1; mixture.method = "bic"; bic.threshold = 0; pca.basis = FALSE          
 
   # Check data matrix validity         
   datamatrix <- check.matrix(datamatrix)
@@ -177,7 +178,8 @@ detect.responses <- function(datamatrix,
 		 mc.cores = mc.cores,
 		 mixture.method = mixture.method,
 		 bic.threshold = bic.threshold,
-		 positive.edges = positive.edges
+		 positive.edges = positive.edges, 
+		 pca.basis = pca.basis		 
 		 )
 
   # Place each node in a singleton subnet

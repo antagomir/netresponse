@@ -17,8 +17,6 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
-
-
 #' independent.models
 #' 
 #' Mainly for internal use. Provide independent models for each node.
@@ -50,37 +48,12 @@ independent.models <- function (datamatrix, params) {
     if ( params$verbose ) { message(paste('Computing model for node', k, "/", ncol( datamatrix ))) }
     
     Nparams <- NULL
-    if (params$mixture.method == "vdp") {
 
-      model <- vdp.mixt( matrix(datamatrix[, node], nrow( datamatrix )),
-                      implicit.noise = params$implicit.noise,
-                      prior.alpha = params$prior.alpha,
-                      prior.alphaKsi = params$prior.alphaKsi,
-                      prior.betaKsi = params$prior.betaKsi,
-                      threshold = params$vdp.threshold,
-                      initial.K = params$initial.responses,
-                      ite = params$ite,
-                      c.max = params$max.responses - 1,
-                      speedup = params$speedup )
+    # FIXME: use mixture.model function everywhere here to simplify
 
-      model.params <- pick.model.parameters(model, node)
+    model <- mixture.model(matrix(datamatrix[, node], nrow( datamatrix )), mixture.method = params$mixture.method, max.responses = params$max.responses, implicit.noise = params$implicit.noise, prior.alpha = params$prior.alpha, prior.alphaKsi = params$prior.alphaKsi, prior.betaKsi = params$prior.betaKsi, vdp.threshold = params$vdp.threshold, initial.responses = params$initial.responses, ite = params$ite, speedup = params$speedup, bic.threshold = params$bic.threshold, pca.basis = params$pca.basis)
 
-    } else if (params$mixture.method == "bic") {
-
-      model <- bic.mixture.univariate(datamatrix[, node], max.modes = params$max.responses, bic.threshold = params$bic.threshold)
-
-      means <- matrix(model$means, nrow = length(model$ws))   
-      sds <- matrix(model$sds, nrow = length(model$ws))   
-      ws <- model$ws
-
-      rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
-      colnames(means) <- colnames(sds) <- node
-      
-      model.params <- list(mu = means, sd = sds, w = ws, free.energy = model$free.energy, Nparams = model$Nparams)
-
-    } else {
-      stop("Provide proper mixture.method")
-    }
+    model.params <- model$params
 
     # Cost for model
     C[[k]] <- info.criterion(model.params$Nparams, 

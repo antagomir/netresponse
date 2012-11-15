@@ -25,7 +25,7 @@
 #' Description: Fit Gaussian mixture model
 #'
 #' Arguments:
-#'  @param x data matrix (for multivariate analysis) or a vector (for univariate analysis)
+#'  @param x data matrix (samples x features, for multivariate analysis) or a vector (for univariate analysis)
 #'  @param mixture.method Specify the approach to use in mixture modeling.
 #'         Options. vdp (nonparametric Variational Dirichlet process mixture model);
 #'         bic (based on Gaussian mixture modeling with EM, using BIC to select the
@@ -49,6 +49,7 @@
 #'         etc in various places to speed up calculations. Particularly useful with
 #' 	   large and densely connected networks and/or large sample size.
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture with mixture.method = "bic"
+#'  @param pca.basis pca.basis
 #'  @param ... Further optional arguments to be passed.
 #'
 #' Returns:
@@ -59,7 +60,18 @@
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
 
-mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, ...) {
+mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE, ...) {
+
+  # Present data in PCA space to cope with diagonality of the covariances
+  if (pca.basis) {    
+    if (nrow(x) > ncol(x)) {
+      x <- princomp(x)$scores
+    } else {
+      # FIXME: implement sparse PCA here to gain more generality?
+      warning("Less samples than features, not applying PCA basis")
+      x <- x
+    }
+  }
 
   if (mixture.method == "vdp") {
 
@@ -81,9 +93,11 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
   } else if (mixture.method == "bic") { 	
 
     model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold)  
+
     mu <- matrix(model$means, nrow = length(model$ws))
     sd <- matrix(model$sds, nrow = length(model$ws))
     ws <- matrix(model$ws)
+    qofz <- matrix(model$qofz, ncol = length(ws))
 
     rownames(mu) <- rownames(sd) <- names(ws)
     colnames(mu) <- colnames(sd) <- colnames(x)        
@@ -91,6 +105,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     model.params <- list(mu = mu,
     		         sd = sd,
 			 w = ws, 
+			 qofz = qofz,
 			 free.energy = model$free.energy, 
 			 Nparams = model$Nparams)
 
@@ -126,6 +141,8 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 #' @keywords utilities
 bic.mixture <- function (x, max.modes, bic.threshold = 0, ...) { 
 
+  if (!is.vector(x) && ncol(x) == 1) {x <- x[,1]}	    
+
   if (is.vector(x)) {
     bic.mixture.univariate(x, max.modes, bic.threshold, ...)
   } else {
@@ -154,24 +171,29 @@ bic.mixture <- function (x, max.modes, bic.threshold = 0, ...) {
 
 bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) { 
 
-  #x <- mat; max.modes = params$max.responses; bic.threshold = params$bic.threshold
+  # x <- mat; max.modes = params$max.responses; bic.threshold = params$bic.threshold
 
   best.mode <- bic.select.best.mode(x, max.modes, bic.threshold) 
 
   mcl <- Mclust(x, G = best.mode)
 
   means <- t(mcl$parameters$mean)
-  vars <- t(apply(mcl$parameters$variance$sigma,3, function(x){diag(x)}))
+  vars <- t(apply(mcl$parameters$variance$sigma, 3, function(x){diag(x)}))
   sds <- sqrt(vars)
   ws <- as.vector(mcl$parameters$pro)
   if (is.null(ws)) {ws <- 1} 
 
   Nparams <- prod(dim(means)) + prod(dim(sds)) + length(ws) 
 
+  # Determine the most likely mode for each sample (-> hard clusters)
+  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+  rownames(qofz) <- rownames(x)
+  colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
+
   rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
   colnames(means) <- colnames(sds) <- colnames(x)
 
-  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik)
+  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, qofz = qofz)
 
 }
 
@@ -205,15 +227,22 @@ bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) {
   sds <- as.vector(sqrt(mcl$parameters$variance$sigmasq))
   if (length(sds) == 1) {sds <- rep(sds, length(means))} 
   ws <- as.vector(mcl$parameters$pro)
+
   if (is.null(ws)) {warning("NULL weights, replacing with 1"); ws <- 1} 
   if (is.null(means)) {warning("NULL means, replacing with 1"); means <- 1} 
   if (is.null(sds)) {warning("NULL sds, replacing with 1"); sds <- 1} 
 
   Nparams <- length(means) + length(sds) + length(ws) 
 
+  means <- matrix(means, nrow = length(ws))
+  sds <- matrix(sds, nrow = length(ws))
+
+  # Determine the most likely mode for each sample (-> hard clusters)
+  # save(means, sds, ws, x, file = "~/tmp/tmp.RData")
+  qofz <- P.r.s(matrix(x, nrow = 1), list(mu = means, sd = sds, w = ws), log = FALSE)
   names(means) <- names(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
 
-  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik)
+  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, qofz = qofz)
 
 }
 
