@@ -7,7 +7,7 @@
     prior.alpha = 1, prior.alphaKsi = 0.01,
     prior.betaKsi = 0.01, vdp.threshold = 1e-05,
     initial.responses = 1, ite = Inf, speedup = TRUE,
-    bic.threshold = 0, ...)
+    bic.threshold = 0, pca.basis = FALSE, ...)
 }
 \arguments{
   \item{x}{data matrix (for multivariate analysis) or a
@@ -56,9 +56,10 @@
   exceeded before a new mode is added to the mixture with
   mixture.method = "bic"}
 
-  \item{...}{Further optional arguments to be passed.
+  \item{pca.basis}{Perform clustering in PCA basis to improve mode detection with diagonal covariance matrices.}
 
-  Returns:}
+  \item{...}{Further optional arguments to be passed.}
+
 }
 \value{
   List with two elements: model: fitted mixture model

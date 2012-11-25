@@ -2,7 +2,7 @@
 \alias{PlotMixtureMultivariate}
 \title{PlotMixtureMultivariate}
 \usage{
-  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, title = NULL, ...)
+  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, ...)
 }
 \arguments{
   \item{x}{data matrix (samples x features)}
@@ -20,6 +20,8 @@
   indicated in colors.}
 
   \item{title}{title}
+
+  \item{modes}{Provide sample labels in the input.}
 
   \item{...}{Further arguments for plot function.}
 }

@@ -113,7 +113,9 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     stop("Provide proper mixture.method argument.")
   }    
 
-  list(model = model, params = model.params)
+  # FIXME: perhaps the 'model' is not needed any more when model.params is given? Check and remove to save space.
+  # How about pca.basis = TRUE case?
+  model.params
 
 }
 
@@ -186,7 +188,7 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
   Nparams <- prod(dim(means)) + prod(dim(sds)) + length(ws) 
 
   # Determine the most likely mode for each sample (-> hard clusters)
-  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = FALSE)
   rownames(qofz) <- rownames(x)
   colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
 

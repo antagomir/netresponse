@@ -211,7 +211,7 @@ vis <- plot.responses(model, subnet.id)
 \end{figure}
 
 Plot color scale used in the visualization:
-<<>>=
+<<visu2, fig=true>>=
 plot.scale(vis$breaks, vis$palette)
 @
 

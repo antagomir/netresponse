@@ -188,7 +188,7 @@ function(dat,
   # Retrieve model parameters 
 
   # number of mixture components (nonempty components only!)
-  # response must have 'non-negligible' probability mass!
+  # response must have non-negligible' probability mass!
   # i.e. at least some points associated with it
   Kreal <- max(apply(qOFz, 1, which.max))  #sum(colSums(qOFz) > 1e-3)
   qOFz  <- matrix(qOFz[, 1:Kreal], nrow(dat))

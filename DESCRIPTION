@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.11.04
-Date: 2012-11-13
+Version: 1.11.08
+Date: 2012-11-24
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -10,7 +10,7 @@ Description: Algorithms for functional network analysis. Includes an
     for nonparametric mixture modeling.
 License: GPL (>=2)
 Depends:
-    R (>= 2.15.0),
+    R (>= 2.15.2),
     dmt,
     igraph0,
     infotheo,
@@ -57,7 +57,6 @@ Collate:
     'check.network.R'
     'filter.netw.R'
     'get.mis.R'
-    'get.model.R'
     'ICMg.get.comp.memberships.R'
     'independent.models.R'
     'update.model.pair.R'
