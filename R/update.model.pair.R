@@ -32,13 +32,22 @@ update.model.pair <- function (datamatrix, delta, network, edge, network.nodes, 
   
   dat <- matrix(datamatrix[, vars], nrow( datamatrix ))
   
-  tmp <- mixture.model(dat, params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold, params$pca.basis)
-  model <- tmp$model # FIXME: perhaps the 'model' is not needed when model.params is given. Check and remove.
-  model.params <- tmp$params
+  model.params <- mixture.model(dat, 
+      	 		    mixture.method = params$mixture.method, 
+			    max.responses = params$max.responses, 
+			    implicit.noise = params$implicit.noise, 
+			    prior.alpha = params$prior.alpha, 
+			    prior.alphaKsi = params$prior.alphaKsi, 
+			    prior.betaKsi = params$prior.betaKsi, 
+			    vdp.threshold = params$vdp.threshold, 
+			    initial.responses = params$initial.responses, 
+			    ite = params$ite, params$speedup, 
+			    bic.threshold = params$bic.threshold, 
+			    pca.basis = params$pca.basis)
 
   # Negative free energy is (variational) lower bound for P(D|H)          
   # Use this to approximate P(D|H)          
-  if (is.finite(model$free.energy)) {
+  if (is.finite(model.params$free.energy)) {
     # Compute COST-value for two independent subnets vs. joint model
     # Negative free energy (-cost) is (variational) lower bound for P(D|H)
     # Use it as an approximation for P(D|H)

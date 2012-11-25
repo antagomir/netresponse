@@ -602,6 +602,8 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 plot.responses <-
 function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, ...) {
 
+  # x <- res; nc = 3; plot.names = TRUE; plot.mode = "pca"; xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = D
+
   if (is.null(datamatrix)) {
     datamatrix <- x@datamatrix
   }
@@ -609,7 +611,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
   require(igraph0)
   require(Rgraphviz)
 
-  tmp <- NULL
+  value <- tmp <- NULL
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -640,7 +642,7 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
   rownames(difexp) <- rownames(centroids)
 
   # Determine the most likely mode for each sample (-> hard clusters)
-  qofz <- x@models$qofz
+  qofz <- x@models[[subnet.id]]$qofz
   modes <- apply(qofz, 1, which.max)
 
   if (plot.mode == "network") {
@@ -650,11 +652,13 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
                           main = paste(subnet.id, "/Response-", comp, sep=""), plot.type = plot.type, ...)
     }
   } else if (plot.mode == "matrix" || plot.mode == "heatmap") {
+
     # order samples according to responses
     ordered.samples <- unlist(response2sample(x, subnet.id))
 
     dmat <- datamatrix[ordered.samples, subnet.nodes]
     dmat <- t(t(dmat) - ctrl.state)
+
     par(mfrow = c())
 
     # Color plot of the whole expression matrix, ordered by responses
@@ -666,31 +670,41 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 
   } else if (plot.mode == "boxplot.data") {
 
-    stop("boxplot.data option todo")
+    #stop("boxplot.data option todo")
 
     #r2s <- response2sample(x, subnet.id)
     label <- factor(apply(sample2response(x, subnet.id), 1, which.max))
+
     dat <- t(get.dat(x, subnet.id)) # samples x nodes
-    nr <- ceiling(sqrt(ncol(dat)))
-    nc <- ceiling(ncol(dat)/nr)
-    par(mfrow = c(nr, nc))
-    for (fnam in colnames(dat)) {
-    	boxplot(dat[, fnam] ~ label, main = fnam)
-    }
+
+    #require(reshape)
+    #df <- data.frame(dat)
+    #df$label <- label
+    #dfm <- melt(df, id.var = "label")    
+    #require(ggplot2)
+    #p <- ggplot(dfm, aes(x = variable, y = value, fill = label)) + geom_boxplot(); 
+    #print(p)
+
+    #nr <- ceiling(sqrt(ncol(dat)))
+    #nc <- ceiling(ncol(dat)/nr)
+    #par(mfrow = c(nr, nc))
+    #for (fnam in colnames(dat)) {
+    #  	boxplot(dat[, fnam] ~ label, main = fnam)
+    #}
     
     # Ggplot2 boxplots, this is handy as it determines the grid size automatically
     # List samples in each response (hard assignments)
-    #library(ggplot2)
-    #s2r <- sample2response(x, subnet.id)
-    #responses <- factor(apply(s2r, 1, which.max))
-    #dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
-    #df <- data.frame(list(responses = responses, dat))
-    #dfm <- melt(df, id = "responses")
-    #ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": response boxplot", sep = ""))    
+    require(ggplot2)
+    s2r <- sample2response(x, subnet.id)
+    responses <- factor(apply(s2r, 1, which.max))
+    dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
+    df <- data.frame(list(responses = responses, dat))
+    dfm <- melt(df, id = "responses")
+    ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + ggtitle(paste(subnet.id, ": response boxplot", sep = ""))
 
   } else if (plot.mode == "response.barplot") {
 
-    stop("response.barplot todo")
+    #stop("response.barplot todo")
 
     # Plot cross-bars for estimated means and 95% intervals for each response for each node
     m <- get.model.parameters(x, subnet.id)
@@ -699,11 +713,11 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     means <- m$mu[rev(1:nrow(m$mu)), rev(1:ncol(m$mu))]
     sds <- m$sd[rev(1:nrow(m$sd)), rev(1:ncol(m$sd))]
 
-    par(mar = mar);
-    bp <- seq(0.5, (nrow(means) + 1) * ncol(means), 1)
+    #par(mar = mar);
+    #bp <- seq(0.5, (nrow(means) + 1) * ncol(means), 1)
     # Use 1.96*std of the mean (95% quantile) for error limits
     # using the soft assignment sum as the sample size for each cluster
-    # FIXME: later use directly the parametric estimates from the model?
+    # FIXME: use directly the parametric estimates from the model?
 
     # note: reverse the groups since also sds is reversed
     std.of.mean <- sds/rev(sqrt(colSums(sample2response(x, subnet.id))))
@@ -712,14 +726,24 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
     eb1 <- rbind(rep(NA, ncol(means)), means - 1.96*std.of.mean)
     eb2 <- rbind(rep(NA, ncol(means)), means + 1.96*std.of.mean)
 
-    # Plot error bars
-    if (horiz) {
-      tmp <- barplot(means, beside = TRUE, las = 1, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
-      segments(y0 = bp, x0 = eb1, y1 = bp, x1 = eb2, col = "gray20", lwd = 1.5)
-    } else {
-      tmp <- barplot(means, beside = TRUE, las = 2, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
-      segments(x0 = bp, y0 = eb1, x1 = bp, y1 = eb2, col = "gray20", lwd = 1.5)
-    }
+    dat <- t(get.dat(x, subnet.id)) # samples x nodes
+    label <- factor(apply(sample2response(x, subnet.id), 1, which.max))
+    df <- data.frame(dat)
+    df$label <- label
+    dfm <- melt(df, id.var = "label")    
+    require(ggplot2)
+    ggplot(dfm) + aes(x = responses, y = value, fill = responses) + facet_wrap(~variable) + geom_bar(stat="identity")
+
+    # TODO: add error bars
+
+    ## Plot error bars
+    #if (horiz) {
+    #  tmp <- barplot(means, beside = TRUE, las = 1, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
+    #  segments(y0 = bp, x0 = eb1, y1 = bp, x1 = eb2, col = "gray20", lwd = 1.5)
+    #} else {
+    #  tmp <- barplot(means, beside = TRUE, las = 2, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
+    #  segments(x0 = bp, y0 = eb1, x1 = bp, y1 = eb2, col = "gray20", lwd = 1.5)
+    #}
   } else if (plot.mode == "pca") {
     
     dmat <- datamatrix[, subnet.nodes]

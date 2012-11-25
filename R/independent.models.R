@@ -49,11 +49,7 @@ independent.models <- function (datamatrix, params) {
     
     Nparams <- NULL
 
-    # FIXME: use mixture.model function everywhere here to simplify
-
-    model <- mixture.model(matrix(datamatrix[, node], nrow( datamatrix )), mixture.method = params$mixture.method, max.responses = params$max.responses, implicit.noise = params$implicit.noise, prior.alpha = params$prior.alpha, prior.alphaKsi = params$prior.alphaKsi, prior.betaKsi = params$prior.betaKsi, vdp.threshold = params$vdp.threshold, initial.responses = params$initial.responses, ite = params$ite, speedup = params$speedup, bic.threshold = params$bic.threshold, pca.basis = params$pca.basis)
-
-    model.params <- model$params
+    model.params  <- mixture.model(matrix(datamatrix[, node], nrow( datamatrix )), mixture.method = params$mixture.method, max.responses = params$max.responses, implicit.noise = params$implicit.noise, prior.alpha = params$prior.alpha, prior.alphaKsi = params$prior.alphaKsi, prior.betaKsi = params$prior.betaKsi, vdp.threshold = params$vdp.threshold, initial.responses = params$initial.responses, ite = params$ite, speedup = params$speedup, bic.threshold = params$bic.threshold, pca.basis = params$pca.basis)
 
     # Cost for model
     C[[k]] <- info.criterion(model.params$Nparams, 

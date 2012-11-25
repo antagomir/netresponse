@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti
+# Copyright (C) 2008-2012 Leo Lahti and Olli-Pekka Huovilainen
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -36,9 +36,11 @@ pick.model.parameters <- function (m, nodes) {
   mu   <- m$posterior$centroids  # component centroids
   sds  <- m$posterior$sds        # component standard devs
   qofz  <- m$posterior$qOFz      # soft mode assignmentd
+  free.energy <- m$free.energy # free energy
+  Nparams <- m$posterior$Nparams
 
   # For mu and std, rows correspond to the mixture components, in w the elements
-  list(mu = mu, sd = sds, w = w, free.energy = m$free.energy, Nparams = m$posterior$Nparams, qofz = qofz)
+  list(mu = mu, sd = sds, w = w, free.energy = free.energy, Nparams = Nparams, qofz = qofz)
 
 }
 
@@ -105,9 +107,10 @@ compute.weight <- function (pt, mu, vars, xt) {
 
 
 retrieve.model <- function (model, subnet.id) {
+
+  # Recalculate the model for a given subnet
   # Note: the algorithm has some stochasticity in initialization etc.
-  # so the results may not be exactly same each time; but they should
-  # be sufficiently similar in any case
+  # so the results may not be exactly same each time
   
   # Former: get.model
 
@@ -116,7 +119,7 @@ retrieve.model <- function (model, subnet.id) {
   # level: which agglomeration step
   # datamatrix for which the model was calculated
   
-  #  Copyright (C) 2008-2011 Leo Lahti
+  #  Copyright (C) 2008-2012 Leo Lahti
   #  Licence: GPL >=2
 
   if (is.numeric(subnet.id)) {
@@ -128,8 +131,23 @@ retrieve.model <- function (model, subnet.id) {
   nodes <- model@subnets[[subnet.id]]
 
   # Compute the model
-  vdp.mixt(matrix(model@datamatrix[, nodes], nrow(model@datamatrix)))
+  x <- matrix(model@datamatrix[, nodes], nrow(model@datamatrix))
 
+  pars <- mixture.model(x, mixture.method = model$params$mixture.method, 
+  		   max.responses = model$params$max.responses,
+		   implicit.noise = model$params$implicit.noise, 
+		   prior.alpha = model$params$prior.alpha,  
+		   prior.alphaKsi = model$params$prior.alphaKsi,
+		   prior.betaKsi = model$params$prior.betaKsi,
+		   vdp.threshold = model$params$vdp.threshold, 
+		   initial.responses = model$params$initial.responses, 
+		   ite = model$params$ite, 
+		   speedup = model$params$speedup, 
+		   bic.threshold = model$params$bic.threshold, 
+		   pca.basis = model$params$pca.basis)
+
+
+  pars
 }
 
 
@@ -1014,72 +1032,3 @@ fsort <- function (df, sortvar) {
 
 ##################################################################
 	
-plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", ylab = "", mypalette = NULL, interval = .1, cex.main = 1, xaxis = FALSE, yaxis = TRUE, row.tick = 1, col.tick = 1, cex.xlab = .9, cex.ylab = .9, cex.lab = .9, limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
-
-  # mat: differential expression matrix to plot in two-color palette
-  # interval: interval for palette color switches
-  # FIXME: synchronize with PlotMatrix in sorvi package  
-    
-  require(graph)
-  #require(RBGL)
-  require(Rgraphviz)
-  require(graphics)
-	   
-  if (length(mybreaks) == 0)  {
-    m <- max(round(max(abs(mat)), limit.trunc) - interval, 0)
-    mm <- m + interval/2
-    vals <- seq(interval/2,mm,interval)
-    # Set breaks evenly around zero
-    mybreaks  <- c(-(m+1e6),c(-rev(vals),vals),m+1e6)
-  }
-		  
-  if (length(mypalette)==0) {
-    mypalette <- colorRampPalette(c("blue", "black", "red"),space = "rgb")
-    my.colors <- mypalette(length(mybreaks)-1)
-  } else {
-    my.colors <- mypalette(length(mybreaks)-1)
-  }
-		      
-  # transpose and revert row order to plot matrix in the same way it
-  # appears in its numeric form
-  par(mar = mar)
-  image(t(mat[rev(seq(nrow(mat))),]), col = my.colors, xaxt='n', yaxt='n', zlim=range(mybreaks), breaks=mybreaks, main=maintext, xlab=xlab, ylab=ylab, cex.lab = cex.lab, cex.main = cex.main)
-
-  if (yaxis) {
-      
-    v <- seq(1, nrow(mat), row.tick) # take every nth index
-    axis(2, at = seq(0,1,length = nrow(mat))[v], labels = rev(rownames(mat))[v], 
-    	    cex.axis=cex.ylab, las = 2)
-    
-  }
-  
-  if (xaxis) {    
-
-    v <- seq(1, ncol(mat), col.tick) # take every nth index
-    axis(1, at = seq(0,1,length = ncol(mat))[v], labels = colnames(mat)[v], 
-    	    cex.axis = cex.xlab, las=2)
-
-  }
-    
-  return(list(palette = my.colors, breaks = mybreaks))
-      	  
-}
-
-
-check.bins <- function (difexp, mybreaks) {
-
-  # check color scale bin for each expression value
-  bins <- c()
-  for (i in 1:length(difexp)) {
-    # which color bins are smaller than our difexp value
-    # (for probet: i, mode:mode)
-    inds <- which(difexp[[i]] > mybreaks)
-    if (length(inds) == 0) {
-      bins[[i]] <- 1
-    } else if (length(inds) > 0)  {
-      bins[[i]] <- max(inds) + 1
-    }
-  }	
-  bins
-}
-

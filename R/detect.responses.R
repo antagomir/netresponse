@@ -296,13 +296,14 @@ detect.responses <- function(datamatrix,
 
           }
       
-          # FIXME: parallelize to speed up
+          # TODO: parallelize to speed up
           for (edge in merge.edges) {
 	    tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
 	    model.pairs <- tmp$model.pairs
 	    delta <- tmp$delta
 	  }
 
+	  # Didn't work straight away
 	  #tmp <- mclapply(merge.edges, function (edge) {
 	  #  update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
 	  #}, mc.cores = params$mc.cores)	  

@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
+# Copyright (C) 2008-2012 Leo Lahti and Olli-Pekka Huovilainen
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -66,8 +66,20 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, node.m
     b <- network[2, edge]
     vars <- network.nodes[c(a, b)]
 
-    tmp <- mixture.model(matrix(datamatrix[, vars], nrow( datamatrix )), params$mixture.method, params$max.responses, params$implicit.noise, params$prior.alpha, params$prior.alphaKsi, params$prior.betaKsi, params$vdp.threshold, params$initial.responses, params$ite, params$speedup, params$bic.threshold) 
-    model.params <- tmp$params
+    model.params <- mixture.model(x = matrix(datamatrix[, vars], nrow( datamatrix )), 
+    	   		 mixture.method = params$mixture.method, 
+			 max.responses = params$max.responses, 
+			 implicit.noise = params$implicit.noise, 
+			 prior.alpha = params$prior.alpha, 
+			 prior.alphaKsi = params$prior.alphaKsi, 
+			 prior.betaKsi = params$prior.betaKsi, 
+			 vdp.threshold = params$vdp.threshold, 
+			 initial.responses = params$initial.responses, 
+			 ite = params$ite, 
+			 speeup = params$speedup,
+			 bic.threshold = params$bic.threshold, 
+			 pca.basis = params$pca.basis
+			 ) 
 
     # Compute COST-value for two independent subnets vs. joint model
     # Negative free energy (-cost) is (variational) lower bound for P(D|H)
@@ -81,7 +93,7 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, node.m
     # change (increase) of the total COST / cost
     delt <- as.numeric(costjoint - costind)
 
-    # Store these only if it would improve the cost; otherwise never needed
+    # Store these only if it would improve the cost; otherwise never needed again
     if (-delt > params$merging.threshold) {
       mod.pair <- model.params
     } else {

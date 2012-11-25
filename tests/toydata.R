@@ -15,11 +15,9 @@ component.vars <- matrix(1/rgamma(Nc*dd, shape = rgam.shape, scale = rgam.scale)
 	                 nrow = Nc, ncol = dd)
 component.sds <- sqrt(component.vars)
 
-
 # Size for each component -> sample randomly for each data point from uniform distr.
 # i.e. cluster assignments
 sample2comp <- sample.int(Nc, Ns, replace = TRUE)
-
 D <- array(NA, dim = c(Ns, dd))
 for (i in 1:Ns)  {
     # component identity of this sample
@@ -28,4 +26,7 @@ for (i in 1:Ns)  {
     csd <- component.sds[ci,]
     D[i,] <- rnorm(dd, mean = cm, sd = csd)
 }
+
+colnames(D) <- paste("Feature-",  1:ncol(D), sep = "")
+rownames(D) <- paste("Sample-", 1:nrow(D), sep = "")
 
