@@ -168,6 +168,7 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' @param xlab.text xlab.text
 #' @param ylab.text ylab.text
 #' @param binwidth binwidth for histogram
+#' @param qofz qofz
 #' @param ... Further arguments for plot function.
 #'
 #' Return:
@@ -178,10 +179,8 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
-#' @examples #plotMixtureUnivariate(dat, means, sds, ws)
-PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, ...) {
-
-  # x <- z; means = model@models[[1]]$mu; sds = model@models[[1]]$sd; ws = model@models[[1]]$w; title.text = names(model@models)[[1]]; xlab.text = "Component score"; ylab.text = "Frequency"; binwidth = 0.1
+#' @examples # plotMixtureUnivariate(dat, means, sds, ws)
+PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, qofz = NULL, ...) {
 				 
   # Circumvent warnings
   ..density.. <- NULL
@@ -189,7 +188,8 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
   varname <- NULL
 		 
   # Find cluster for each sample
-  qofz <- P.r.s(t(matrix(x)), list(mu = means, sd = sds, w = ws), log = TRUE)
+  if (is.null(qofz)) {qofz <- P.r.s(t(matrix(x)), list(mu = means, sd = sds, w = ws), log = TRUE)}
+
   sms <- apply(qofz, 1, which.max)
      
   df <- data.frame(list(x = x))
@@ -198,7 +198,6 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
 
   # Histogram and density plot
   pg <- ggplot2::ggplot(df, aes(x=x)) 
-
 
   # This shows all in the same scale but no colors for modes
   #pg <- pg + geom_histogram(aes(y = ..density..), binwidth=binwidth, fill = "gray") 
@@ -293,6 +292,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param title title
 #' @param modes Optional: provide sample modes for visualization already in the input
+#' @param pca The data is projected on PCA plane by default (pca = TRUE). By setting this off (pca = FALSE) it is possible to visualize two-dimensional data in the original domain.
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -300,7 +300,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = TRUE, ...) {
 
   # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
 
@@ -311,27 +311,27 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
     names(labels) <- rownames(x)
   } 
 
-  if (ncol(x) > 1) {
+  if (pca || ncol(x) > 2) {
 
-    # center the data
-    dat.mean <- colMeans(x)
-    dat.centered <- t(t(x) - dat.mean)
+      # center the data
+      dat.mean <- colMeans(x)
+      dat.centered <- t(t(x) - dat.mean)
 
-    # PCA, two principal components
-    pca <- princomp( dat.centered )
+      # PCA, two principal components
+      pca <- princomp( dat.centered )
 
-    # projection plane
-    v <- as.matrix( pca$loadings[, 1:2] )
+      # projection plane
+      v <- as.matrix( pca$loadings[, 1:2] )
   
-    # Projected centroids (in PC space) for the detected components
-    dat.pca <- dat.centered %*% v
+      # Projected centroids (in PC space) for the detected components
+      dat.pca <- dat.centered %*% v
 
-    pld <- dat.pca
+      pld <- dat.pca
 
-    xtitle <- "PCA1"
-    ytitle <- "PCA2"
+      xtitle <- "PCA1"
+      ytitle <- "PCA2"
 
-    if (is.null(title)) {title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")}
+      if (is.null(title)) {title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")}
 
   } else {
 
@@ -587,6 +587,7 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' @param mar Figure margins.
 #' @param horiz Logical. Horizontal barplot.
 #' @param datamatrix datamatrix
+#' @param scale scale the phylotypes to unit length (only implemented for plot.mode = "matrix"
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -600,9 +601,12 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' #vis <- plot.responses(res, subnet.id)
 #' 
 plot.responses <-
-function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, ...) {
+function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...) {
 
   # x <- res; nc = 3; plot.names = TRUE; plot.mode = "pca"; xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = D
+
+  responses <- NULL
+  variable <- NULL
 
   if (is.null(datamatrix)) {
     datamatrix <- x@datamatrix
@@ -654,10 +658,13 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
   } else if (plot.mode == "matrix" || plot.mode == "heatmap") {
 
     # order samples according to responses
-    ordered.samples <- unlist(response2sample(x, subnet.id))
+    s2r <- apply(x[[subnet.id]]$qofz, 1, which.max) 
+    ordered.samples <- order(s2r)
 
     dmat <- datamatrix[ordered.samples, subnet.nodes]
     dmat <- t(t(dmat) - ctrl.state)
+
+    if (scale) {dmat <- scale(dmat, center = FALSE, scale = TRUE)}
 
     par(mfrow = c())
 
@@ -670,89 +677,57 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 
   } else if (plot.mode == "boxplot.data") {
 
-    #stop("boxplot.data option todo")
+    s2r <- apply(x[[subnet.id]]$qofz, 1, which.max)
+    label <- factor(s2r)  
 
-    #r2s <- response2sample(x, subnet.id)
-    label <- factor(apply(sample2response(x, subnet.id), 1, which.max))
-
-    dat <- t(get.dat(x, subnet.id)) # samples x nodes
-
-    #require(reshape)
-    #df <- data.frame(dat)
-    #df$label <- label
-    #dfm <- melt(df, id.var = "label")    
-    #require(ggplot2)
-    #p <- ggplot(dfm, aes(x = variable, y = value, fill = label)) + geom_boxplot(); 
-    #print(p)
-
-    #nr <- ceiling(sqrt(ncol(dat)))
-    #nc <- ceiling(ncol(dat)/nr)
-    #par(mfrow = c(nr, nc))
-    #for (fnam in colnames(dat)) {
-    #  	boxplot(dat[, fnam] ~ label, main = fnam)
-    #}
-    
-    # Ggplot2 boxplots, this is handy as it determines the grid size automatically
+    # Ggplot2 boxplot handy as determines the grid size automatically
     # List samples in each response (hard assignments)
     require(ggplot2)
-    s2r <- sample2response(x, subnet.id)
-    responses <- factor(apply(s2r, 1, which.max))
+
     dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
-    df <- data.frame(list(responses = responses, dat))
+    df <- data.frame(list(responses = label, dat))
     dfm <- melt(df, id = "responses")
-    ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + ggtitle(paste(subnet.id, ": response boxplot", sep = ""))
+
+    p <- ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + ggtitle(paste(subnet.id, ": response boxplot", sep = ""))
+
+    print(p)
 
   } else if (plot.mode == "response.barplot") {
-
-    #stop("response.barplot todo")
 
     # Plot cross-bars for estimated means and 95% intervals for each response for each node
     m <- get.model.parameters(x, subnet.id)
 
-    # Flip the responses and features for visualization
-    means <- m$mu[rev(1:nrow(m$mu)), rev(1:ncol(m$mu))]
-    sds <- m$sd[rev(1:nrow(m$sd)), rev(1:ncol(m$sd))]
-
-    #par(mar = mar);
-    #bp <- seq(0.5, (nrow(means) + 1) * ncol(means), 1)
     # Use 1.96*std of the mean (95% quantile) for error limits
     # using the soft assignment sum as the sample size for each cluster
     # FIXME: use directly the parametric estimates from the model?
+    # NOTE: that wouldn't work with pca.basis version directly
 
     # note: reverse the groups since also sds is reversed
-    std.of.mean <- sds/rev(sqrt(colSums(sample2response(x, subnet.id))))
-
-    # Error bars
-    eb1 <- rbind(rep(NA, ncol(means)), means - 1.96*std.of.mean)
-    eb2 <- rbind(rep(NA, ncol(means)), means + 1.96*std.of.mean)
+    s2r <- apply(x[[subnet.id]]$qofz, 1, which.max)
 
     dat <- t(get.dat(x, subnet.id)) # samples x nodes
-    label <- factor(apply(sample2response(x, subnet.id), 1, which.max))
+    response <- factor(s2r) #factor(apply(sample2response(x, subnet.id), 1, which.max))
     df <- data.frame(dat)
-    df$label <- label
-    dfm <- melt(df, id.var = "label")    
+    df$response <- response
+    dfm <- melt(df, id.var = "response")    
+
     require(ggplot2)
-    ggplot(dfm) + aes(x = responses, y = value, fill = responses) + facet_wrap(~variable) + geom_bar(stat="identity")
+    ggplot(dfm) + aes(x = response, y = value, fill = response) + facet_wrap(~variable) + geom_bar(stat="identity")
 
-    # TODO: add error bars
+    # mean and std of mean
+    df <- ddply(dfm, c("response", "variable"), function (dd) {c(mean = mean(dd$value), sd = 1.96*sd(dd$value)/sqrt(sum(x[[subnet.id]]$qofz[, dd$response])))})
 
-    ## Plot error bars
-    #if (horiz) {
-    #  tmp <- barplot(means, beside = TRUE, las = 1, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
-    #  segments(y0 = bp, x0 = eb1, y1 = bp, x1 = eb2, col = "gray20", lwd = 1.5)
-    #} else {
-    #  tmp <- barplot(means, beside = TRUE, las = 2, cex.names = 0.8, legend = TRUE, main = subnet.id, horiz = horiz)
-    #  segments(x0 = bp, y0 = eb1, x1 = bp, y1 = eb2, col = "gray20", lwd = 1.5)
-    #}
+    p <- ggplot2::qplot(response, mean, fill=variable, data=df, geom="bar", position="dodge")
+    p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), position="dodge")+theme_bw()
+
+    print(p)
+
+
   } else if (plot.mode == "pca") {
     
     dmat <- datamatrix[, subnet.nodes]
 
     if (length(subnet.nodes) == 1) {
-
-     				 #means = model$params$mu, 
-				 #sds = model$params$sd, 
-				 #ws = model$params$w, 
 
       pg <- PlotMixtureUnivariate(dmat, 
       	    			 modes = modes,
@@ -764,9 +739,12 @@ function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis 
 
     } else {
 
+      if (ncol(dmat) > 2) {pca = TRUE} else {pca = FALSE}
+
       pg <- PlotMixtureMultivariate(dmat, 
       	    			 modes = modes,
-				 title = subnet.id
+				 title = subnet.id, 
+				 pca = pca
 					  )
 
       # tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)

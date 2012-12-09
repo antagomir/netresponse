@@ -5,7 +5,7 @@
   \method{plot}{responses}(x, subnet.id, nc = 3, plot.names
     = TRUE, plot.mode = "network", xaxis = TRUE, yaxis =
     TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz =
-    TRUE, datamatrix = NULL, ...)
+    TRUE, datamatrix = NULL, scale = FALSE, ...)
 }
 \arguments{
   \item{x}{Result from NetResponse (detect.responses
@@ -40,6 +40,8 @@
   \item{horiz}{Logical. Horizontal barplot.}
 
   \item{datamatrix}{Optionally provide the data matrix as argument.}
+
+  \item{scale}{Scale the phylotypes to unit length (only implemented for plot.mode = "matrix"}
 
   \item{...}{Further arguments for plot function.}
 }

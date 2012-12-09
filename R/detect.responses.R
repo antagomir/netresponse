@@ -266,33 +266,38 @@ detect.responses <- function(datamatrix,
 	   
 	  # Remove edges that would exceed max.size
 	  # FIXME: include as part of cost function?
-	  new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
-	  merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
 
-          if (speedup && length(merge.edges) > speedup.max.edges) {
+	  if (length(merge.edges) > 0) {
 
-            # To speed up computation, pre-filter the edge set for which
-            # new models are calculated.  Calculate empirical mutual
-            # information between the first principal components of each
-            # subnetwork pair. If number of new subnetwork pairs exceeds
-            # the threshold, then calculate new model only for the
-            # subnetwork pairs that have the highest mutual information.
-            # It is expected that the subnetwork pair that will benefit
-            # most from joint modeling will also be among the top mutual
-            # infomation candidates. This way we can avoid calculating
-            # exhaustive many models on large network hubs at each
-            # update.
-            # merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
-            merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
+  	    new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+	    merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
+
+            if (speedup && length(merge.edges) > speedup.max.edges) {
+
+              # To speed up computation, pre-filter the edge set for which
+              # new models are calculated.  Calculate empirical mutual
+              # information between the first principal components of each
+              # subnetwork pair. If number of new subnetwork pairs exceeds
+              # the threshold, then calculate new model only for the
+              # subnetwork pairs that have the highest mutual information.
+              # It is expected that the subnetwork pair that will benefit
+              # most from joint modeling will also be among the top mutual
+              # infomation candidates. This way we can avoid calculating
+              # exhaustive many models on large network hubs at each
+              # update.
+              # merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
+              merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
 	    
-	    # Remove edges that would exceed max.size
-	    new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
-	    keep <- (new.sizes <= params$max.subnet.size)
-	    merge.edges <- merge.edges[keep][1:speedup.max.edges]
+	      # Remove edges that would exceed max.size
+	      new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+	      keep <- (new.sizes <= params$max.subnet.size)
+	      merge.edges <- merge.edges[keep][1:speedup.max.edges]
 	    
-	    # Needs Inf: NAs would be confused with other merges later since
-	    # models to be calculated are taken from is.na(delta) at each step
-            delta[setdiff(which(is.na(delta)), merge.edges)] <- Inf 
+	      # Needs Inf: NAs would be confused with other merges later since
+	      # models to be calculated are taken from is.na(delta) at each step
+              delta[setdiff(which(is.na(delta)), merge.edges)] <- Inf 
+
+            } 
 
           }
       

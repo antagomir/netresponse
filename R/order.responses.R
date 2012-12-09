@@ -68,96 +68,98 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
   if (class(model) == "NetResponseModel") {
 
-  # Given sample (for instance set of samples associated with a given factor 
-  # level) order the responses across all subnetworks based on their 
-  # association strength
+    # Given sample (for instance set of samples associated with a given factor 
+    # level) order the responses across all subnetworks based on their 
+    # association strength
 
-  # For a given sample, calculate enrichment values in each response
-  subnets <- responses <- scores <- pvals <- c()
-  enrichment.info <- list()
-  cnt <- 0
+    # For a given sample, calculate enrichment values in each response
+    subnets <- responses <- scores <- pvals <- c()
+    enrichment.info <- list()
+    cnt <- 0
 
-  # Get model statistics
-  stat <- model.stats(model)
+    # Get model statistics
+    stat <- model.stats(model)
 
-  # Filter the results
-  sn <- get.subnets(model, get.names = TRUE, min.size, max.size, min.responses)
-  stat <- stat[names(sn),]
-  if (is.null(subnet.ids)) { subnet.ids <- rownames(stat) }
+    # Filter the results
+    sn <- get.subnets(model, get.names = TRUE, min.size, max.size, min.responses)
+    stat <- stat[names(sn),]
+    if (is.null(subnet.ids)) { subnet.ids <- rownames(stat) }
   
-  # Check enrichment in the selected responses  
-  for ( subnet.id in subnet.ids ) {
+    # Check enrichment in the selected responses  
+    for ( subnet.id in subnet.ids ) {
 
-    if ( verbose ) { message(subnet.id) }
+      if ( verbose ) { message(subnet.id) }
     
-    for (response in 1:length(model@models[[subnet.id]]$w)) {
+      for (response in 1:length(model@models[[subnet.id]]$w)) {
 
-      enr <- response.enrichment(subnet.id, model, sample, response, method)
+        enr <- response.enrichment(subnet.id, model, sample, response, method)
 
-      # add further info about enrichments
-      cnt <- cnt + 1
+        # add further info about enrichments
+        cnt <- cnt + 1
 
-      enrichment.info[[cnt]] <- c(subnet = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 
-
-    }
-  }
-
-  if (verbose) { message("Subnets checked.") }
-
-  if (length(enrichment.info) > 0) {
-
-    enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
-
-    enr <- as.data.frame(t(sapply(enrichment.info, identity)))
-
-    if ("pvalue" %in% colnames(enr)) {
-       
-      if (length(enr$pvalue) > 50) {
-        # calculate q-values
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
-      } else if (length(enr$pvalue) > 10) {
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
-      } else {
-
-        warning("Not enough p-values for q-value estimation")
-        enr$qvalue <- rep(NA, length(enr$pvalue))
+        enrichment.info[[cnt]] <- c(subnet = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 
 
       }
     }
 
-    enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
+    if (verbose) { message("Subnets checked.") }
 
-    if ("enrichment.score" %in% names(enr)) {
+    if (length(enrichment.info) > 0) {
 
-      enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
+      enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
 
-      enr[["subnet"]] <- as.character(enr[["subnet"]])
+      enr <- as.data.frame(t(sapply(enrichment.info, identity)))
 
-      # Add subnet info in the result table
-      enr <- cbind(enr, stat[enr$subnet,])
+      if ("pvalue" %in% colnames(enr)) {
+        
+        if (length(enr$pvalue) > 50) {
+          # calculate q-values
+          enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+        } else if (length(enr$pvalue) > 10) {
+          enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap")$qvalues
+        } else {
 
-      tmp <- list(ordered.responses = enr, method = method, sample = sample)
+          warning("Not enough p-values for q-value estimation")
+          enr$qvalue <- rep(NA, length(enr$pvalue))
 
-      return(tmp)
+        }
+      }
+
+      enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
+
+      if ("enrichment.score" %in% names(enr)) {
+
+        enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
+
+        enr[["subnet"]] <- as.character(enr[["subnet"]])
+
+        # Add subnet info in the result table
+        enr <- cbind(enr, stat[enr$subnet,])
+
+        tmp <- list(ordered.responses = enr, method = method, sample = sample)
+
+        return(tmp)
+
+      } else {
+
+        return(NULL)
+
+      }
 
     } else {
-
       return(NULL)
-
-    }
-
-  } else {
-    return(NULL)
-  }	
+    }	
 
   } else if (class(model) == "list") {
 
     # For mixture.model output
     enrichment.info <- list()
-    for (response in 1:model$model$posterior$K) {
+    for (response in 1:ncol(model$qofz)) {
 
       enr <- response.enrichment(model = model, s = sample, response = response, method = method, data = data)
+
       enr <- c(mode = response, enrichment.score = enr$score, enr$info) 
+
       enrichment.info[[response]] <- enr
 
     }
@@ -172,171 +174,6 @@ order.responses <- function (model, sample, method = "hypergeometric", min.size 
 
 }
 			    
-
-
-#' Enrichment for a specified sample group in the given response.
-#' 
-#' Calculate enrichment values for a specified sample group in the given
-#' response.
-#'
-#' @param subnet.id Subnet.
-#' @param model NetResponseModel object.
-#' @param s User-defined sample group. For instance, samples belonging to a particular annotation class.
-#' @param response Response id (integer) within the subnet.
-#' @param method Enrichment method.
-#' @param data data (samples x features)
-#'
-#' @return List with enrichment statistics, depending on enrichment method.
-#' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @seealso order.responses
-#' @references See citation("netresponse").
-#' @keywords utilities
-#' @export
-#' @examples #enr <- response.enrichment(subnet.id, model, sample, response, method)
-#' 
-response.enrichment <- function (subnet.id = NULL, model, s, response, method = "hypergeometric", data = NULL) {
-
-  # samples x features
-  if(is.vector(data)) {
-    data2 <- matrix(data)
-    rownames(data2) <- names(data)
-    data <- data2
-  }
-
-  # pick sample data for the response and
-  # ensure this is a matrix also when a single sample is given
-  if (any(!s %in% rownames(data))) {
-    warning("Not all samples are in the original data matrix; these are removed from enrichment analysis.")
-    s <- intersect(s, rownames(data))
-    s.ann <- s
-  }
-
-  if (class(model) == "NetResponseModel") {
-
-    if (is.null(data)) {
-      data <- model@datamatrix
-    }
-
-    if (is.numeric(subnet.id)) {
-      subnet.id <- paste("Subnet", subnet.id, sep = "-")
-      warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
-    }
- 
-     response.samples <- response2sample(model, subnet.id, component.list = TRUE)
-
-     # Subnetwork feature names
-     nodes <- model@subnets[[subnet.id]]
-     dat <- matrix(data[, nodes, drop = FALSE], ncol = length(nodes))
-     rownames(dat) <- rownames(data)
-     colnames(dat) <- nodes
-     # dat is now samples x features matrix
-
-   } else {
-     # For mixture.model output
-     dat <- data
-     response.samples <- response2sample(model, component.list = TRUE, data = t(dat))
-   }
-
-  if (length(response.samples) == 0) { return(NULL) }
-  response.sample <- response.samples[[response]]
-  
-  # Fixme: there is some minor stochasticity here, perhaps due to numerical limitations?
- 
-  pars <- get.model.parameters(model, subnet.id)
-
-  # Method indicates which test will be used
-  # FIXME: add other methods; the higher the better
-
-  if (method == "hypergeometric") {
-
-      N <- nrow(dat)
-
-      # number of white balls in the urn
-      m <- length(s) 
-    
-      # number of black balls in the urn
-      n <- N - m
-      
-      # number of balls drawn from the urn
-      k <- length(response.sample)  
-      
-      # overlap between investigated sample group among response samples (using hard assignments)
-      q <- sum(s %in% response.sample)  #number of white balls drawn without replacement
-      
-      # hypergeometric enrichment (small p, high enrichment)
-      # take 1-p to indicate high enrichment with high score
-      # use q-1 since lower.tail = FALSE indicates X > x calculation, but we need X >=x
-      # enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-      pval <- phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-
-      temp <- c(sample.size.total = N,
-      	     			   sample.size.response = k, 
-	     			   sample.size.mysample = m,
-	     			   mysamples.in.response = q, 
-				   fraction.in.data = m/N,
-				   fraction.in.response = q/k, 
-				   pvalue = pval)
-
-      enr <- list(score = 1 - pval, info = temp)
-
-  }
-  
-  # This could be implemented, not sure how useful it would be
-  # P(r|S) = P(S,r)/P(S) this assumes that all samples in S come from exactly one of the responses
-  # prS <- P.rS(samples, model, pars = NULL, subnet.id, log = FALSE)
-  # Or normalized version of the above: P(r|S)/P(r)
-  
-  if (method == "dependency") {
-          
-    # log(P(s,r)/P(s)P(r))
-	  	    
-    # now with actual sample density (not density mass as above)      
-    # P(S) = sum_r P(S,r)
-    ps.log <- log(sum(get.P.rs.joint(s, model, subnet.id, log = FALSE)))
-
-    # this requires features x samples matrix
-    psr.log <- P.s.r(t(dat), pars, log = TRUE)
-    
-    # log(P(s,r)/P(s)P(r)) = log(P(s|r)/P(s))
-    enr <- list(score = psr.log - ps.log, info = NULL)
-   
-  }
-      
-  if (method == "precision") {
-
-    # This differs from 'hypergeometric' and 'dependency' in that they
-    # compare proportion of factor level in response to factor level in overall model
-    # now we compare proportion of factor level in response to overall response (all samples in the response)
-    # This does not necessarily correlate with the two other measures.
-    # In a way, this measures the purity of the response w.r.t. given factor level
- 
-    # precision: TP/(TP + FP) = TP/n fraction of true posivites in response
-    # -> here: density mass associated with this sample in each response
-    # additionally normalize by the analogous fraction in overall model
-    # density mass is the sum of individual sample densities
-             
-    # P(s|r) / P(S|r)
-
-    # density for each data point
-    dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[response, s.ann]
-
-    # P(s,r)/P(s)P(r) = P(s|r)/P(s) for factor level samples
-    # Fraction of total density mass of factor level sample compared to all samples within the response
-    # and w.r.t. overall density mass of the sample
-
-    # relative density of sample
-    enr <- list(score = sum(dens[s])/sum(dens), info = NULL)
-
-  }
-
-  # recall: TP/(TP + FN) = TP/P fraction of all true positives included in the response
-  # -> Not needed right now
-
-  # later utilize probabilistic interpretation of precision/recall? 
-  
-  enr
-}
-
 
 
 
