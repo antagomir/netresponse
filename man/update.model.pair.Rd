@@ -23,6 +23,7 @@
   \item{model.nodes}{model.nodes}
 
   \item{model.pairs}{model.pairs}
+
 }
 \value{
   \item{model.pairs }{model.pairs} \item{delta }{delta}

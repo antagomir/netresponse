@@ -61,6 +61,10 @@ check.network <- function (network, datamatrix, verbose = FALSE) {
         warning("Network is not symmetric. Removing link directions to force symmetric network.")
         network <- ((network + t(network)) > 0) - 0
       }
+
+      # Filter non-connected nodes
+      keep <- rowSums(network) > 1
+      network <- network[keep, keep]
       
       # check that node names given in the data and correspond
       if ( is.null(rownames( network )) || is.null(colnames( datamatrix )) ) {        

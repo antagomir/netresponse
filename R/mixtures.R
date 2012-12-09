@@ -98,10 +98,13 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     sd <- matrix(model$sds, nrow = length(model$ws))
     ws <- matrix(model$ws)
     qofz <- matrix(model$qofz, ncol = length(ws))
+    rownames(qofz) <- rownames(x)
 
     rownames(mu) <- rownames(sd) <- names(ws)
     colnames(mu) <- colnames(sd) <- colnames(x)        
    
+
+
     model.params <- list(mu = mu,
     		         sd = sd,
 			 w = ws, 
@@ -242,6 +245,8 @@ bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) {
   # Determine the most likely mode for each sample (-> hard clusters)
   # save(means, sds, ws, x, file = "~/tmp/tmp.RData")
   qofz <- P.r.s(matrix(x, nrow = 1), list(mu = means, sd = sds, w = ws), log = FALSE)
+  rownames(qofz) <- names(x)
+
   names(means) <- names(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
 
   list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, qofz = qofz)

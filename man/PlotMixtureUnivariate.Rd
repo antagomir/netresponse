@@ -2,7 +2,7 @@
 \alias{PlotMixtureUnivariate}
 \title{PlotMixtureUnivariate}
 \usage{
-  PlotMixtureUnivariate(x, means, sds, ws, title.text = "", xlab.text = "", ylab.text = "", binwidth = 0.05, ...)
+  PlotMixtureUnivariate(x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, qofz = NULL, ...)
 }
 \arguments{
 
@@ -21,6 +21,8 @@
   \item{ylab.text}{y label text}
 
   \item{binwidth}{Histogram bin width}
+
+  \item{qofz}{Sample-response probabilistic assignments matrix (samples x responses)}
 
   \item{...}{Further arguments to be passed}
 

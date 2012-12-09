@@ -61,24 +61,32 @@ response2sample <- function (model, subnet.id = NULL, component.list = TRUE, ver
       warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
     }
   
-    response.probabilities <- sample2response(model, subnet.id)
+    response.probabilities <- model[[subnet.id]]$qofz # sample2response(model, subnet.id)
+
+    rownames(response.probabilities) <- rownames(model@datamatrix)
 
   } else if (class(model) == "list") {
 
-    # For mixture.model output
-    if (is.vector(data)) { 
-      data2 <- t(matrix(data)) 
-      colnames(data2) <- names(data)
-      rownames(data2) <- "Mode-1"
-      data <- data2
-      data2 <- NULL
-    }
+    if (!is.null(model$qofz)) {
+      # Pick response probabilities from the model object
+      response.probabilities <- model$qofz
+    } else {
+      # Otherwise, retrieve the response probabilities assuming the 
+      # input data and parameters are presented on the same basis 
+      # For mixture.model output
+      if (is.vector(data)) { 
+        data2 <- t(matrix(data)) 
+        colnames(data2) <- names(data)
+        rownames(data2) <- "Mode-1"
+        data <- data2
+        data2 <- NULL
+      }
 
-    # Find cluster for each sample
-    response.probabilities <- P.r.s(data, model$params, log = TRUE)
-    rownames(response.probabilities) <- colnames(data)
-    colnames(response.probabilities) <- paste("Mode", 1:ncol(response.probabilities), sep = "-")
-    
+      # Find cluster for each sample
+      response.probabilities <- P.r.s(data, model$params, log = TRUE)
+      #rownames(response.probabilities) <- colnames(data)
+      colnames(response.probabilities) <- paste("Mode", 1:ncol(response.probabilities), sep = "-")
+    }
   }
 
   # For each sample, list the most strongly associated response (highest P(r|s))
@@ -88,8 +96,15 @@ response2sample <- function (model, subnet.id = NULL, component.list = TRUE, ver
     warning(paste("Error with response2sample in subnet", subnet.id))
   } else if ( component.list ) {
     # list samples separately for each cluster
-    clusters <- lapply(seq(max(clusters)), function( i ){ names(which(clusters == i)) })
-    # Names(clusters) <- FIXME add names here
+    clusters <- lapply(seq(max(clusters)), function( i ){ 
+      if (is.null(names(clusters))) {
+        which(clusters == i)
+      } else {
+        names(which(clusters == i))
+      }
+    })
+
+    names(clusters) <- paste("Mode-", 1:length(clusters), sep = "")
     if ( length(clusters) < ncol(response.probabilities) ) {
       n <- ncol(response.probabilities) - length(clusters)
       clusters <- c(clusters, vector(n, mode = "list"))

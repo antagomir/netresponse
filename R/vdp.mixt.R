@@ -192,6 +192,7 @@ function(dat,
   # i.e. at least some points associated with it
   Kreal <- max(apply(qOFz, 1, which.max))  #sum(colSums(qOFz) > 1e-3)
   qOFz  <- matrix(qOFz[, 1:Kreal], nrow(dat))
+  rownames(qOFz) <- rownames(dat)
 
   # Calculate mixture model parameters
   # FIXME: move this outside from this vdp.mixt function

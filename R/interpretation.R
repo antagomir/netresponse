@@ -45,7 +45,7 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
     level.samples <- names(annotation.vector)[which(annotation.vector == lev)]
 
       ors <- order.responses(model, level.samples, method = method, min.size = min.size, data = data) 
- 
+
       if (is.null(ors)) { 
         ors <- NA 
         warning(paste("No significant responses for level", lev))
@@ -98,9 +98,7 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 
 list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  # annotation.df <- atlas.metadata[sample.set, factor.vars]; model <- res$model; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = TRUE
-  # annotation.df <- annot[, factor.vars]; model; min.size = 1; qth = 1; method = "hypergeometric"; verbose = TRUE
-  # annotation.df <- annot[sample.set, factor.vars]; model; min.size = 1; qth = qth; data = t(X); method = "hypergeometric"; verbose = TRUE
+  # annotation.df <- annot[names(vec), factor.vars]; method = "hypergeometric"; min.size = 2; qth = Inf; verbose = T; data = vec; rounding = 3
 
   pth <- NULL
 
@@ -137,13 +135,11 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
         responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
       				   rep(fnam,  nrow(responses.per.level[[level]])), 
 				   rep(level, nrow(responses.per.level[[level]])))
-
         tmp <- responses.per.level[[level]]
         colnames(responses.per.level[[level]]) <- c(colnames(tmp)[1:(ncol(tmp)-2)], "Factor", "Level")
 
       }
     
-
       # Combine the level-wise matrices
       mat <- responses.per.level[[1]]; 
 
@@ -164,6 +160,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
   collected.table <- data.frame(collected.table)
   collected.table$pvalue <- as.numeric(as.character(collected.table$pvalue))
 
+
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
@@ -172,8 +169,6 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
       collected.table$qvalue <- rep(NA, nrow(collected.table))
     }  
 
-    colnames(collected.table) <- c(colnames(collected.table)[1:(ncol(collected.table)-1)], "qvalue")
-  
     # Filtering based on qvalues
     if (!all(is.na(collected.table$qvalue))) {
       collected.table <- collected.table[collected.table$qvalue < qth, ]
@@ -181,7 +176,6 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
       collected.table <- collected.table[collected.table$pvalue < pth, ]
     }
   }
-
 
   collected.table$mode <- as.character(collected.table$mode)
   #collected.table$Factor <- collected.table$Factor
@@ -201,7 +195,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     collected.table$qvalue <- round(collected.table$qvalue, rounding)
  
   }
- 
+
   collected.table
 
 }
@@ -232,11 +226,8 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
 
 list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  # annotation.df <- atlas.metadata[sample.set, continuous.vars]; method <- "t-test"; model <- res$model; min.size = 1; qth = 0.2; verbose = TRUE
-  # annotation.df <- annot[, continuous.vars];  method <- "t-test"; min.size = 1; qth = 0.2; verbose = TRUE
-  # annotation.df <- annot[, continuous.vars]; method = "t-test"; min.size = 1; qth = qth; verbose = TRUE
-  # source("~/Rpackages/netresponse/netresponse/R/interpretation.R")
-  # annotation.df <- annot[, continuous.vars]; method = "t-test"; model; min.size = 1; qth = 1; data = z; verbose = TRUE
+  # annotation.df <- annot[rownames(dat), continuous.vars]; model <- model[[id]]; method <- "t-test"; min.size = 1; qth = qth; data = t(dat[, gpt]); rounding = 3; model <- model.bu[[id]]
+  # annotation.df <- annot[names(vec), continuous.vars]; model; min.size = 1; data = vec; rounding = 3; method <- "t-test";
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -292,8 +283,8 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
   if (!is.null(rounding)) {
     collected.table$qvalue <- round(collected.table$qvalue, rounding)
     collected.table$pvalue <- round(collected.table$pvalue, rounding)
+    collected.table$mean.difference <- round(collected.table$mean.difference, rounding)
   }  
-
 
   collected.table
 
@@ -318,8 +309,8 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
 #' @export
 #' @keywords utilities
 continuous.responses <- function (annotation.vector, model, method = "t-test", min.size = 2, data = NULL) {
-
-  # annotation.vector, model, method = method, min.size = min.size
+		    
+  # method = "t-test"; min.size = 2; data = t(dat[, gpt])		     
 
   if (is.null(data) && class(model) == "NetResponseModel") {
     data <- model@datamatrix
@@ -350,6 +341,7 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
       r2s <- response2sample(model, subnet.id = sn)
 
       pvals <- c()
+      mean.difference <- c()
       for (mo in 1:length(r2s)) {
 
         # annotated samples in the mode
@@ -360,25 +352,40 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
         if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
           pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+          mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
+
         } else {
           warning(paste("Not enough annotated observations for response", mo))
           pvals[[mo]] <- NA
+	  mean.difference[[mo]] <- NA
         }
+      }
+
+      associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
+
     }
 
-    associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = paste("Mode-", 1:length(r2s), sep = ""), pvalue = pvals))
-
-    }
+    associations <- data.frame(list(subnet = associations[, "subnet"], 
+    		    	            mode = associations[, "mode"], 
+    		    	            pvalue = as.numeric(associations[, "pvalue"]), 
+    		    	            mean.difference = as.numeric(associations[, "mean.difference"])
+    				    ))
 
   } else if (class(model) == "list") {
 
     # for mixture.model output, for instance; assuming there is only a single 'subnet'
          
     # samples in each mode (hard assignment)
-    #r2s <- model$model$posterior$qOFz 
-    r2s <- response2sample(model, data = t(data))
+    r2s <- model$qofz
+    if (is.null(rownames(r2s))) {rownames(r2s) <- colnames(data)}
+    clusters <- apply(r2s, 1, which.max)
+    names(clusters) <- rownames(data)
+    r2s <- split(names(clusters), clusters)
+
+    #r2s <- response2sample(model, data = t(data))
 
     pvals <- c()
+    mean.difference <- c()
     for (mo in 1:length(r2s)) {
 
       # annotated samples in the mode
@@ -389,13 +396,15 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
       if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
         pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+	mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
       } else {
         warning(paste("Not enough annotated observations for response", mo))
         pvals[[mo]] <- NA
+        mean.difference[[mo]] <- NA
       }
     }
 
-    associations <- data.frame(list(mode = paste("Mode-", 1:length(r2s), sep = ""), pvalue = pvals))
+    associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
 
   }
 

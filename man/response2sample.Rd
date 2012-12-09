@@ -34,7 +34,7 @@
 }
 \examples{
 library( netresponse )
-
+#fs <- list.files("../R", full.names=T); for (f in fs) {source(f)}
 # Load example data
 data( toydata )         # Load toy data set
 D    <- toydata$emat    # Response matrix (for example, gene expression)
@@ -43,13 +43,7 @@ model <- toydata$model  # Pre-calculated model
 # Find the samples for each response (for a given subnetwork)
 response2sample(model, subnet.id = 1)
 }
-\author{
-  Leo Lahti \email{leo.lahti@iki.fi}
-}
-\references{
-  Leo Lahti et al.: Global modeling of transcriptional
-  responses in interaction networks. Bioinformatics (2010).
-  See citation("netresponse") for citation details.
-}
+\author{Leo Lahti \email{leo.lahti@iki.fi}}
+\references{See citation("netresponse").}
 \keyword{utilities}
 
