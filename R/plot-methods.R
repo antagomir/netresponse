@@ -293,6 +293,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @param title title
 #' @param modes Optional: provide sample modes for visualization already in the input
 #' @param pca The data is projected on PCA plane by default (pca = TRUE). By setting this off (pca = FALSE) it is possible to visualize two-dimensional data in the original domain.
+#' @param qofz Sample-response probabilistic assignments matrix (samples x responses)
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -300,7 +301,7 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = TRUE, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = FALSE, qofz = NULL, ...) {
 
   # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
 
@@ -331,7 +332,7 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
       xtitle <- "PCA1"
       ytitle <- "PCA2"
 
-      if (is.null(title)) {title <- paste("PCA (", ncol(x), " phylotypes)", sep = "")}
+      if (is.null(title)) {title <- paste("PCA (", ncol(x), " features)", sep = "")}
 
   } else {
 
@@ -354,9 +355,11 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
   if (is.null(modes)) {
   
     # Determine the most likely cluster for each sample (-> hard clusters)
-    qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
-    rownames(qofz) <- rownames(x)
-    colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
+    if (is.null(qofz)) {
+      qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+      rownames(qofz) <- rownames(x)
+      colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
+    }
     modes <- paste("Mode", apply(qofz, 1, which.max), sep = "-")
 
   }

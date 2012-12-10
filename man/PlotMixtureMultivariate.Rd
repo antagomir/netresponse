@@ -2,7 +2,7 @@
 \alias{PlotMixtureMultivariate}
 \title{PlotMixtureMultivariate}
 \usage{
-  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = TRUE, ...)
+  PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = FALSE, qofz = NULL, ...)
 }
 \arguments{
   \item{x}{data matrix (samples x features)}
@@ -24,6 +24,8 @@
   \item{modes}{Provide sample labels in the input.}
 
   \item{pca}{The data is projected on PCA plane by default (pca = TRUE). By setting this off (pca = FALSE) it is possible to visualize two-dimensional data in the original domain.}
+
+  \item{qofz}{Sample-response probabilistic assignments matrix (samples x responses)}
 
   \item{...}{Further arguments for plot function.}
 }

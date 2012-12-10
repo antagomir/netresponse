@@ -1,4 +1,3 @@
-
 # 1. vdp.mixt: moodien loytyminen eri dimensiolla, naytemaarilla ja komponenteilla
 #   -> ainakin nopea check
 
@@ -15,7 +14,6 @@ library(netresponse)
 #source("~/Rpackages/netresponse/netresponse/R/internals.R")
 #source("~/Rpackages/netresponse/netresponse/R/vdp.mixt.R")
 #dyn.load("/home/tuli/Rpackages/netresponse/netresponse/src/netresponse.so")
-
 
 #########  Generate DATA #############################################
 
