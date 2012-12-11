@@ -16,9 +16,6 @@
 # 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
 # Seppa, Harri Valpola, and Paul Wagner.
 
-
-
-
 #' pick.model.parameters
 #' 
 #' @param m vdp.mixt output
