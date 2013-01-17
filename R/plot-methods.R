@@ -202,20 +202,34 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
   # This shows all in the same scale but no colors for modes
   #pg <- pg + geom_histogram(aes(y = ..density..), binwidth=binwidth, fill = "gray") 
   
-  # This plots modes with different colors but densities are shown at
-  # different scale
-  pg <- pg + geom_histogram(aes(y = ..density.., fill = mode), binwidth=binwidth) 
-  pg <- pg + geom_density(fill="gray", alpha = 0.1) 
+  # This plots modes with different colors but densities are shown at0
+  # different scal
+
+  pg <- pg + geom_histogram(aes(fill = mode), binwidth=binwidth) 
+
+  # Overlay total density estimate
+  #pg <- pg + geom_density(aes(y = ..count..), fill="gray", alpha = 0.1, adjust = binwidth) 
+
+  # Backup scripts
+  #pg <- pg + geom_histogram(aes(y=..density.., fill = mode), binwidth=binwidth) 
+  #pg <- pg + geom_density(fill="gray", alpha = 0.1, adjust = 4) 
+  #pg <- pg + geom_histogram(aes(y = ..density.., fill = mode), binwidth=binwidth) 
+  #pg <- pg + geom_histogram(aes(y = ..count.., fill = mode), binwidth=binwidth) 
+  #pg <- pg + geom_density(fill="gray", alpha = 0.1) 
+  #pg <- pg + geom_line(aes(y = ..count..), stat="density", size = 1, colour="red")
+
   pg <- pg + theme_bw() + xlab(xlab.text) + ylab(ylab.text) 
   pg <- pg + ggtitle(title.text)
   # pg <- pg + scale_fill_brewer(palette = "Greys") 
 
   # Estimated normal distributions from the mixture model
+  h <- hist(x, seq(min(x) - binwidth - 1/binwidth, max(x) + binwidth + 1/binwidth, binwidth), plot = FALSE)
+  scal <- max(h$counts)/max(ws[[1]]*dnorm(df$vals, mean = means[[1]], sd = sds[[1]]))
   for(comp in 1:length(means)){
-    df2 <- data.frame(list(vals = df$vals, varname = ws[[comp]]*dnorm(df$vals, mean = means[[comp]], sd = sds[[comp]])))
+    df2 <- data.frame(list(vals = df$vals, varname = scal*ws[[comp]]*dnorm(df$vals, mean = means[[comp]], sd = sds[[comp]])))
     # Add in normal distribution
     #pg <- pg + geom_area(aes(x=vals, y=varname), fill=comp, data = df2) 
-    pg <- pg + geom_line(aes(x=vals, y=varname), color="red", data = df2) 
+    pg <- pg + geom_line(aes(x=vals, y=varname), color="gray", data = df2) 
   }
 
   pg
