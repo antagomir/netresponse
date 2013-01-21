@@ -15,14 +15,13 @@
 
   \item{min.size}{minimum sample size for a response}
 
-  \item{data}{data}
+  \item{data}{data matrix (samples x features)
 
-
+  Returns:}
 }
 \value{
-  List with each element corresponding to one factor level
-  and listing the responses according to association
-  strength
+  List with each element corresponding to one variable and
+  listing the responses according to association strength
 }
 \description{
   Arguments:

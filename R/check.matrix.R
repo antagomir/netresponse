@@ -17,7 +17,7 @@
 
 #' check.matrix
 #' 
-#' Mostl for internal purposes. Check input matrix format.
+#' Mostly for internal purposes. Check input matrix format.
 #' 
 #' 
 #' @usage check.matrix(datamatrix)

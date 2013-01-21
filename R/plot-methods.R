@@ -168,7 +168,8 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' @param xlab.text xlab.text
 #' @param ylab.text ylab.text
 #' @param binwidth binwidth for histogram
-#' @param qofz qofz
+#' @param qofz Mode assignment probabilities for each sample. Samples x modes.
+#' @param density.color Color for density lines
 #' @param ... Further arguments for plot function.
 #'
 #' Return:
@@ -180,7 +181,7 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
 #' @examples # plotMixtureUnivariate(dat, means, sds, ws)
-PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, qofz = NULL, ...) {
+PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, qofz = NULL, density.color = "darkgray", ...) {
 				 
   # Circumvent warnings
   ..density.. <- NULL
@@ -230,7 +231,7 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
     df2 <- data.frame(list(vals = df$vals, varname = scal*ws[[comp]]*dnorm(df$vals, mean = means[[comp]], sd = sds[[comp]])))
     # Add in normal distribution
     #pg <- pg + geom_area(aes(x=vals, y=varname), fill=comp, data = df2) 
-    pg <- pg + geom_line(aes(x=vals, y=varname), color="gray", data = df2) 
+    pg <- pg + geom_line(aes(x=vals, y=varname), color=density.color, data = df2) 
   }
 
   pg
@@ -584,10 +585,9 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' 
 #' Plot the detected transcriptional responses for a given subnetwork.
 #' 
-#' 
 #' @usage \method{plot}{responses}(x, subnet.id, nc = 3, plot.names = TRUE,
 #' plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar
-#' = c(5, 4, 4, 2), horiz = TRUE, ...)
+#' = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...)
 #' @param x Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet id.
 #' @param nc Number of columns for an array of images.
@@ -614,12 +614,9 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' @keywords utilities
 #' @export
 #' @examples #
-#' 
 #' #res <- detect.responses(D, netw)
 #' #vis <- plot.responses(res, subnet.id)
-#' 
-plot.responses <-
-function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...) {
+plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...) {
 
   # x <- res; nc = 3; plot.names = TRUE; plot.mode = "pca"; xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = D
 

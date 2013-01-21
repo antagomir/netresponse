@@ -22,8 +22,9 @@
 
   \item{model.nodes}{model.nodes}
 
-  \item{model.pairs}{model.pairs}
+  \item{model.pairs}{model.pairs
 
+  Return:}
 }
 \value{
   \item{model.pairs }{model.pairs} \item{delta }{delta}

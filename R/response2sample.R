@@ -17,8 +17,6 @@
 #' sample.
 #' 
 #' 
-#' @usage response2sample(model, subnet.id, component.list = TRUE, verbose =
-#' FALSE)
 #' @param model A NetResponseModel object. Result from NetResponse
 #' (detect.responses function).
 #' @param subnet.id Subnet id. A natural number which specifies one of the

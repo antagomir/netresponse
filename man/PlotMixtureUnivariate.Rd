@@ -2,10 +2,12 @@
 \alias{PlotMixtureUnivariate}
 \title{PlotMixtureUnivariate}
 \usage{
-  PlotMixtureUnivariate(x, means, sds, ws, title.text = NULL, xlab.text = NULL, ylab.text = NULL, binwidth = 0.05, qofz = NULL, ...)
+  PlotMixtureUnivariate(x, means, sds, ws,
+    title.text = NULL, xlab.text = NULL, ylab.text = NULL,
+    binwidth = 0.05, qofz = NULL,
+    density.color = "darkgray", ...)
 }
 \arguments{
-
   \item{x}{data vector}
 
   \item{means}{mode centroids}
@@ -14,28 +16,35 @@
 
   \item{ws}{weight for each mode}
 
-  \item{title.text}{title text}
+  \item{title.text}{Plot title}
 
-  \item{xlab.text}{x label text}
+  \item{xlab.text}{xlab.text}
 
-  \item{ylab.text}{y label text}
+  \item{ylab.text}{ylab.text}
 
-  \item{binwidth}{Histogram bin width}
+  \item{binwidth}{binwidth for histogram}
 
-  \item{qofz}{Sample-response probabilistic assignments matrix (samples x responses)}
+  \item{qofz}{Mode assignment probabilities for each
+  sample. Samples x modes.}
 
-  \item{...}{Further arguments to be passed}
+  \item{density.color}{Color for density lines}
 
+  \item{...}{Further arguments for plot function.
+
+  Return:}
 }
 \value{
-  Used for its side-effects.
+  Used for its side-effects
 }
 \description{
-Visualize data, centroids and stds for a given univariate Gaussian mixture model.
-
+  Visualize data, centroids and stds for a given univariate
+  Gaussian mixture model with PCA.
+}
+\details{
+  Arguments:
 }
 \examples{
-#PlotMixtureUnivariate(x, means, sds, ws)
+# plotMixtureUnivariate(dat, means, sds, ws)
 }
 \author{
   Leo Lahti \email{leo.lahti@iki.fi}

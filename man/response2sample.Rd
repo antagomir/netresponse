@@ -2,8 +2,8 @@
 \alias{response2sample}
 \title{response2sample}
 \usage{
-  response2sample(model, subnet.id = NULL, component.list = TRUE,
-    verbose = FALSE, data = NULL)
+  response2sample(model, subnet.id = NULL,
+    component.list = TRUE, verbose = FALSE, data = NULL)
 }
 \arguments{
   \item{model}{A NetResponseModel object. Result from
@@ -19,7 +19,12 @@
 
   \item{verbose}{Follow progress by intermediate messages.}
 
-  \item{data}{Data (features x samples; or a vector for univariate case) to predict response for given data points (currently implemented only for mixture.model output)}
+  \item{data}{Data (features x samples; or a vector for
+  univariate case) to predict response for given data
+  points (currently implemented only for mixture.model
+  output)
+
+  Return:}
 }
 \value{
   A list. Each element corresponds to one subnetwork
@@ -34,7 +39,7 @@
 }
 \examples{
 library( netresponse )
-#fs <- list.files("../R", full.names=T); for (f in fs) {source(f)}
+
 # Load example data
 data( toydata )         # Load toy data set
 D    <- toydata$emat    # Response matrix (for example, gene expression)
@@ -43,7 +48,13 @@ model <- toydata$model  # Pre-calculated model
 # Find the samples for each response (for a given subnetwork)
 response2sample(model, subnet.id = 1)
 }
-\author{Leo Lahti \email{leo.lahti@iki.fi}}
-\references{See citation("netresponse").}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  Leo Lahti et al.: Global modeling of transcriptional
+  responses in interaction networks. Bioinformatics (2010).
+  See citation("netresponse") for citation details.
+}
 \keyword{utilities}
 

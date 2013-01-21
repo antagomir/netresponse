@@ -11,7 +11,8 @@
     ite = Inf, information.criterion = "BIC",
     speedup = TRUE, speedup.max.edges = 10,
     positive.edges = FALSE, mc.cores = 1,
-    mixture.method = "vdp", bic.threshold = 0, pca.basis = FALSE, ...)
+    mixture.method = "vdp", bic.threshold = 0,
+    pca.basis = FALSE, ...)
 }
 \arguments{
   \item{datamatrix}{Matrix of samples x features. For
@@ -104,7 +105,8 @@
   exceeded before a new mode is added to the mixture with
   mixture.method = "bic"}
 
-  \item{pca.basis}{Perform clustering in PCA axes to improve mode detection with diagonal covariance matrices.}
+  \item{pca.basis}{Transform data first onto PCA basis to
+  try to avoid problems with non-diagonal covariances.}
 
   \item{...}{Further optional arguments to be passed.}
 }

@@ -12,7 +12,7 @@
   for the netresponse algorithm.
 }
 \description{
-  Mostl for internal purposes. Check input matrix format.
+  Mostly for internal purposes. Check input matrix format.
 }
 \examples{
 # datamatrix <- check.matrix(datamatrix)

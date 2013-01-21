@@ -15,8 +15,10 @@
 
   \item{min.size}{minimum sample size for a response}
 
-  \item{data}{data (samples x features; or a vector in univariate case)}
+  \item{data}{data (samples x features; or a vector in
+  univariate case)
 
+  Returns:}
 }
 \value{
   List with each element corresponding to one factor level

@@ -24,7 +24,7 @@ for (mm in c("vdp", "bic")) {
 
   # Fit nonparametric Gaussian mixture model
   #source("~/Rpackages/netresponse/netresponse/R/vdp.mixt.R")
-  out <- mixture.model(D, mixture.method = mm, c.max = 10, pca.basis = FALSE)
+  out <- mixture.model(D, mixture.method = mm, max.responses = 10, pca.basis = FALSE)
 
   ############################################################
 
