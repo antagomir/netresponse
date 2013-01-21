@@ -192,6 +192,7 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
 
   sms <- apply(qofz, 1, which.max)
      
+  x <- unname(x)
   df <- data.frame(list(x = x))
   df$vals <- seq(min(df$x), max(df$x), length=nrow(df)) # estimation points for fitted Gaussians
   df$mode <- factor(sms)
