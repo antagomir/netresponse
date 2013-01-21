@@ -2,7 +2,7 @@
 \alias{get.model.parameters}
 \title{get.model.parameters}
 \usage{
-  get.model.parameters(model, subnet.id)
+  get.model.parameters(model, subnet.id = NULL)
 }
 \arguments{
   \item{model}{Result from NetResponse (detect.responses

@@ -95,6 +95,7 @@
 #' bic (based on Gaussian mixture modeling with EM, using BIC to select the
 #' optimal number of components)
 #' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture with mixture.method = "bic"
+#' @param pca.basis Transform data first onto PCA basis to try to avoid problems with non-diagonal covariances.
 #' @param ... Further optional arguments to be passed.
 #' @return NetResponseModel object.
 #' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}

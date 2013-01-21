@@ -28,8 +28,8 @@
 
   \item{verbose}{Follow progress by intermediate messages.}
 
-  \item{data}{data (samples x features; or a vector in univariate case)}
-
+  \item{data}{data (samples x features; or a vector in
+  univariate case)}
 }
 \value{
   A data frame with elements 'ordered.responses' which

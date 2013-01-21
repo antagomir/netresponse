@@ -10,8 +10,9 @@
     bic.threshold = 0, pca.basis = FALSE, ...)
 }
 \arguments{
-  \item{x}{data matrix (samples x features, for multivariate analysis) or a
-  vector (for univariate analysis)}
+  \item{x}{data matrix (samples x features, for
+  multivariate analysis) or a vector (for univariate
+  analysis)}
 
   \item{mixture.method}{Specify the approach to use in
   mixture modeling.  Options. vdp (nonparametric
@@ -56,10 +57,11 @@
   exceeded before a new mode is added to the mixture with
   mixture.method = "bic"}
 
-  \item{pca.basis}{Perform clustering in PCA basis to improve mode detection with diagonal covariance matrices.}
+  \item{pca.basis}{pca.basis}
 
-  \item{...}{Further optional arguments to be passed.}
+  \item{...}{Further optional arguments to be passed.
 
+  Returns:}
 }
 \value{
   List with two elements: model: fitted mixture model

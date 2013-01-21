@@ -39,9 +39,10 @@
 
   \item{horiz}{Logical. Horizontal barplot.}
 
-  \item{datamatrix}{Optionally provide the data matrix as argument.}
+  \item{datamatrix}{datamatrix}
 
-  \item{scale}{Scale the phylotypes to unit length (only implemented for plot.mode = "matrix"}
+  \item{scale}{scale the phylotypes to unit length (only
+  implemented for plot.mode = "matrix"}
 
   \item{...}{Further arguments for plot function.}
 }
@@ -54,7 +55,6 @@
 }
 \examples{
 #
-
 #res <- detect.responses(D, netw)
 #vis <- plot.responses(res, subnet.id)
 }

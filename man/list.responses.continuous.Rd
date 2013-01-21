@@ -20,10 +20,11 @@
 
   \item{verbose}{verbose}
 
-  \item{data}{data}
+  \item{data}{data (samples x features)}
 
-  \item{rounding}{rounding digits}
+  \item{rounding}{rounding digits
 
+  Returns:}
 }
 \value{
   Table listing all associations between the factor levels

@@ -18,7 +18,6 @@
   \item{method}{Enrichment method.}
 
   \item{data}{data (samples x features)}
-
 }
 \value{
   List with enrichment statistics, depending on enrichment

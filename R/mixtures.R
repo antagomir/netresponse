@@ -62,7 +62,7 @@
 
 mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE, ...) {
 
-  # x <- z; mixture.method = "bic"; max.responses = 3; bic.threshold = 10
+  # x <- D; mixture.method = "vdp"; max.responses = 10; implicit.noise = 0; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01; vdp.threshold = 1.0e-5; initial.responses = 1; ite = Inf; speedup = TRUE; bic.threshold = 0; pca.basis = FALSE
 
   # Present data in PCA space to cope with diagonality of the covariances
   if (pca.basis) {    
