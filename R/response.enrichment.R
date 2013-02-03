@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -33,31 +33,25 @@
 #' 
 response.enrichment <- function (subnet.id = NULL, model, s, response, method = "hypergeometric", data = NULL) {
 
-  # s <- sample; method = "hypergeometric"; data = NULL
-
-  if (is.null(data)) {
-    data <- model@datamatrix
-  }
-
-  # samples x features
-  if(is.vector(data)) {
-    data2 <- matrix(data)
-    rownames(data2) <- names(data)
-    data <- data2
-  }
-
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
-  if (any(!s %in% rownames(data))) {
-    warning("Not all samples are in the original data matrix; these are removed from enrichment analysis.")
-    s <- intersect(s, rownames(data))
-    s.ann <- s
+  if (any(!s %in% rownames(model$qofz))) {
+    warning("Not all annotation samples are in the original data matrix; only the included ones are used for the enrichment analysis.")
+    s <- intersect(s, rownames(model$qofz))
   }
+  s.ann <- s
 
   if (class(model) == "NetResponseModel") {
 
     if (is.null(data)) {
       data <- model@datamatrix
+    }
+
+    # samples x features
+    if(is.vector(data)) {
+      data2 <- matrix(data)
+      rownames(data2) <- names(data)
+      data <- data2
     }
 
     if (is.numeric(subnet.id)) {
@@ -83,47 +77,21 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
      response.samples <- response2sample(model, component.list = TRUE)
      pars <- model
      dat <- data
+
    }
 
   if (length(response.samples) == 0) { return(NULL) }
   response.sample <- response.samples[[response]]
   
-  # Fixme: there is some minor stochasticity here, perhaps due to numerical limitations?
+  # Fixme: some minor stochasticity here, perhaps due to 
+  # numerical limitations?
  
   # Method indicates which test will be used
-  # FIXME: add other methods; the higher the better
+  # The higher the better score
 
   if (method == "hypergeometric") {
 
-      N <- nrow(dat)
-
-      # number of white balls in the urn
-      m <- length(s) 
-    
-      # number of black balls in the urn
-      n <- N - m
-      
-      # number of balls drawn from the urn
-      k <- length(response.sample)  
-      
-      # overlap between investigated sample group among response samples (using hard assignments)
-      q <- sum(s %in% response.sample)  #number of white balls drawn without replacement
-      
-      # hypergeometric enrichment (small p, high enrichment)
-      # take 1-p to indicate high enrichment with high score
-      # use q-1 since lower.tail = FALSE indicates X > x calculation, but we need X >=x
-      # enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-      pval <- phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-
-      temp <- c(sample.size.total = N,
-      	     			   sample.size.response = k, 
-	     			   sample.size.mysample = m,
-	     			   mysamples.in.response = q, 
-				   fraction.in.data = m/N,
-				   fraction.in.response = q/k, 
-				   pvalue = pval)
-
-      enr <- list(score = 1 - pval, info = temp)
+    enr <- enrichment.score(model$qofz, which.mode = response, annotation.samples = s, method = "hypergeometric")
 
   }
   
@@ -151,15 +119,18 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
   if (method == "precision") {
 
     # This differs from 'hypergeometric' and 'dependency' in that they
-    # compare proportion of factor level in response to factor level in overall model
-    # now we compare proportion of factor level in response to overall response (all samples in the response)
-    # This does not necessarily correlate with the two other measures.
-    # In a way, this measures the purity of the response w.r.t. given factor level
+    # compare proportion of factor level in response to factor level
+    # in overall model now we compare proportion of factor level in
+    # response to overall response (all samples in the response) This
+    # does not necessarily correlate with the two other measures.  In
+    # a way, this measures the purity of the response w.r.t. given
+    # factor level
  
-    # precision: TP/(TP + FP) = TP/n fraction of true posivites in response
-    # -> here: density mass associated with this sample in each response
-    # additionally normalize by the analogous fraction in overall model
-    # density mass is the sum of individual sample densities
+    # precision: TP/(TP + FP) = TP/n fraction of true posivites in
+    # response -> here: density mass associated with this sample in
+    # each response additionally normalize by the analogous fraction
+    # in overall model density mass is the sum of individual sample
+    # densities
              
     # P(s|r) / P(S|r)
 
@@ -175,12 +146,83 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
 
   }
 
-  # recall: TP/(TP + FN) = TP/P fraction of all true positives included in the response
-  # -> Not needed right now
+  # recall: TP/(TP + FN) = TP/P fraction of all true positives
+  # included in the response -> Add later
 
   # later utilize probabilistic interpretation of precision/recall? 
   
   enr
 }
 
+
+
+
+
+
+#' Enrichment for a specified sample group in the given response.
+#' 
+#' Calculate enrichment values for a specified sample group in the given
+#' response.
+#'
+#' @param assignment.matrix Samples-to-modes assignment matrix. Soft or hard.
+#' @param which.mode Mode for which the enrichment is calculated.
+#' @param annotation.samples Samples assigned to the class for which the enrichment is calculated
+#' @param method Enrichment method.
+#' @param data Optionally required by some methods: data (samples x features)
+#'
+#' @return Enrichment score and info. Enrichment score varies from 0
+#' (low) to 1 (high enrichment).
+#' @author Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse").
+#' @keywords utilities
+#' @export
+#' @examples #
+
+enrichment.score <- function (assignment.matrix, which.mode, annotation.samples, method = "hypergeometric", data = NULL) {
+
+  # List all samples in the data set		 
+  total.samples <- rownames(assignment.matrix)
+
+  # List samples in the investigated mode
+  subset.samples <- names(which(apply(assignment.matrix, 1, which.max) == which.mode))
+
+  if (method == "hypergeometric") {
+
+      N <- length(total.samples)
+
+      # number of white balls in the urn
+      m <- length(annotation.samples) 
+    
+      # number of black balls in the urn
+      n <- N - m
+      
+      # number of balls drawn from the urn
+      k <- length(subset.samples)  
+      
+      # overlap between investigated sample group among response
+      # samples (using hard assignments)
+      # number of white balls drawn without replacement
+      q <- sum(annotation.samples %in% subset.samples)  
+      
+      # hypergeometric enrichment (small p, high enrichment)
+      # take 1-p to indicate high enrichment with high score
+      # use q-1 since lower.tail = FALSE indicates X > x calculation,
+      # but we need X >=x
+      # enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
+      pval <- phyper(q - 1, m, n, k, lower.tail = FALSE, log.p = FALSE)
+
+      temp <- c(sample.size.total = N,
+      	     	sample.size.subset = k, 
+	     	sample.size.annotation = m,
+	     	annotated.in.subset = q, 
+		fraction.in.data = m/N,
+		fraction.in.subset = q/k, 
+		pvalue = pval)
+
+      enr <- list(score = 1 - pval, info = temp)
+  }
+
+  enr
+
+}
 

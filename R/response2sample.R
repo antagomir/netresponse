@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,8 +17,7 @@
 #' sample.
 #' 
 #' 
-#' @param model A NetResponseModel object. Result from NetResponse
-#' (detect.responses function).
+#' @param model A NetResponseModel object or list. 
 #' @param subnet.id Subnet id. A natural number which specifies one of the
 #' subnetworks within the 'model' object.
 #' @param component.list List samples separately for each mixture component

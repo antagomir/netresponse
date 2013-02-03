@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,7 +14,6 @@
 
 # "To invent, you need a good imagination and a pile of junk." 
 #     	      	       	      -- Thomas Edison
-
 
 
 #' Description: Quantify association between modes and continuous variable
@@ -115,38 +114,37 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
 continuous.responses.single <- function (model, data, annotation.data, annotated.samples, method = "t.test") {
 
-      # samples in each mode (hard assignment)
-      r2s <- model$qofz
-      if (is.null(rownames(r2s))) {rownames(r2s) <- colnames(data)}
-      clusters <- apply(r2s, 1, which.max)
-      names(clusters) <- rownames(data)
-      r2s <- split(names(clusters), clusters)
+  r2s <- response2sample(model)
 
-      pvals <- c()
-      mean.difference <- c()
-      for (mo in 1:length(r2s)) {
+  pvals <- c()
+  mean.difference <- c()
 
-        # annotated samples in the mode
-      	s <- intersect(r2s[[mo]], annotated.samples)
+  for (mo in 1:length(r2s)) {
 
-        # annotated samples in other modes
-      	sc <- intersect(unlist(r2s[-mo]), annotated.samples)
+    # annotated samples in the mode
+    s <- intersect(r2s[[mo]], annotated.samples)
 
-      	if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
-	  if (method == "t.test") {
-	    pval <- t.test(annotation.data[s], annotation.data[sc])$p.value
-	  }
-          pvals[[mo]] <- pval
-	  mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
-        } else {
-          warning(paste("Not enough annotated observations to calculate p-values", mo))
-          pvals[[mo]] <- NA
-          mean.difference[[mo]] <- NA
-        }
+    # annotated samples in other modes
+    sc <- intersect(unlist(r2s[-mo]), annotated.samples)
+
+    if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {     
+      if (method == "t.test") {
+        pval <- t.test(annotation.data[s], annotation.data[sc])$p.value 
       }
 
-      associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
+      pvals[[mo]] <- pval
 
-      associations
+      mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
+    } else {
+
+      warning(paste("Not enough annotated observations to calculate p-values", mo))
+      pvals[[mo]] <- NA
+      mean.difference[[mo]] <- NA
+    }
+  }
+
+  associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
+
+  associations
       
 }
