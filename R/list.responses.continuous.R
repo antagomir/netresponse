@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -34,8 +34,7 @@
 
 list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  # annotation.df <- annot[rownames(dat), continuous.vars]; model <- model[[id]]; method <- "t-test"; min.size = 1; qth = qth; data = t(dat[, gpt]); rounding = 3; model <- model.bu[[id]]
-  # annotation.df <- annot[names(vec), continuous.vars]; model; min.size = 1; data = vec; rounding = 3; method <- "t-test";
+  # annotation.df <- annot[, continuous.vars]; method <- "t-test"; min.size = 1; qth = Inf; data = X; rounding = NULL;
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL

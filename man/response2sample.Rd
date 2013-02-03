@@ -6,8 +6,7 @@
     component.list = TRUE, verbose = FALSE, data = NULL)
 }
 \arguments{
-  \item{model}{A NetResponseModel object. Result from
-  NetResponse (detect.responses function).}
+  \item{model}{A NetResponseModel object or list.}
 
   \item{subnet.id}{Subnet id. A natural number which
   specifies one of the subnetworks within the 'model'
