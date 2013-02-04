@@ -31,7 +31,7 @@
   Leo Lahti \email{leo.lahti@iki.fi}
 }
 \references{
-  See citation("netresponse").
+  See citation("netresponse")
 }
 \seealso{
   order.responses

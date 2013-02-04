@@ -24,11 +24,10 @@
 #' @return List with enrichment statistics, depending on enrichment method.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @seealso order.responses
-#' @references See citation("netresponse").
+#' @references See citation("netresponse")
 #' @keywords utilities
 #' @export
 #' @examples #enr <- response.enrichment(subnet.id, models, sample, response, method)
-#' 
 response.enrichment <- function (qofz, annotation.sample, response, method = "hypergeometric") {
 
   # pick sample data for the response and
@@ -112,71 +111,4 @@ response.enrichment <- function (qofz, annotation.sample, response, method = "hy
 
 
 
-
-#' Enrichment for a specified sample group in the given response.
-#' 
-#' Calculate enrichment values for a specified sample group in the given
-#' response.
-#'
-#' @param assignment.matrix Samples-to-modes assignment matrix. Soft or hard.
-#' @param which.mode Mode for which the enrichment is calculated.
-#' @param annotation.samples Samples assigned to the class for which the enrichment is calculated
-#' @param method Enrichment method.
-#' @param data Optionally required by some methods: data (samples x features)
-#'
-#' @return Enrichment score and info. Enrichment score varies from 0
-#' (low) to 1 (high enrichment).
-#' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse").
-#' @keywords utilities
-#' @export
-#' @examples #
-
-enrichment.score <- function (assignment.matrix, which.mode, annotation.samples, method = "hypergeometric", data = NULL) {
-
-  # List all samples in the data set		 
-  total.samples <- rownames(assignment.matrix)
-
-  # List samples in the investigated mode
-  subset.samples <- names(which(apply(assignment.matrix, 1, which.max) == which.mode))
-
-  if (method == "hypergeometric") {
-
-      N <- length(total.samples)
-
-      # number of white balls in the urn
-      m <- length(annotation.samples) 
-    
-      # number of black balls in the urn
-      n <- N - m
-      
-      # number of balls drawn from the urn
-      k <- length(subset.samples)  
-      
-      # overlap between investigated sample group among response
-      # samples (using hard assignments)
-      # number of white balls drawn without replacement
-      q <- sum(annotation.samples %in% subset.samples)  
-      
-      # hypergeometric enrichment (small p, high enrichment)
-      # take 1-p to indicate high enrichment with high score
-      # use q-1 since lower.tail = FALSE indicates X > x calculation,
-      # but we need X >=x
-      # enr <- 1 - phyper(q-1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-      pval <- phyper(q - 1, m, n, k, lower.tail = FALSE, log.p = FALSE)
-
-      temp <- c(sample.size.total = N,
-      	     	sample.size.subset = k, 
-	     	sample.size.annotation = m,
-	     	annotated.in.subset = q, 
-		fraction.in.data = m/N,
-		fraction.in.subset = q/k, 
-		pvalue = pval)
-
-      enr <- list(score = 1 - pval, info = temp)
-  }
-
-  enr
-
-}
 
