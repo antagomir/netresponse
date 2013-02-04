@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #' 
 #' Arguments:
 #'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
-#'   @param model NetResponse model object
+#'   @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
 #'   @param method method for enrichment calculation
 #'   @param min.size minimum sample size for a response 
 #'   @param data data (samples x features; or a vector in univariate case)
@@ -28,7 +28,7 @@
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-factor.responses <- function (annotation.vector, model, method = "hypergeometric", min.size = 2, data = NULL) {
+factor.responses <- function (annotation.vector, models, method = "hypergeometric", min.size = 2, data = NULL) {
 
   responses <- list()
 
@@ -40,12 +40,13 @@ factor.responses <- function (annotation.vector, model, method = "hypergeometric
 
     level.samples <- names(annotation.vector)[which(annotation.vector == lev)]
 
-      ors <- order.responses(model, level.samples, method = method, min.size = min.size, data = data) 
+    #ors <- order.responses(models, level.samples, method = method, min.size = min.size, data = data) 
+    ors <- enrichment.list.factor(models, level.samples, method = method)
 
-      if (is.null(ors)) { 
-        ors <- NA 
-        warning(paste("No significant responses for level", lev))
-      }
+    if (is.null(ors)) { 
+      ors <- NA 
+      warning(paste("No significant responses for level", lev))
+    }
   
     responses[[as.character(lev)]] <- ors
   }

@@ -2,22 +2,19 @@
 \alias{response.enrichment}
 \title{Enrichment for a specified sample group in the given response.}
 \usage{
-  response.enrichment(subnet.id = NULL, model, s, response,
-    method = "hypergeometric", data = NULL)
+  response.enrichment(qofz, annotation.sample, response,
+    method = "hypergeometric")
 }
 \arguments{
-  \item{subnet.id}{Subnet.}
+  \item{qofz}{sample-mode assignment matrix}
 
-  \item{model}{NetResponseModel object.}
-
-  \item{s}{User-defined sample group. For instance, samples
-  belonging to a particular annotation class.}
+  \item{annotation.sample}{User-defined sample group. For
+  instance, samples belonging to a particular annotation
+  class.}
 
   \item{response}{Response id (integer) within the subnet.}
 
   \item{method}{Enrichment method.}
-
-  \item{data}{data (samples x features)}
 }
 \value{
   List with enrichment statistics, depending on enrichment
@@ -28,7 +25,7 @@
   in the given response.
 }
 \examples{
-#enr <- response.enrichment(subnet.id, model, sample, response, method)
+#enr <- response.enrichment(subnet.id, models, sample, response, method)
 }
 \author{
   Leo Lahti \email{leo.lahti@iki.fi}

@@ -2,11 +2,10 @@
 \alias{model.stats}
 \title{model.stats}
 \usage{
-  model.stats( model )
+  model.stats(models)
 }
 \arguments{
-  \item{model}{Result from NetResponse (detect.responses
-  function).}
+  \item{models}{NetResponse object or list of models}
 }
 \value{
   A 'subnetworks x properties' data frame containing the

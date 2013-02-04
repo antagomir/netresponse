@@ -305,9 +305,6 @@ setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, 
     grouping <- lapply(grouping, function(x) {colnames(model@datamatrix)[unlist(x)]})    
   }
   
-  # name the subnetworks
-  # names(grouping) <- paste("Subnet", 1:length(grouping), sep = "-")
-        
   # If filters are given, apply them (stat needs to be specified)
 	    
   # SUBNET SIZE
@@ -329,7 +326,7 @@ setMethod("get.subnets", "NetResponseModel", function (model, get.names = TRUE, 
     inds.size <- rownames(subset(stat,
 		          subnet.size >= min.size & subnet.size <= max.size))# & 
    
-    inds.nresp <- rownames(stat)[which(stat[["subnet.responses"]] >= min.responses)]
+    inds.nresp <- rownames(stat)[which(stat[["responses"]] >= min.responses)]
 
     inds <- intersect(inds.size, inds.nresp)
     

@@ -16,12 +16,10 @@
 #' Arguments: 
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #' named by the samples
-#' @param model NetResponse model object
+#' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
 #' @param method method for quantifying the association
-#' @param min.size minimum sample size for a response
 #' @param qth q-value threshold
 #' @param verbose verbose 
-#' @param data data (samples x features)
 #' @param rounding rounding digits
 #'
 #' Returns:
@@ -32,9 +30,7 @@
 #' @export
 #' @keywords utilities
 
-list.responses.continuous <- function (annotation.df, model, method = "t-test", min.size = 1, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
-
-  # annotation.df <- annot[, continuous.vars]; method <- "t-test"; min.size = 1; qth = Inf; data = X; rounding = NULL;
+list.responses.continuous <- function (annotation.df, models, method = "t-test", qth = Inf, verbose = TRUE, rounding = NULL) {
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
@@ -47,7 +43,8 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
     names(annotation.vector) <- rownames(annotation.df)
 
     # quantify association to each response for the continuous variable
-    responses.per.cont <- continuous.responses(annotation.vector, model, method = method, min.size = min.size, data = data)
+    responses.per.cont <- enrichment.list(models, annotation.vector)
+
     responses.per.cont$annotation <- rep(fnam, nrow(responses.per.cont))
 
     collected.table <- rbind(collected.table, responses.per.cont)
@@ -59,7 +56,7 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
     collected.table$qvalue <- rep(NA, nrow(collected.table))
     nainds <- is.na(collected.table$pvalue)
     if (sum(!nainds) > 100) {
-      qv <- qvalue(collected.table$pvalue[!nainds], pi0.method = "bootstrap")
+      qv <- qvalue(collected.table$pvalue[!nainds], pi0.method = "bootstrap", fdr.level = 0.25)
       if (("qvalues" %in% names(qv)) && sum(!nainds) > 0) {
         collected.table$qvalue[!nainds] <- qv$qvalues
       } else {
@@ -90,7 +87,7 @@ list.responses.continuous <- function (annotation.df, model, method = "t-test", 
   if (!is.null(rounding)) {
     collected.table$qvalue <- round(collected.table$qvalue, rounding)
     collected.table$pvalue <- round(collected.table$pvalue, rounding)
-    collected.table$mean.difference <- round(collected.table$mean.difference, rounding)
+    collected.table$fold.change <- round(collected.table$fold.change, rounding)
   }  
 
   collected.table
