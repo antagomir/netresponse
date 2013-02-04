@@ -38,86 +38,43 @@ continuous.responses <- function (annotation.vector, model, method = "t-test", m
 
   if (is.null(data) && class(model) == "NetResponseModel") {
     data <- model@datamatrix
-  } else if (is.null(data)) {
-    stop("Provide data")
-  }
+    all.samples <- rownames(data)
+  } 
 
   # samples x features
   if(is.vector(data)) {
     data2 <- matrix(data)
     rownames(data2) <- names(data)
     data <- data2
+    all.samples <- rownames(data)
   }
 
-  all.samples <- rownames(data)
-  annotated.samples <- names(which(!is.na(annotation.vector)))
-  annotation.data <- annotation.vector[annotated.samples]
-  names(annotation.data) <- annotated.samples
-
-  associations <- NULL  	 
   if (class(model) == "NetResponseModel") {
-
-    subnets <- get.subnets(model, min.size = min.size)
-
-    for (sn in names(subnets)) {
-
-      # samples in each mode (hard assignment)
-      r2s <- response2sample(model, subnet.id = sn)
-
-      pvals <- c()
-      mean.difference <- c()
-      for (mo in 1:length(r2s)) {
-
-        # annotated samples in the mode
-        s <- intersect(r2s[[mo]], annotated.samples)
-
-	# annotated samples in other modes
-        sc <- intersect(unlist(r2s[-mo]), annotated.samples)
-
-        if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
-          pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
-          mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
-
-        } else {
-          warning(paste("Not enough annotated observations for response", mo))
-          pvals[[mo]] <- NA
-	  mean.difference[[mo]] <- NA
-        }
-      }
-
-      associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
-
-    }
-
-    associations <- data.frame(list(subnet = associations[, "subnet"], 
-    		    	            mode = associations[, "mode"], 
-    		    	            pvalue = as.numeric(associations[, "pvalue"]), 
-    		    	            mean.difference = as.numeric(associations[, "mean.difference"])
-    				    ))
-
-  } else if (class(model) == "list") {
-
-    # for mixture.model output, for instance; assuming there is only a single 'subnet'
- 
-    if (all(c("mu", "sd", "w") %in% names(model))) {
-      # Assuming it is a single group
-      associations <- continuous.responses.single(model, data, annotation.data, annotated.samples, method = "t.test")
-
-    } 
-
+    models <- get.subnets(model, min.size = min.size)
+  } else {
+    models <- model
   }
+
+  associations <- enrichment.list(models, annotation.vector)
 
   associations
 
 }
 
+#associations <- continuous.responses.single(model, annotation.vector, method = "t.test")
+continuous.responses.single <- function (model, annotation.vector, method = "t.test") {
 
-continuous.responses.single <- function (model, data, annotation.data, annotated.samples, method = "t.test") {
+  annotated.samples <- names(which(!is.na(annotation.vector)))
+  annotation.data <- annotation.vector[annotated.samples]
+  names(annotation.data) <- annotated.samples
+
 
   r2s <- response2sample(model)
 
+  if (length(r2s) <= 1) {return(NA)} # No multimodality -> no enrichments
+
   pvals <- c()
-  mean.difference <- c()
+  fold.change <- c()
 
   for (mo in 1:length(r2s)) {
 
@@ -134,17 +91,84 @@ continuous.responses.single <- function (model, data, annotation.data, annotated
 
       pvals[[mo]] <- pval
 
-      mean.difference[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
+      fold.change[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
     } else {
 
       warning(paste("Not enough annotated observations to calculate p-values", mo))
       pvals[[mo]] <- NA
-      mean.difference[[mo]] <- NA
+      fold.change[[mo]] <- NA
     }
   }
 
-  associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, mean.difference = mean.difference))
+  associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, fold.change = fold.change))
 
   associations
       
+}
+
+
+
+
+#' Description: Quantify association between modes and continuous variable
+#' 
+#' Arguments:
+#'   @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
+#'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
+#'
+#' Returns:
+#'   @return List with each element corresponding to one annotation variable and listing the responses according to association strength
+#'            
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @export
+#' @keywords utilities
+
+enrichment.list <- function (models, annotation.vector) {
+
+  annotated.samples <- names(which(!is.na(annotation.vector)))
+  annotation.data <- annotation.vector[annotated.samples]
+  names(annotation.data) <- annotated.samples
+
+  if (is.null(names(models))) {names(models) <- 1:length(models)}
+
+  associations <- NULL  	 
+  for (sn in names(models)) {
+
+    # samples in each mode (hard assignment)
+    r2s <- response2sample(models[[sn]])
+
+    pvals <- c()
+    fold.change <- c()
+    for (mo in 1:length(r2s)) {
+
+      # annotated samples in the mode
+      s <- intersect(r2s[[mo]], annotated.samples)
+
+      # annotated samples in other modes
+      sc <- intersect(unlist(r2s[-mo]), annotated.samples)
+
+      if (length(na.omit(s)) > 1 && length(na.omit(sc)) > 1) {      
+        pvals[[mo]] <- t.test(annotation.data[s], annotation.data[sc])$p.value
+        fold.change[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
+
+       } else {
+         warning(paste("Not enough annotated observations for response", mo))
+         pvals[[mo]] <- NA
+	 fold.change[[mo]] <- NA
+       }
+     }
+
+     associations <- rbind(associations, cbind(subnet = rep(sn, length(r2s)), mode = 1:length(r2s), pvalue = pvals, fold.change = fold.change))
+
+    }
+
+  associations <- data.frame(list(model = associations[, "subnet"], 
+    		    	      mode = associations[, "mode"], 
+    		    	      pvalue = as.numeric(associations[, "pvalue"]), 
+    		fold.change = as.numeric(associations[, "fold.change"])
+    				    ))
+
+
+  associations
+
 }

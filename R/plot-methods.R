@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -55,9 +55,9 @@ plotAssociations <- function (x, subnet.id, labels, method = "hypergeometric", m
 
     enr <- list()
     for (response in 1:N.responses) {
-      enr[[response]] <- response.enrichment(subnet.id, x, samples, response, method)
-    }
-
+ 
+      enr[[response]] <- response.enrichment(x[[subnet.id]]$qofz, samples, response, method)
+    }    
     neg.log.p <- -log10(sapply(enr, function (tab) {tab$info["pvalue"]}))
     association.tab[as.character(lab),] <- unname(neg.log.p)
 

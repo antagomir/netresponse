@@ -3,7 +3,7 @@
 \title{Description: List responses for all factors and levels in the given
 annotation matrix}
 \usage{
-  list.responses.factor(annotation.df, model,
+  list.responses.factor(annotation.df, models,
     method = "hypergeometric", min.size = 2, qth = Inf,
     verbose = TRUE, data = NULL, rounding = NULL)
 }
@@ -11,7 +11,8 @@ annotation matrix}
   \item{annotation.df}{annotation data.frame with discrete
   factor levels, rows named by the samples}
 
-  \item{model}{NetResponse model object}
+  \item{models}{List of models. Each model should have a
+  sample-cluster assignment matrix qofz.}
 
   \item{method}{method for enrichment calculation}
 

@@ -2,25 +2,22 @@
 \alias{list.responses.continuous}
 \title{Description: Investigate association of a continuous variable and the modes}
 \usage{
-  list.responses.continuous(annotation.df, model,
-    method = "t-test", min.size = 1, qth = Inf,
-    verbose = TRUE, data = NULL, rounding = NULL)
+  list.responses.continuous(annotation.df, models,
+    method = "t-test", qth = Inf, verbose = TRUE,
+    rounding = NULL)
 }
 \arguments{
   \item{annotation.df}{annotation data.frame with discrete
   factor levels, rows named by the samples}
 
-  \item{model}{NetResponse model object}
+  \item{models}{List of models. Each model should have a
+  sample-cluster assignment matrix qofz.}
 
   \item{method}{method for quantifying the association}
-
-  \item{min.size}{minimum sample size for a response}
 
   \item{qth}{q-value threshold}
 
   \item{verbose}{verbose}
-
-  \item{data}{data (samples x features)}
 
   \item{rounding}{rounding digits
 

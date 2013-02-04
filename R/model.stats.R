@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,8 +18,7 @@
 #' subnet.
 #' 
 #' 
-#' @usage model.stats( model )
-#' @param model Result from NetResponse (detect.responses function).
+#' @param models NetResponse object or list of models
 #' @return
 #' 
 #' A 'subnetworks x properties' data frame containing the following elements.
@@ -43,22 +42,26 @@
 #' stat <- model.stats(toydata$model)
 #' 
 #' 
-model.stats <- function ( model ) {
+model.stats <- function ( models ) {
 
   # Check statistics for subnetworks
   # subnetwork size
   # number of responses
 
-  subnets <- model@subnets
-
-  Ncomps <- c()
-  for (subnet.id in names(subnets)) {
-    Ncomps[[subnet.id]] <- length(model@models[[subnet.id]]$w)
+  if (class(models) == "NetResponseModel") { 
+    models <- models@models
   }
 
-  tab <- cbind(sapply(subnets, length), Ncomps)  
-  colnames(tab) <- c("subnet.size", "subnet.responses")
-  rownames(tab) <- names(subnets)
+  if (is.null(names(models))) {names(models) <- 1:length(models)}
+
+  Ncomps <- c()
+  for (subnet.id in names(models)) {
+    Ncomps[[subnet.id]] <- ncol(models[[subnet.id]]$qofz)
+  }
+
+  tab <- cbind(sapply(models, function (x) {ncol(x$mu)}), Ncomps)
+  colnames(tab) <- c("nodes", "responses")
+  rownames(tab) <- names(models)
 
   as.data.frame(tab)
 

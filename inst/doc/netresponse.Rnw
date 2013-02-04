@@ -96,13 +96,13 @@ details. With large data sets, consider using the 'speedup' option.
 
 
 \section{Investigating the results}
-
-Subnetwork statistics: size and number of distinct responses for each subnet
-
-<<stat>>=
-stat <- model.stats(model) 
-stat
-@
+%
+%Subnetwork statistics: size and number of distinct responses for each subnet%
+%
+%<<stat>>=
+%stat <- model.stats(model) 
+%stat
+%@%
 
 List the detected subnetworks (each is a list of nodes). By default,
 singleton subnetworks (with only one gene) and subnetworks with only a

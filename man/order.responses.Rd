@@ -2,12 +2,14 @@
 \alias{order.responses}
 \title{order.responses}
 \usage{
-  order.responses(model, sample, method = "hypergeometric",
-    min.size = 2, max.size = Inf, min.responses = 2,
-    subnet.ids = NULL, verbose = FALSE, data = NULL)
+  order.responses(models, sample,
+    method = "hypergeometric", min.size = 2,
+    max.size = Inf, min.responses = 2, subnet.ids = NULL,
+    verbose = FALSE, data = NULL)
 }
 \arguments{
-  \item{model}{NetResponseModel object.}
+  \item{models}{List of models. Each model should have a
+  sample-cluster assignment matrix qofz.}
 
   \item{sample}{Measure enrichment of this sample (set)
   across the observed responses.}

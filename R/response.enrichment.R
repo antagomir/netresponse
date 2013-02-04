@@ -16,12 +16,10 @@
 #' Calculate enrichment values for a specified sample group in the given
 #' response.
 #'
-#' @param subnet.id Subnet.
-#' @param model NetResponseModel object.
-#' @param s User-defined sample group. For instance, samples belonging to a particular annotation class.
+#' @param qofz sample-mode assignment matrix
+#' @param annotation.sample User-defined sample group. For instance, samples belonging to a particular annotation class.
 #' @param response Response id (integer) within the subnet.
 #' @param method Enrichment method.
-#' @param data data (samples x features)
 #'
 #' @return List with enrichment statistics, depending on enrichment method.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -29,72 +27,26 @@
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @export
-#' @examples #enr <- response.enrichment(subnet.id, model, sample, response, method)
+#' @examples #enr <- response.enrichment(subnet.id, models, sample, response, method)
 #' 
-response.enrichment <- function (subnet.id = NULL, model, s, response, method = "hypergeometric", data = NULL) {
+response.enrichment <- function (qofz, annotation.sample, response, method = "hypergeometric") {
 
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
-  if (any(!s %in% rownames(model$qofz))) {
-    warning("Not all annotation samples are in the original data matrix; only the included ones are used for the enrichment analysis.")
-    s <- intersect(s, rownames(model$qofz))
+  if (any(!annotation.sample %in% rownames(qofz))) {
+    warning("Not all annotation samples are in the original data matrix; only the shared ones used for enrichment analysis.")
+    annotation.sample <- intersect(annotation.sample, rownames(qofz))
   }
-  s.ann <- s
 
-  if (class(model) == "NetResponseModel") {
+  response.samples <- response2sample(list(qofz = qofz), component.list = TRUE)
+  if (length(response.samples) == 0) { warning("No samples in response"); return(NULL) }
 
-    if (is.null(data)) {
-      data <- model@datamatrix
-    }
-
-    # samples x features
-    if(is.vector(data)) {
-      data2 <- matrix(data)
-      rownames(data2) <- names(data)
-      data <- data2
-    }
-
-    if (is.numeric(subnet.id)) {
-      subnet.id <- paste("Subnet", subnet.id, sep = "-")
-      warning("subnet.id given as numeric; converting to character: ", subnet.id, sep="")
-    }
- 
-     response.samples <- response2sample(model, subnet.id, component.list = TRUE)
-
-     # Subnetwork feature names
-     nodes <- model@subnets[[subnet.id]]
-     dat <- matrix(data[, nodes, drop = FALSE], ncol = length(nodes))
-     rownames(dat) <- rownames(data)
-     colnames(dat) <- nodes
-     # dat is now samples x features matrix
-
-     pars <- get.model.parameters(model, subnet.id)
-     dat <- model@datamatrix
-
-   } else {
-
-     # For mixture.model output
-     response.samples <- response2sample(model, component.list = TRUE)
-     pars <- model
-     dat <- data
-
-   }
-
-  if (length(response.samples) == 0) { return(NULL) }
-  response.sample <- response.samples[[response]]
-  
-  # Fixme: some minor stochasticity here, perhaps due to 
-  # numerical limitations?
- 
-  # Method indicates which test will be used
-  # The higher the better score
-
+  # Fixme: minor stochasticity here, perhaps due to numerical limitations?
+  # Method indicates which test will be used; the higher the better score
   if (method == "hypergeometric") {
-
-    enr <- enrichment.score(model$qofz, which.mode = response, annotation.samples = s, method = "hypergeometric")
-
+    enr <- enrichment.score(qofz, which.mode = response, annotation.samples = annotation.sample, method = method)
   }
-  
+
   # This could be implemented, not sure how useful it would be
   # P(r|S) = P(S,r)/P(S) this assumes that all samples in S come from exactly one of the responses
   # prS <- P.rS(samples, model, pars = NULL, subnet.id, log = FALSE)
@@ -106,13 +58,14 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
 	  	    
     # now with actual sample density (not density mass as above)      
     # P(S) = sum_r P(S,r)
-    ps.log <- log(sum(get.P.rs.joint(s, model, subnet.id, log = FALSE)))
+
+    #ps.log <- log(sum(get.P.rs.joint(s, models, subnet.id, log = FALSE)))
 
     # this requires features x samples matrix
-    psr.log <- P.s.r(t(dat), pars, log = TRUE)
+    #psr.log <- P.s.r(t(dat), pars, log = TRUE)
     
     # log(P(s,r)/P(s)P(r)) = log(P(s|r)/P(s))
-    enr <- list(score = psr.log - ps.log, info = NULL)
+    #enr <- list(score = psr.log - ps.log, info = NULL)
    
   }
       
@@ -135,14 +88,14 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
     # P(s|r) / P(S|r)
 
     # density for each data point
-    dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[response, s.ann]
+    #dens <- sample.densities(s.ann, model, subnet.id, log = FALSE, summarize = FALSE)[response, s.ann]
 
     # P(s,r)/P(s)P(r) = P(s|r)/P(s) for factor level samples
     # Fraction of total density mass of factor level sample compared to all samples within the response
     # and w.r.t. overall density mass of the sample
 
     # relative density of sample
-    enr <- list(score = sum(dens[s])/sum(dens), info = NULL)
+    #enr <- list(score = sum(dens[s])/sum(dens), info = NULL)
 
   }
 
@@ -152,6 +105,7 @@ response.enrichment <- function (subnet.id = NULL, model, s, response, method = 
   # later utilize probabilistic interpretation of precision/recall? 
   
   enr
+
 }
 
 

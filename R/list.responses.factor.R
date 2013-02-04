@@ -17,7 +17,7 @@
 #' Arguments:  
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #'   named by the samples
-#' @param model NetResponse model object
+#' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
 #' @param method method for enrichment calculation
 #' @param min.size minimum sample size for a response
 #' @param qth q-value threshold
@@ -33,9 +33,9 @@
 #' @export
 #' @keywords utilities
 
-list.responses.factor <- function (annotation.df, model, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
+list.responses.factor <- function (annotation.df, models, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  # annotation.df <- annot[, factor.vars]; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = T; data <- NULL; rounding = 3
+  # annotation.df <- annot[, factor.vars]; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = T; data <- NULL; rounding = 3; models <- CAG.models
 
   pth <- NULL
 
@@ -61,7 +61,8 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
     names(annotation.vector) <- rownames(annotation.df)
 
     # Order responses for each level of this factor
-    responses.per.level <- factor.responses(annotation.vector, model, method = method, min.size = min.size, data = data) 
+    responses.per.level <- factor.responses(annotation.vector, models, method = method, min.size = min.size, data = data) 
+
     responses.per.level <- responses.per.level[na.omit(names(responses.per.level))]
 
     # Add factor/level information
@@ -70,8 +71,8 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
       for (level in na.omit(names(responses.per.level))) {
 
         responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
-      				   rep(fnam,  nrow(responses.per.level[[level]])), 
-				   rep(level, nrow(responses.per.level[[level]])))
+							fnam, 
+				   			level)
         tmp <- responses.per.level[[level]]
         colnames(responses.per.level[[level]]) <- c(colnames(tmp)[1:(ncol(tmp)-2)], "Factor", "Level")
 
@@ -100,7 +101,7 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
-      collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE)$qvalue
+      collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
     } else {
       collected.table$qvalue <- rep(NA, nrow(collected.table))
     }  
@@ -114,8 +115,6 @@ list.responses.factor <- function (annotation.df, model, method = "hypergeometri
   }
 
   collected.table$mode <- as.character(collected.table$mode)
-  #collected.table$Factor <- collected.table$Factor
-  #collected.table$Level <- collected.table$Level
   collected.table$annotated.in.subset <- as.numeric(as.character(collected.table$annotated.in.subset))
   collected.table$fraction.in.subset <- as.numeric(as.character(collected.table$fraction.in.subset))
   collected.table$fraction.in.data <- as.numeric(as.character(collected.table$fraction.in.data))

@@ -8,9 +8,8 @@ if (!skip) {
 
 # Load the package
 library(netresponse)
-#fs <- list.files("~/Rpackages/netresponse/netresponse/R/independent.models.R", full.names = TRUE); for (f in fs) {source(f)};
-#source("~/Rpackages/netresponse/netresponse/R/independent.models.R")
-#source("~/Rpackages/netresponse/netresponse/R/mixtures.R")
+#load("../data/toydata.rda")
+fs <- list.files("../R/", full.names = TRUE); for (f in fs) {source(f)};
 
 data(toydata)
 
@@ -36,6 +35,8 @@ rv <- 1
 #res <- detect.responses(D, netw, verbose = TRUE, max.responses = 4)
 
 res <- detect.responses(D, netw, verbose = TRUE, max.responses = 3, mixture.method = "bic", information.criterion = "BIC", merging.threshold = 1, bic.threshold = 10, pca.basis = FALSE)
+
+print("OK")
 
 # Subnets (each is a list of nodes)
 subnets <- get.subnets(res)
