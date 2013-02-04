@@ -1,6 +1,6 @@
 \name{enrichment.list.factor}
 \alias{enrichment.list.factor}
-\title{order.responses}
+\title{Description: enrichment.list.factor}
 \usage{
   enrichment.list.factor(models, level.samples, method,
     verbose = FALSE)
@@ -19,7 +19,9 @@
   and factor level vs. their marginal densities:
   log(P(r,s)/(P(r)P(s)))}
 
-  \item{verbose}{Follow progress by intermediate messages.}
+  \item{verbose}{Follow progress by intermediate messages.
+
+  Returns:}
 }
 \value{
   A data frame which gives a data frame of responses
@@ -36,6 +38,9 @@
   samples correspond to a particular experimental factor,
   this function can be used to prioritize the responses
   according to their association strength to this factor.
+}
+\details{
+  Arguments:
 }
 \examples{
 #

@@ -66,3 +66,6 @@ Collate:
     'list.responses.factor.R'
     'continuous.responses.R'
     'factor.responses.R'
+    'enrich.list.R'
+    'enrichment.score.R'
+    'enrichment.list.factor.R'
