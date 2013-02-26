@@ -239,6 +239,8 @@ PlotMixtureUnivariate <- function (x, means, sds, ws, title.text = NULL, xlab.te
 }
 
 
+
+
 #' PlotMixtureBivariate
 #' 
 #' Visualize data, centroids and response confidence intervals for a given
