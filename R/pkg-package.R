@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
+# Copyright (C) 2008-2013 Olli-Pekka Huovilainen and Leo Lahti 
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -83,6 +83,7 @@ NULL
 #' @name netresponse-package
 #' @aliases netresponse-package netresponse
 #' @docType package
+#' @useDynLib netresponse
 #' @author Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso
 #' Parkkinen. Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references Leo Lahti et al.: Global modeling of transcriptional responses
