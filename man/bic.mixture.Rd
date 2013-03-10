@@ -3,7 +3,8 @@
 \title{Description: Latent class analysis based on (infinite) Gaussian mixture model.
 If the input is data matrix, a multivariate model is fitted; if the input is a vector, a univariate model is fitted}
 \usage{
-  bic.mixture(x, max.modes, bic.threshold = 0, ...)
+  bic.mixture(x, max.modes, bic.threshold = 0,
+    min.modes = 1, ...)
 }
 \arguments{
   \item{x}{samples x features matrix for multivariate
