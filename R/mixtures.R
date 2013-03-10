@@ -50,6 +50,7 @@
 #' 	   large and densely connected networks and/or large sample size.
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture with mixture.method = "bic"
 #'  @param pca.basis pca.basis
+#'  @param min.responses minimum number of responses
 #'  @param ... Further optional arguments to be passed.
 #'
 #' Returns:
@@ -60,7 +61,7 @@
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
 
-mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE, ...) {
+mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE, min.responses = 1, ...) {
 
   # x <- D; mixture.method = "vdp"; max.responses = 10; implicit.noise = 0; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01; vdp.threshold = 1.0e-5; initial.responses = 1; ite = Inf; speedup = TRUE; bic.threshold = 0; pca.basis = FALSE
 
@@ -94,7 +95,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 
   } else if (mixture.method == "bic") { 	
 
-    model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold)  
+    model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold, min.modes = min.responses)  
 
     mu <- matrix(model$means, nrow = length(model$ws))
     sd <- matrix(model$sds, nrow = length(model$ws))
@@ -135,6 +136,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 #'  @param x samples x features matrix for multivariate analysis, or a vector for univariate analysis 
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
+#'  @param min.modes minimum number of modes
 #'  @param ... Further optional arguments to be passed
 #'
 #' Returns:
@@ -144,12 +146,12 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
-bic.mixture <- function (x, max.modes, bic.threshold = 0, ...) { 
+bic.mixture <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) { 
 
   if (!is.vector(x) && ncol(x) == 1) {x <- x[,1]}	    
 
   if (is.vector(x)) {
-    bic.mixture.univariate(x, max.modes, bic.threshold, ...)
+    bic.mixture.univariate(x, max.modes, bic.threshold, min.modes = min.modes, ...)
   } else {
     bic.mixture.multivariate(x, max.modes, bic.threshold, ...)
   }
@@ -211,6 +213,7 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
 #'  @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
+#'  @param min.modes minimum number of modes
 #'  @param ... Further optional arguments to be passed
 #'
 #' Returns:
@@ -219,13 +222,13 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) { 
+bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) { 
 
   # x <- datamatrix[, node];  max.modes = params$max.responses; bic.threshold = params$bic.threshold
 
   require(mclust)
 
-  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold) 
+  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold, min.modes = min.modes) 
   mcl <- Mclust(x, G = best.mode)
 
   means <- as.vector(mcl$parameters$mean)
@@ -263,6 +266,7 @@ bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) {
 #'  @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
+#'  @param min.modes Optiomal. Minimum number of modes.
 #'
 #' Returns:
 #' @return Fitted latent class model (parameters and free energy)
@@ -270,12 +274,12 @@ bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, ...) {
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-bic.select.best.mode <- function (x, max.modes, bic.threshold) {
+bic.select.best.mode <- function (x, max.modes, bic.threshold, min.modes = 1) {
 
   # Cost for single mode
   # BIC : smaller is better
   # mclustBIC returns the value for -BIC, to be exact
-  nc <- 1
+  nc <- min.modes
   if (is.vector(x)) { # univariate
     m <- -mclustBIC(x, G = nc)[, "V"] 
   } else { # multivariate
@@ -285,8 +289,8 @@ bic.select.best.mode <- function (x, max.modes, bic.threshold) {
   # ----------------------------------------------------------------
   
   add.component <- TRUE
-  best.mode <- 1
-  if (max.modes == 1) {
+  best.mode <- min.modes
+  if (max.modes == min.modes) {
     add.component <- FALSE
   }
 

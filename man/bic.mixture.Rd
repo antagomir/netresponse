@@ -3,7 +3,8 @@
 \title{Description: Latent class analysis based on (infinite) Gaussian mixture model.
 If the input is data matrix, a multivariate model is fitted; if the input is a vector, a univariate model is fitted}
 \usage{
-  bic.mixture(x, max.modes, bic.threshold = 0, ...)
+  bic.mixture(x, max.modes, bic.threshold = 0,
+    min.modes = 1, ...)
 }
 \arguments{
   \item{x}{samples x features matrix for multivariate
@@ -14,6 +15,8 @@ If the input is data matrix, a multivariate model is fitted; if the input is a v
 
   \item{bic.threshold}{BIC threshold which needs to be
   exceeded before a new mode is added to the mixture.}
+
+  \item{min.modes}{minimum number of modes}
 
   \item{...}{Further optional arguments to be passed
 
