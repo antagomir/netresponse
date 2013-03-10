@@ -7,7 +7,8 @@
     prior.alpha = 1, prior.alphaKsi = 0.01,
     prior.betaKsi = 0.01, vdp.threshold = 1e-05,
     initial.responses = 1, ite = Inf, speedup = TRUE,
-    bic.threshold = 0, pca.basis = FALSE, ...)
+    bic.threshold = 0, pca.basis = FALSE,
+    min.responses = 1, ...)
 }
 \arguments{
   \item{x}{data matrix (samples x features, for
@@ -58,6 +59,8 @@
   mixture.method = "bic"}
 
   \item{pca.basis}{pca.basis}
+
+  \item{min.responses}{minimum number of responses}
 
   \item{...}{Further optional arguments to be passed.
 
