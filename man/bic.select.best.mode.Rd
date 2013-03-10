@@ -3,8 +3,7 @@
 \title{Description: Select optimal number of mixture components by adding components until
 the increase in objective function is below threshold.}
 \usage{
-  bic.select.best.mode(x, max.modes, bic.threshold,
-    min.modes = 1)
+  bic.select.best.mode(x, max.modes, bic.threshold)
 }
 \arguments{
   \item{x}{dat vector (for univariate analysis) or a matrix
