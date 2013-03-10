@@ -6,7 +6,7 @@ the input is a vector or a 1-dimensional matrix, a univariate model is
 fitted.}
 \usage{
   bic.mixture.univariate(x, max.modes, bic.threshold = 0,
-    ...)
+    min.modes = 1, ...)
 }
 \arguments{
   \item{x}{dat vector (for univariate analysis) or a matrix
