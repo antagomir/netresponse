@@ -2,10 +2,11 @@
 \alias{PlotMixtureUnivariate}
 \title{PlotMixtureUnivariate}
 \usage{
-  PlotMixtureUnivariate(x, means, sds, ws,
-    title.text = NULL, xlab.text = NULL, ylab.text = NULL,
-    binwidth = 0.05, qofz = NULL,
-    density.color = "darkgray", ...)
+  PlotMixtureUnivariate(x, means = NULL, sds = NULL,
+    ws = NULL, title.text = NULL, xlab.text = NULL,
+    ylab.text = NULL, binwidth = 0.05, qofz = NULL,
+    density.color = "darkgray", cluster.assignments = NULL,
+    ...)
 }
 \arguments{
   \item{x}{data vector}
@@ -28,6 +29,9 @@
   sample. Samples x modes.}
 
   \item{density.color}{Color for density lines}
+
+  \item{cluster.assignments}{Vector of cluster indices,
+  indicating cluster for each data point}
 
   \item{...}{Further arguments for plot function.
 
