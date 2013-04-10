@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.13.0
-Date: 2013-03-09
+Version: 1.13.01
+Date: 2013-04-10
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -70,3 +70,4 @@ Collate:
     'enrichment.score.R'
     'enrichment.list.factor.R'
     'PlotMixture.R'
+    'PlotMixtureUnivariate.R'
