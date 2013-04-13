@@ -2,11 +2,11 @@
 \alias{response.enrichment}
 \title{Enrichment for a specified sample group in the given response.}
 \usage{
-  response.enrichment(qofz, annotation.sample, response,
-    method = "hypergeometric")
+  response.enrichment(mode.assignments, annotation.sample,
+    response, method = "hypergeometric")
 }
 \arguments{
-  \item{qofz}{sample-mode assignment matrix}
+  \item{mode.assignments}{sample-mode assignment matrix}
 
   \item{annotation.sample}{User-defined sample group. For
   instance, samples belonging to a particular annotation

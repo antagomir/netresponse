@@ -1,10 +1,16 @@
-enrichment.score <- function (assignment.matrix, which.mode, annotation.samples, method = "hypergeometric") {
+enrichment.score <- function (mode.assignments, which.mode, annotation.samples, method = "hypergeometric") {
+
+  if (!is.vector(mode.assignments)) {
+    rnams <- rownames(mode.assignments)
+    mode.assignments <- apply(mode.assignments, 1, which.max)
+    names(mode.assignments) <- rnams
+  }
 
   # List all samples in the data set		 
-  total.samples <- rownames(assignment.matrix)
+  total.samples <- names(mode.assignments)
 
   # List samples in the investigated mode
-  subset.samples <- names(which(apply(assignment.matrix, 1, which.max) == which.mode))
+  subset.samples <- names(which(mode.assignments == which.mode))
 
   if (method == "hypergeometric") {
 

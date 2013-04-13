@@ -16,7 +16,7 @@
 #' Arguments: 
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #' named by the samples
-#' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
+#' @param groupings List of mode groupings. Each element lists the samples assignment matrix qofz, or a vector of cluster indices named by the samples.
 #' @param method method for quantifying the association
 #' @param qth q-value threshold
 #' @param verbose verbose 
@@ -30,10 +30,24 @@
 #' @export
 #' @keywords utilities
 
-list.responses.continuous <- function (annotation.df, models, method = "t-test", qth = Inf, verbose = TRUE, rounding = NULL) {
+list.responses.continuous <- function (annotation.df, groupings, method = "t-test", qth = Inf, verbose = TRUE, rounding = NULL) {
 
   # Collect the tables from all factors and levels here
   collected.table <- NULL
+
+  # Quantify association to each response for the continuous variable
+  if (is.null(names(groupings))) {names(groupings) <- 1:length(groupings)}
+  groupings <- list()
+  for (sn in names(groupings)) {
+    # samples in each mode (hard assignment)
+    m <- groupings[[sn]]
+    
+    if (!is.vector(m)) {
+      groupings[[sn]] <- response2sample(m)
+    } else {
+      groupings[[sn]] <- split(names(m), m)
+    }
+  }
 
   for (fnam in colnames(annotation.df)) { 
 
@@ -42,8 +56,7 @@ list.responses.continuous <- function (annotation.df, models, method = "t-test",
     annotation.vector <- annotation.df[[fnam]]
     names(annotation.vector) <- rownames(annotation.df)
 
-    # quantify association to each response for the continuous variable
-    responses.per.cont <- enrichment.list(models, annotation.vector)
+    responses.per.cont <- enrichment.list(groupings, annotation.vector)
 
     responses.per.cont$annotation <- rep(fnam, nrow(responses.per.cont))
 

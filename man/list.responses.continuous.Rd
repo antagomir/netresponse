@@ -2,7 +2,7 @@
 \alias{list.responses.continuous}
 \title{Description: Investigate association of a continuous variable and the modes}
 \usage{
-  list.responses.continuous(annotation.df, models,
+  list.responses.continuous(annotation.df, groupings,
     method = "t-test", qth = Inf, verbose = TRUE,
     rounding = NULL)
 }
@@ -10,8 +10,9 @@
   \item{annotation.df}{annotation data.frame with discrete
   factor levels, rows named by the samples}
 
-  \item{models}{List of models. Each model should have a
-  sample-cluster assignment matrix qofz.}
+  \item{groupings}{List of mode groupings. Each element
+  lists the samples assignment matrix qofz, or a vector of
+  cluster indices named by the samples.}
 
   \item{method}{method for quantifying the association}
 

@@ -1,6 +1,6 @@
 \name{list.responses.factor}
 \alias{list.responses.factor}
-\title{Description: List responses for all factors and levels in the given
+\title{Description: List significantly associated responses for all factors and levels in the given
 annotation matrix}
 \usage{
   list.responses.factor(annotation.df, models,
@@ -12,7 +12,8 @@ annotation matrix}
   factor levels, rows named by the samples}
 
   \item{models}{List of models. Each model should have a
-  sample-cluster assignment matrix qofz.}
+  sample-cluster assignment matrix qofz, or a vector of
+  cluster indices named by the samples.}
 
   \item{method}{method for enrichment calculation}
 

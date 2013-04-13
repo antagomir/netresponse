@@ -1,16 +1,13 @@
-enrichment.list <- function (models, annotation.vector) {
+enrichment.list <- function (groupings, annotation.vector) {
 
   annotated.samples <- names(which(!is.na(annotation.vector)))
   annotation.data <- annotation.vector[annotated.samples]
   names(annotation.data) <- annotated.samples
 
-  if (is.null(names(models))) {names(models) <- 1:length(models)}
-
   associations <- NULL  	 
-  for (sn in names(models)) {
+  for (sn in names(groupings)) {
 
-    # samples in each mode (hard assignment)
-    r2s <- response2sample(models[[sn]])
+    r2s <- groupings[[sn]]
 
     pvals <- c()
     fold.change <- c()
