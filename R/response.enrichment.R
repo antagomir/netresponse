@@ -16,7 +16,7 @@
 #' Calculate enrichment values for a specified sample group in the given
 #' response.
 #'
-#' @param qofz sample-mode assignment matrix
+#' @param mode.assignments sample-mode assignment matrix
 #' @param annotation.sample User-defined sample group. For instance, samples belonging to a particular annotation class.
 #' @param response Response id (integer) within the subnet.
 #' @param method Enrichment method.
@@ -28,22 +28,25 @@
 #' @keywords utilities
 #' @export
 #' @examples #enr <- response.enrichment(subnet.id, models, sample, response, method)
-response.enrichment <- function (qofz, annotation.sample, response, method = "hypergeometric") {
+response.enrichment <- function (mode.assignments, annotation.sample, response, method = "hypergeometric") {
 
+  if (!is.vector(mode.assignments)) {
+    mode.assignments <- apply(mode.assignments, 1, which.max)
+  } 
+		   
   # pick sample data for the response and
   # ensure this is a matrix also when a single sample is given
-  if (any(!annotation.sample %in% rownames(qofz))) {
+  if (any(!annotation.sample %in% names(mode.assignments))) {
     warning("Not all annotation samples are in the original data matrix; only the shared ones used for enrichment analysis.")
-    annotation.sample <- intersect(annotation.sample, rownames(qofz))
+    annotation.sample <- intersect(annotation.sample, names(mode.assignments))
   }
 
-  response.samples <- response2sample(list(qofz = qofz), component.list = TRUE)
+  response.samples <- split(mode.assignments, names(mode.assignments))
   if (length(response.samples) == 0) { warning("No samples in response"); return(NULL) }
-
   # Fixme: minor stochasticity here, perhaps due to numerical limitations?
   # Method indicates which test will be used; the higher the better score
   if (method == "hypergeometric") {
-    enr <- enrichment.score(qofz, which.mode = response, annotation.samples = annotation.sample, method = method)
+    enr <- enrichment.score(mode.assignments, which.mode = response, annotation.samples = annotation.sample, method = method)
   }
 
   # This could be implemented, not sure how useful it would be

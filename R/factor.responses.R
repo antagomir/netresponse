@@ -16,7 +16,7 @@
 #' 
 #' Arguments:
 #'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
-#'   @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
+#'   @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
 #'   @param method method for enrichment calculation
 #'   @param min.size minimum sample size for a response 
 #'   @param data data (samples x features; or a vector in univariate case)
@@ -28,7 +28,7 @@
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-factor.responses <- function (annotation.vector, models, method = "hypergeometric", min.size = 2, data = NULL) {
+factor.responses <- function (annotation.vector, groupings, method = "hypergeometric", min.size = 2, data = NULL) {
 
   responses <- list()
 
@@ -40,8 +40,7 @@ factor.responses <- function (annotation.vector, models, method = "hypergeometri
 
     level.samples <- names(annotation.vector)[which(annotation.vector == lev)]
 
-    #ors <- order.responses(models, level.samples, method = method, min.size = min.size, data = data) 
-    ors <- enrichment.list.factor(models, level.samples, method = method)
+    ors <- enrichment.list.factor(groupings, level.samples, method = method)
 
     if (is.null(ors)) { 
       ors <- NA 

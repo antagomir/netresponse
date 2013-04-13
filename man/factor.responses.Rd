@@ -2,15 +2,16 @@
 \alias{factor.responses}
 \title{Description: List responses for each level of the given factor}
 \usage{
-  factor.responses(annotation.vector, models,
+  factor.responses(annotation.vector, groupings,
     method = "hypergeometric", min.size = 2, data = NULL)
 }
 \arguments{
   \item{annotation.vector}{annotation vector with discrete
   factor levels, and named by the samples}
 
-  \item{models}{List of models. Each model should have a
-  sample-cluster assignment matrix qofz.}
+  \item{groupings}{List of groupings. Each model should
+  have a sample-cluster assignment matrix qofz, or a vector
+  of cluster indices named by the samples.}
 
   \item{method}{method for enrichment calculation}
 

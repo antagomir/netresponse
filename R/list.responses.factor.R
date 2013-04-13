@@ -11,13 +11,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-#' Description: List responses for all factors and levels in the given
+#' Description: List significantly associated responses for all factors and levels in the given
 #' annotation matrix
 #' 
 #' Arguments:  
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #'   named by the samples
-#' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
+#' @param models List of models. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
 #' @param method method for enrichment calculation
 #' @param min.size minimum sample size for a response
 #' @param qth q-value threshold
@@ -34,8 +34,6 @@
 #' @keywords utilities
 
 list.responses.factor <- function (annotation.df, models, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
-
-  # annotation.df <- annot[, factor.vars]; method = "hypergeometric"; min.size = 1; qth = Inf; verbose = T; data <- NULL; rounding = 3; models <- CAG.models
 
   pth <- NULL
 
