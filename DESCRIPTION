@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: NetResponse: functional network analysis
-Version: 1.13.02
-Date: 2013-04-13
+Version: 1.13.03
+Date: 2013-04-21
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -31,11 +31,17 @@ biocViews: CellBiology, Clustering, GeneExpression, Genetics, NetworkAnalysis,
 Collate:
     'AllClasses.R'
     'AllGenerics.R'
+    'continuous.responses.R'
     'deprecated.R'
     'detect.responses.R'
-    'firstlib.R'
     'enrichment.list.factor.minimal.R'
+    'enrichment.list.R'
+    'enrichment.score.R'
+    'enrichment.list.factor.R'
+    'factor.responses.R'
+    'firstlib.R'
     'list.responses.factor.minimal.R'
+    'listify.groupings.R'
     'toydata.R'
     'ICMg.internals.R'
     'information.criteria.R'
@@ -67,10 +73,5 @@ Collate:
     'pick.model.pairs.R'
     'list.responses.continuous.R'
     'list.responses.factor.R'
-    'continuous.responses.R'
-    'factor.responses.R'
-    'enrich.list.R'
-    'enrichment.score.R'
-    'enrichment.list.factor.R'
     'PlotMixture.R'
     'PlotMixtureUnivariate.R'

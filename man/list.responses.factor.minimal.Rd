@@ -4,7 +4,7 @@
 annotation matrix}
 \usage{
   list.responses.factor.minimal(annotation.df, groupings,
-    method = "hypergeometric", min.size = 2, qth = Inf,
+    method = "hypergeometric", min.size = 2, pth = Inf,
     verbose = TRUE, data = NULL, rounding = NULL)
 }
 \arguments{
@@ -19,7 +19,8 @@ annotation matrix}
 
   \item{min.size}{minimum sample size for a response}
 
-  \item{qth}{q-value threshold}
+  \item{pth}{p-value threshold; applied to adjusted
+  p-value}
 
   \item{verbose}{verbose}
 

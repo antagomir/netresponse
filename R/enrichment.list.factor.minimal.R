@@ -37,14 +37,11 @@ enrichment.list.factor.minimal <- function (groupings, level.samples, method, ve
   cnt <- 0
   for (subnet.id in names(groupings)) {
 
-    m <- groupings[[subnet.id]]
-    if (!is.vector(m)) {
-      m <- apply(m, 1, which.max)
-    }
+    groupings.list <- listify.groupings(groupings[[subnet.id]])
 
-    for (response in unique(m)) {
+    for (response in names(groupings.list)) {
 
-      enr <- response.enrichment(m, level.samples, response, method)
+      enr <- response.enrichment(groupings.list, level.samples, response, method)
       
       cnt <- cnt + 1
       enrichment.info[[cnt]] <- c(model = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 

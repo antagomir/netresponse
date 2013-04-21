@@ -6,7 +6,8 @@
     response, method = "hypergeometric")
 }
 \arguments{
-  \item{mode.assignments}{sample-mode assignment matrix}
+  \item{mode.assignments}{sample-mode assignments as
+  matrix, list or vector; listing samples in each group}
 
   \item{annotation.sample}{User-defined sample group. For
   instance, samples belonging to a particular annotation

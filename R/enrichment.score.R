@@ -1,16 +1,12 @@
 enrichment.score <- function (mode.assignments, which.mode, annotation.samples, method = "hypergeometric") {
 
-  if (!is.vector(mode.assignments)) {
-    rnams <- rownames(mode.assignments)
-    mode.assignments <- apply(mode.assignments, 1, which.max)
-    names(mode.assignments) <- rnams
-  }
+  mode.assignments <- listify.groupings(mode.assignments)
 
   # List all samples in the data set		 
-  total.samples <- names(mode.assignments)
+  total.samples <- unlist(mode.assignments)
 
   # List samples in the investigated mode
-  subset.samples <- names(which(mode.assignments == which.mode))
+  subset.samples <- mode.assignments[[which.mode]]
 
   if (method == "hypergeometric") {
 
