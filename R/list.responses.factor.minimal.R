@@ -20,7 +20,7 @@
 #' @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
 #' @param method method for enrichment calculation
 #' @param min.size minimum sample size for a response
-#' @param qth q-value threshold
+#' @param pth p-value threshold; applied to adjusted p-value
 #' @param verbose verbose 
 #' @param data data (samples x features; or a vector in univariate case) 
 #' @param rounding rounding digits 
@@ -33,11 +33,9 @@
 #' @export
 #' @keywords utilities
 
-list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
+list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  #annotation.df <- annot[, factor.vars]; method = "hypergeometric"; min.size = 2; qth = Inf; verbose = TRUE; data = NULL; rounding = NULL
-
-  pth <- NULL
+  #annotation.df <- annot[, factor.vars]; groupings <- list(clusterModel = groupings.vector); method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
 
   # samples x features
   if(is.vector(data)) {
@@ -101,14 +99,14 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
-      collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+      collected.table$p.adj <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
     } else {
-      collected.table$qvalue <- rep(NA, nrow(collected.table))
+      collected.table$p.adj <- p.adjust(collected.table$pvalue, method = "BH")
     }  
 
-    # Filtering based on qvalues
-    if (!all(is.na(collected.table$qvalue))) {
-      collected.table <- collected.table[collected.table$qvalue < qth, ]
+    # Significance Filtering 
+    if (!all(is.na(collected.table$p.adj))) {
+      collected.table <- collected.table[collected.table$p.adj < pth, ]
     } else {
       collected.table <- collected.table[collected.table$pvalue < pth, ]
     }
@@ -118,15 +116,15 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
   collected.table$annotated.in.subset <- as.numeric(as.character(collected.table$annotated.in.subset))
   collected.table$fraction.in.subset <- as.numeric(as.character(collected.table$fraction.in.subset))
   collected.table$fraction.in.data <- as.numeric(as.character(collected.table$fraction.in.data))
-  collected.table$pvalue <- as.numeric(as.character(collected.table$pvalue))
-  collected.table$qvalue <- as.numeric(as.character(collected.table$qvalue))
+  collected.table$pvalue <- NULL
+  collected.table$qvalue <- NULL
+  collected.table$p.adj <- as.numeric(as.character(collected.table$p.adj))
  
   if (!is.null(rounding)) {
 
     collected.table$fraction.in.subset <- round(collected.table$fraction.in.subset, rounding)
     collected.table$fraction.in.data <- round(collected.table$fraction.in.data, rounding)
-    collected.table$pvalue <- round(collected.table$pvalue, rounding)
-    collected.table$qvalue <- round(collected.table$qvalue, rounding)
+    collected.table$p.adj <- round(collected.table$p.adj, rounding)
  
   }
 

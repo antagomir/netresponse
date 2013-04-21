@@ -30,10 +30,10 @@
 #' @keywords utilities
 factor.responses.minimal <- function (annotation.vector, groupings, method = "hypergeometric", min.size = 2, data = NULL) {
 
+  # annotation.vector, groupings, method = method, min.size = min.size, data = data			 
+
   responses <- list()
-
   annotation.vector <- factor(annotation.vector)
-
   levels <- as.character(na.omit(unique(droplevels(annotation.vector))))
 
   for (lev in levels) {
