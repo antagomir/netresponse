@@ -1,0 +1,45 @@
+\name{list.responses.continuous.single}
+\alias{list.responses.continuous.single}
+\title{Description: Investigate association of a continuous variable and the modes}
+\usage{
+  list.responses.continuous.single(annotation.df,
+    groupings, method = "t-test", pth = Inf,
+    verbose = TRUE, rounding = NULL, adjust.p = TRUE)
+}
+\arguments{
+  \item{annotation.df}{annotation data.frame with discrete
+  factor levels, rows named by the samples}
+
+  \item{groupings}{Sample mode information. Each element
+  corresponds to one of the modes and lists the samples
+  assignment matrix qofz. Alternatively, a vector of mode
+  indices named by the samples can be given.}
+
+  \item{method}{method for quantifying the association}
+
+  \item{pth}{p-value threshold (for adjusted p-values)}
+
+  \item{verbose}{verbose}
+
+  \item{rounding}{rounding digits}
+
+  \item{adjust.p}{Adjust p-values (this will add p.adj
+  column and remove pvalue column in the output table)
+
+  Returns:}
+}
+\value{
+  Table listing all associations between the factor levels
+  and responses
+}
+\description{
+  Arguments:
+}
+\author{
+  Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{utilities}
+
