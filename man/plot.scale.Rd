@@ -4,7 +4,7 @@
 \usage{
   \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5,
     label.step = 2, interval = 0.1, two.sided = TRUE,
-    label.start = 1, Nlab = 3, ...)
+    label.start = NULL, Nlab = 3, ...)
 }
 \arguments{
   \item{x}{Breakpoints for the plot.}

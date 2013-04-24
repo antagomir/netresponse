@@ -696,7 +696,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 #' Plot the color scale used in visualization.
 #' 
 #' 
-#' @usage \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = 0.1, two.sided = TRUE, label.start = 1, Nlab = 3, ...)
+#' @usage \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = 0.1, two.sided = TRUE, label.start = NULL, Nlab = 3, ...)
 #' @param x Breakpoints for the plot.
 #' @param y Color palette.
 #' @param m Breakpoints' upper limit.
@@ -718,10 +718,12 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 #'   #vis <- plot.responses(res, subnet.idx)
 #'   #plot.scale(vis$breaks, vis$palette)
 #' 
-plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = .1, two.sided = TRUE, label.start = 1, Nlab = 3, ...) {
+plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = .1, two.sided = TRUE, label.start = NULL, Nlab = 3, ...) {
+
+  # x <- tmp$breaks; y <- tmp$palette; m = NULL; cex.axis = 1.5; label.step = 2; interval = .1; two.sided = TRUE; label.start = NULL; Nlab = 3
+
 
   require(Rgraphviz)
-  #require(igraph0)
   
   if (two.sided) {
     
@@ -738,6 +740,7 @@ plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval
     ndigits <- nchar(unlist(strsplit(as.character(mm), "\\."))[[2]])
     digit.step <- 10^(-ndigits)
     labs <- seq(-mm, mm, by = digit.step)
+    label.start <- -max(abs(round(labs, ndigits)))
     start.position <- match(-label.start, round(labs, ndigits))
     end.position <- match(label.start, round(labs, ndigits))
     inds <- seq(start.position, end.position,length = Nlab)
