@@ -535,7 +535,7 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' #vis <- plot.responses(res, subnet.id)
 plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...) {
 
-  # x <- res; nc = 3; plot.names = TRUE; plot.mode = "pca"; xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = D
+  # xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = NULL; scale = FALSE; x <- res; nc <- 3; plot.names = TRUE; plot.mode = "pca"; main = paste("NoPCA; NoDM")
 
   responses <- NULL
   variable <- NULL
@@ -671,13 +671,14 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     } else {
 
-      if (ncol(dmat) > 2) {pca = TRUE} else {pca = FALSE}
+      if (ncol(dmat) > 2) {pca <- TRUE} else {pca <- FALSE}
 
       pg <- PlotMixtureMultivariate(dmat, 
       	    			 modes = modes,
 				 title = subnet.id, 
-				 pca = pca
-					  )
+				 pca = pca)
+					  
+      # PlotMixtureBivariate(dmat, means, sds, ws, labels = NULL, confidence = 0.95, main = "") 
 
       # tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)
 

@@ -1,3 +1,8 @@
+
+skip <- FALSE
+
+if (!skip) {
+
 library(netresponse)
 
 # SINGLE MODE
@@ -24,3 +29,4 @@ for (mm in c("vdp", "bic")) {
   }
 }
 
+}

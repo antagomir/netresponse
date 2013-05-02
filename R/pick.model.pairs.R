@@ -43,7 +43,8 @@ pick.model.pairs <- function (network, network.nodes, node.models, datamatrix, p
 
     tmp <- edge.delta(edge, network = network, 
     	   		    network.nodes = network.nodes, 
-	   		    datamatrix = datamatrix, params = params,
+	   		    datamatrix = datamatrix, 
+			    params = params,
 	   		    node.models = node.models)
 
     model.pairs[[edge]] <- tmp[["model"]]
@@ -66,7 +67,11 @@ edge.delta <- function (edge, network, network.nodes, datamatrix, params, node.m
     b <- network[2, edge]
     vars <- network.nodes[c(a, b)]
 
-    model.params <- mixture.model(x = matrix(datamatrix[, vars], nrow( datamatrix )), 
+    mat <- matrix(datamatrix[, vars], nrow( datamatrix ))
+    rownames(mat) <- rownames(datamatrix)
+    colnames(mat) <- vars
+
+    model.params <- mixture.model(x = mat, 
     	   		 mixture.method = params$mixture.method, 
 			 max.responses = params$max.responses, 
 			 implicit.noise = params$implicit.noise, 

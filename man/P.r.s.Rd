@@ -3,7 +3,7 @@
 \title{Description: Probabiity of mode given a sample (a data vector)
 Mainly for internal use; documentation will be provided later. Tools for calculating densities with Gaussian mixture models.}
 \usage{
-  P.r.s(dat, pars, log = TRUE)
+  P.r.s(dat, pars, log = TRUE, scaling = 0)
 }
 \arguments{
   \item{dat}{features x samples data matrix for mixture
@@ -15,7 +15,10 @@ Mainly for internal use; documentation will be provided later. Tools for calcula
   component x features matrices, w is vector giving weight
   for each component.}
 
-  \item{log}{Logical. Return densities in log domain.
+  \item{log}{Logical. Return densities in log domain.}
+
+  \item{scaling}{Try to avoid floating errors. To be
+  improved later.
 
   Returns:}
 }
