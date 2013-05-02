@@ -65,6 +65,8 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 
   # x <- D; mixture.method = "vdp"; max.responses = 10; implicit.noise = 0; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01; vdp.threshold = 1.0e-5; initial.responses = 1; ite = Inf; speedup = TRUE; bic.threshold = 0; pca.basis = FALSE
 
+  # x = mat; mixture.method = params$mixture.method; max.responses = params$max.responses; implicit.noise = params$implicit.noise; prior.alpha = params$prior.alpha; prior.alphaKsi = params$prior.alphaKsi; prior.betaKsi = params$prior.betaKsi; vdp.threshold = params$vdp.threshold; initial.responses = params$initial.responses; ite = params$ite; speeup = params$speedup; bic.threshold = params$bic.threshold; pca.basis = params$pca.basis
+
   # Present data in PCA space to cope with diagonality of the covariances
   if (pca.basis) {    
     if (nrow(x) > ncol(x)) {
@@ -101,6 +103,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     sd <- matrix(model$sds, nrow = length(model$ws))
     ws <- matrix(model$ws)
     qofz <- matrix(model$qofz, ncol = length(ws))
+
     rownames(qofz) <- rownames(x)
 
     rownames(mu) <- rownames(sd) <- names(ws)
@@ -148,6 +151,8 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 #' @keywords utilities
 bic.mixture <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) { 
 
+   # x; max.modes = max.responses; bic.threshold = bic.threshold; min.modes = min.responses
+
   if (!is.vector(x) && ncol(x) == 1) {x <- x[,1]}	    
 
   if (is.vector(x)) {
@@ -193,7 +198,7 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
   Nparams <- prod(dim(means)) + prod(dim(sds)) + length(ws) 
 
   # Determine the most likely mode for each sample (-> hard clusters)
-  qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = FALSE)
+  qofz <- P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = FALSE)
   rownames(qofz) <- rownames(x)
   colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
 

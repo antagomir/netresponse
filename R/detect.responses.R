@@ -211,6 +211,7 @@ detect.responses <- function(datamatrix,
 
     ### compute costs for combined (singleton) variable pairs  ###
     tmp <- pick.model.pairs(network, network.nodes, node.models, datamatrix, params)
+
     model.pairs <- tmp$model.pairs
     delta <- tmp$delta
 

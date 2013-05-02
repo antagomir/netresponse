@@ -80,6 +80,7 @@ P.rS <- function (dat, pars, log = TRUE) {
 #'  @param dat features x samples data matrix for mixture modeling
 #'  @param pars Gaussian mixture model parameters (diagonal covariances); list with elements mu (mean vectors), sd (covariance diagonals), w (weights). The mu and sd are component x features matrices, w is vector giving weight for each component.
 #'  @param log Logical. Return densities in log domain.
+#'  @param scaling Try to avoid floating errors. To be improved later.
 #'
 #' Returns:
 #'   @return Probability density
@@ -89,21 +90,23 @@ P.rS <- function (dat, pars, log = TRUE) {
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
 
-P.r.s <- function (dat, pars, log = TRUE) {
+P.r.s <- function (dat, pars, log = TRUE, scaling = 0) {
 
   # FIXME rowmeans(qofz) is constant but not 1
   # P(r|s) for each response r and sample s
   if (length(pars$w) == 1) {
     # If there is only one mode, its likelihood is 1 for all samples
-    qofz <- array(1, dim = dim(dat))
-    colnames(qofz) <- colnames(dat)
+    qofz <- matrix(rep(1, ncol(dat)))
+    rownames(qofz) <- colnames(dat)
   } else {
-    qofz <- t(apply(P.rs.joint.individual(dat, pars, log = FALSE), 2, function (x) {x/sum(x)}))
+    logp <- P.rs.joint.individual(dat, pars, log = TRUE)
+    # Try scaling to avoind floating errors that occur easily with small probs
+    qofz <- t(apply(logp, 2, function (logx) {xs <- (scaling + logx); exp(xs)/sum(exp(xs))}))
   }
 
   if ( log ) { qofz <- log(qofz) }
 
-  matrix(qofz, ncol(dat))
+  matrix(qofz, nrow = ncol(dat))
 
 }
 
@@ -133,12 +136,6 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
   # FIXME: merge with P.rs.joint and/or P.rS to avoid redundancy
   psr.log <- P.s.r(dat, pars, log = TRUE)
   pr.log <- as.vector(log(pars$w))
-
-  #Prs.log <- get.P.rs(model, subnet.id, log = TRUE)
-  #ps <- sum_r P(s,r) = sum_r P(s|r)P(r) 
-  # P(r,s) = P(s|r)P(r) = P(r|s)P(s)
-  #ps <- colSums(exp(psr.log)*exp(pr.log)) # for each sample, sum over responses
-  #ps.log <- log(ps)
 
   logp.joint <- psr.log + pr.log
   colnames(logp.joint) <- colnames(dat)

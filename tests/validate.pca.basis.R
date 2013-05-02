@@ -1,6 +1,12 @@
+
+skip <- FALSE
+
+if (!skip) {
 # Visualization
 
 library(netresponse)
+
+#fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = T); for (f in fs) {source(f)}
 
 source("toydata2.R")
 
@@ -15,9 +21,7 @@ res <- detect.responses(D, verbose = TRUE, max.responses = 10,
 	   		       mixture.method = mixture.method, information.criterion = "BIC", 
 			       merging.threshold = 1, bic.threshold = 10, pca.basis = FALSE)
 
-res.pca <- detect.responses(D, verbose = TRUE, max.responses = 10, 
-	   		       mixture.method = mixture.method, information.criterion = "BIC", 
-			       merging.threshold = 1, bic.threshold = 10, pca.basis = TRUE)
+res.pca <- detect.responses(D, verbose = TRUE, max.responses = 10, mixture.method = mixture.method, information.criterion = "BIC", merging.threshold = 1, bic.threshold = 10, pca.basis = TRUE)
 
 # --------------------------------------------------------------------
 
@@ -45,3 +49,4 @@ vis4 <- plot.responses(res.pca, subnet.id.pca, plot.mode = "pca", datamatrix = D
 # TODO
 # pca.plot(res, subnet.id)
 # plot.subnet(res, subnet.id) 
+}
