@@ -103,6 +103,7 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     sd <- matrix(model$sds, nrow = length(model$ws))
     ws <- matrix(model$ws)
     qofz <- matrix(model$qofz, ncol = length(ws))
+    bic <- model$bic
 
     rownames(qofz) <- rownames(x)
 
@@ -114,7 +115,8 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 			 w = ws, 
 			 qofz = qofz,
 			 free.energy = model$free.energy, 
-			 Nparams = model$Nparams)
+			 Nparams = model$Nparams, 
+			 bic = bic)
 
   } else {
     stop("Provide proper mixture.method argument.")
@@ -158,7 +160,7 @@ bic.mixture <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) {
   if (is.vector(x)) {
     bic.mixture.univariate(x, max.modes, bic.threshold, min.modes = min.modes, ...)
   } else {
-    bic.mixture.multivariate(x, max.modes, bic.threshold, ...)
+    bic.mixture.multivariate(x, max.modes, bic.threshold, min.modes = min.modes, ...)
   }
 
 }
@@ -171,6 +173,7 @@ bic.mixture <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) {
 #'  @param x  matrix (for multivariate analysis)
 #'  @param max.modes Maximum number of modes to be checked for mixture model selection
 #'  @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
+#'  @param min.modes Minimum number of modes to be checked for mixture model selection
 #'  @param ... Further optional arguments to be passed
 #'
 #' Returns:
@@ -181,13 +184,16 @@ bic.mixture <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) {
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
 
-bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) { 
+bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) { 
 
   # x <- mat; max.modes = params$max.responses; bic.threshold = params$bic.threshold
 
-  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold) 
+  best.mode <- bic.select.best.mode(x, max.modes, bic.threshold, min.modes) 
 
   mcl <- Mclust(x, G = best.mode)
+
+  bic <- try(-mclustBIC(x, G = best.mode)[, "VVV"]) 
+  if ( is.na(bic) ) { bic <- Inf } # infinitely bad = Inf
 
   means <- t(mcl$parameters$mean)
   vars <- t(apply(mcl$parameters$variance$sigma, 3, function(x){diag(x)}))
@@ -205,7 +211,7 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, ...) {
   rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), sep = "-")
   colnames(means) <- colnames(sds) <- colnames(x)
 
-  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, qofz = qofz)
+  list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, qofz = qofz, bic = bic)
 
 }
 
