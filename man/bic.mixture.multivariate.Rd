@@ -4,7 +4,7 @@
 If the input (dat) is data matrix, a multivariate model is fitted.}
 \usage{
   bic.mixture.multivariate(x, max.modes, bic.threshold = 0,
-    ...)
+    min.modes = 1, ...)
 }
 \arguments{
   \item{x}{matrix (for multivariate analysis)}
@@ -14,6 +14,9 @@ If the input (dat) is data matrix, a multivariate model is fitted.}
 
   \item{bic.threshold}{BIC threshold which needs to be
   exceeded before a new mode is added to the mixture.}
+
+  \item{min.modes}{Minimum number of modes to be checked
+  for mixture model selection}
 
   \item{...}{Further optional arguments to be passed
 
