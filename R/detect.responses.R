@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2012 Leo Lahti and Olli-Pekka Huovilainen
+# Copyright (C) 2008-2013 Leo Lahti and Olli-Pekka Huovilainen
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
