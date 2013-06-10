@@ -1,19 +1,11 @@
-enrichment.score <- function (mode.assignments, which.mode, annotation.samples, method = "hypergeometric") {
-
-  mode.assignments <- listify.groupings(mode.assignments)
-
-  # List all samples in the data set		 
-  total.samples <- unlist(mode.assignments)
-
-  # List samples in the investigated mode
-  subset.samples <- mode.assignments[[which.mode]]
+enrichment.score <- function (total.samples, subset.samples, annotated.samples, method = "hypergeometric") {
 
   if (method == "hypergeometric") {
 
       N <- length(total.samples)
 
       # number of white balls in the urn
-      m <- length(annotation.samples) 
+      m <- length(annotated.samples) 
     
       # number of black balls in the urn
       n <- N - m
@@ -24,7 +16,7 @@ enrichment.score <- function (mode.assignments, which.mode, annotation.samples, 
       # overlap between investigated sample group among response
       # samples (using hard assignments)
       # number of white balls drawn without replacement
-      q <- sum(annotation.samples %in% subset.samples)  
+      q <- sum(annotated.samples %in% subset.samples)  
       
       # hypergeometric enrichment (small p, high enrichment)
       # take 1-p to indicate high enrichment with high score
@@ -35,7 +27,7 @@ enrichment.score <- function (mode.assignments, which.mode, annotation.samples, 
 
       temp <- c(sample.size.total = N,
       	     	sample.size.subset = k, 
-	     	sample.size.annotation = m,
+	     	sample.size.annotated = m,
 	     	annotated.in.subset = q, 
 		fraction.in.data = m/N,
 		fraction.in.subset = q/k, 

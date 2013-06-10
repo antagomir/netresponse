@@ -50,12 +50,12 @@ vectorize.groupings <- function (groupings, verbose = FALSE) {
 
   if (is.matrix(groupings[[1]])) {
     if (verbose) {message("Convert mode matrix to vector")}
-    gv <- apply(groupings, 1, which.max)
+    gv <- colnames(groupings)[apply(groupings, 1, which.max)]
   } else if (is.vector(groupings) && !is.list(groupings)) {
     if (verbose) {message("Convert mode vector to list")}
     gv <- groupings
   } else if (is.list(groupings)) {
-    gv <- unlist(sapply(1:length(groupings), function (i) {rep(i, length(groupings[[i]]))}))
+    gv <- unlist(sapply(1:length(groupings), function (i) {rep(names(groupings)[[i]], length(groupings[[i]]))}))
     names(gv) <- unlist(groupings)
   }
 
