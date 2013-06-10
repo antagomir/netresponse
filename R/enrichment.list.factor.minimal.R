@@ -7,8 +7,6 @@
 #'  
 #' Arguments:
 #' @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz.
-#' @param level.samples Measure enrichment of this sample (set) across the observed
-#'   responses.
 #' @param method 'hypergeometric' measures enrichment of factor levels in this
 #'   response; 'precision' measures response purity for each factor level;
 #'   'dependency' measures logarithm of the joint density between response and
@@ -28,7 +26,10 @@
 #' @export
 #' @examples #
 #'
-enrichment.list.factor.minimal <- function (groupings, level.samples, method, verbose = FALSE) {
+enrichment.list.factor.minimal <- function (groupings, method, verbose = FALSE, annotation.vector, level) {
+
+  # groupings, level.samples, method = method
+  level.samples <- names(annotation.vector)[annotation.vector %in% level]
 
   if (is.null(names(groupings))) { names(groupings) <- 1:length(groupings) }
 
@@ -41,7 +42,11 @@ enrichment.list.factor.minimal <- function (groupings, level.samples, method, ve
 
     for (response in names(groupings.list)) {
 
-      enr <- response.enrichment(groupings.list, level.samples, response, method)
+      # In enrichment calculations use only those samples where annotations are available
+      total.samples <- intersect(unlist(groupings.list), names(which(!is.na(annotation.vector))))
+      response.samples <- intersect(groupings.list[[response]], names(which(!is.na(annotation.vector))))
+
+      enr <- response.enrichment(total.samples, response.samples, level.samples, method)
       
       cnt <- cnt + 1
       enrichment.info[[cnt]] <- c(model = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 

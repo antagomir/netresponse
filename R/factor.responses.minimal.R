@@ -37,10 +37,8 @@ factor.responses.minimal <- function (annotation.vector, groupings, method = "hy
   levels <- as.character(na.omit(unique(droplevels(annotation.vector))))
 
   for (lev in levels) {
-
-    level.samples <- names(annotation.vector)[which(annotation.vector == lev)]
-
-    ors <- enrichment.list.factor.minimal(groupings, level.samples, method = method)
+ 
+    ors <- enrichment.list.factor.minimal(groupings, method = method, annotation.vector = annotation.vector, level = lev)
 
     if (is.null(ors)) { 
       ors <- NA 
@@ -54,6 +52,7 @@ factor.responses.minimal <- function (annotation.vector, groupings, method = "hy
   responses <- responses[!is.na(responses)]
 
   responses.per.level <- NULL
+
   if (length(responses) > 0) {
 
     responses.per.level <- lapply(responses, function (dr) { dr$ordered.responses })

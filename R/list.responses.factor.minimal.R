@@ -26,8 +26,8 @@
 #' @param rounding rounding digits 
 #'
 #' Returns:
-#' @return Table listing all associations between the factor levels and
-#'   responses
+#' @return A list with two elements: Table listing all associations between the factor levels and
+#'   responses; multiple p-value adjustment method
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export
@@ -35,7 +35,7 @@
 
 list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  #annotation.df <- annot[, factor.vars]; groupings <- list(clusterModel = groupings.vector); method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
+  #annotation.df <- my.annot[, factor.vars]; groupings <- groupings.listing; method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
 
   # samples x features
   if(is.vector(data)) {
@@ -60,7 +60,6 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
 
     # Order responses for each level of this factor
     responses.per.level <- factor.responses.minimal(annotation.vector, groupings, method = method, min.size = min.size, data = data) 
-
     responses.per.level <- responses.per.level[na.omit(names(responses.per.level))]
 
     # Add factor/level information
@@ -68,17 +67,14 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
     if (length(responses.per.level) > 0 && !is.null(na.omit(names(responses.per.level)))) {
       for (level in na.omit(names(responses.per.level))) {
 
-        responses.per.level[[level]] <- cbind(responses.per.level[[level]], 
-							fnam, 
-				   			level)
+        responses.per.level[[level]] <- cbind(responses.per.level[[level]], fnam, level)
         tmp <- responses.per.level[[level]]
         colnames(responses.per.level[[level]]) <- c(colnames(tmp)[1:(ncol(tmp)-2)], "Factor", "Level")
 
       }
     
-      # Combine the level-wise matrices
+      # Combine level-wise matrices
       mat <- responses.per.level[[1]]; 
-
       if (length(responses.per.level) > 1) {
         for (i in 2:length(responses.per.level)) { mat <- rbind(mat, responses.per.level[[i]])} 
       }
@@ -100,8 +96,10 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
   
     if (nrow(collected.table)>100) {
       collected.table$p.adj <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+      p.adj.method <- "qvalue"
     } else {
       collected.table$p.adj <- p.adjust(collected.table$pvalue, method = "BH")
+      p.adj.method <- "BH"
     }  
 
     # Significance Filtering 
@@ -128,7 +126,7 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
  
   }
 
-  collected.table
+  list(table = collected.table, p.adj.method = p.adj.method)
 
 }
 

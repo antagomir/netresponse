@@ -16,9 +16,9 @@
 #' Calculate enrichment values for a specified sample group in the given
 #' response.
 #'
-#' @param mode.assignments sample-mode assignments as matrix, list or vector; listing samples in each group
-#' @param annotation.sample User-defined sample group. For instance, samples belonging to a particular annotation class.
-#' @param response Response id (integer) within the subnet.
+#' @param total.samples All samples in the data
+#' @param response.samples Samples in the investigated subset
+#' @param annotated.samples Samples at the investigated annotation level for enrichment calculation
 #' @param method Enrichment method.
 #'
 #' @return List with enrichment statistics, depending on enrichment method.
@@ -28,23 +28,14 @@
 #' @keywords utilities
 #' @export
 #' @examples #enr <- response.enrichment(subnet.id, models, sample, response, method)
-response.enrichment <- function (mode.assignments, annotation.sample, response, method = "hypergeometric") {
 
-  # mode.assignments <- groupings.list; annotation.sample <- level.samples; method <- "hypergeometric"
-  response.samples <- listify.groupings(mode.assignments)
+response.enrichment <- function (total.samples, response.samples, annotated.samples, method = "hypergeometric") {
 
-  # pick sample data for the response and
-  # ensure this is a matrix also when a single sample is given
-  if (any(!annotation.sample %in% unlist(response.samples))) {
-    warning("Not all annotation samples are in the original data matrix; only the shared ones used for enrichment analysis.")
-    annotation.sample <- intersect(annotation.sample, unlist(response.samples))
-  }
-
-  if (length(response.samples[[response]]) == 0) { warning("No samples in response"); return(NULL) }
+  if (length(response.samples) == 0) { warning("No samples in response"); return(NULL) }
   # Fixme: minor stochasticity here, perhaps due to numerical limitations?
   # Method indicates which test will be used; the higher the better score
   if (method == "hypergeometric") {
-    enr <- enrichment.score(response.samples, which.mode = response, annotation.samples = annotation.sample, method = method)
+    enr <- enrichment.score(total.samples, response.samples, annotated.samples, method = method)
   }
 
   # This could be implemented, not sure how useful it would be

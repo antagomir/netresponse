@@ -127,6 +127,8 @@ list.responses.continuous.single <- function (annotation.df, groupings, method =
 
 list.responses.continuous.multi <- function (annotation.df, groupings, method = "t-test", pth = Inf, verbose = TRUE, rounding = NULL) {
 
+  #annotation.df <- annot[, continuous.vars]; groupings <- groupings.listing; pth = pth; method <- "t-test"; verbose = TRUE; rounding = NULL
+
   tab <- NULL				
   for (gn in names(groupings)) {
 
