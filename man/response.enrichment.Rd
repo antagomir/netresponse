@@ -2,18 +2,17 @@
 \alias{response.enrichment}
 \title{Enrichment for a specified sample group in the given response.}
 \usage{
-  response.enrichment(mode.assignments, annotation.sample,
-    response, method = "hypergeometric")
+  response.enrichment(total.samples, response.samples,
+    annotated.samples, method = "hypergeometric")
 }
 \arguments{
-  \item{mode.assignments}{sample-mode assignments as
-  matrix, list or vector; listing samples in each group}
+  \item{total.samples}{All samples in the data}
 
-  \item{annotation.sample}{User-defined sample group. For
-  instance, samples belonging to a particular annotation
-  class.}
+  \item{response.samples}{Samples in the investigated
+  subset}
 
-  \item{response}{Response id (integer) within the subnet.}
+  \item{annotated.samples}{Samples at the investigated
+  annotation level for enrichment calculation}
 
   \item{method}{Enrichment method.}
 }

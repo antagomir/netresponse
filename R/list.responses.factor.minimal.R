@@ -35,7 +35,7 @@
 
 list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
-  #annotation.df <- my.annot[, factor.vars]; groupings <- groupings.listing; method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
+  #annotation.df <- my.annot2; groupings <- groupings.listing2; method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
 
   # samples x features
   if(is.vector(data)) {

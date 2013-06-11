@@ -12,7 +12,9 @@
 #'   'dependency' measures logarithm of the joint density between response and
 #'   factor level vs. their marginal densities: log(P(r,s)/(P(r)P(s)))
 #' @param verbose Follow progress by intermediate messages.
-#'
+#' @param annotation.vector annotation vector
+#' @param level level
+#' 
 #' Returns:
 #' @return A data frame which gives a data
 #'   frame of responses ordered by enrichment score for the investigated sample.
@@ -76,6 +78,8 @@ enrichment.list.factor.minimal <- function (groupings, method, verbose = FALSE, 
 
       }
     }
+
+    if (nrow(enr) == 0) { return(NULL) }
 
     enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
 
