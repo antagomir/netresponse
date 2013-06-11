@@ -2,15 +2,12 @@
 \alias{enrichment.list.factor.minimal}
 \title{Description: enrichment.list.factor}
 \usage{
-  enrichment.list.factor.minimal(groupings, level.samples,
-    method, verbose = FALSE)
+  enrichment.list.factor.minimal(groupings, method,
+    verbose = FALSE, annotation.vector, level)
 }
 \arguments{
   \item{groupings}{List of groupings. Each model should
   have a sample-cluster assignment matrix qofz.}
-
-  \item{level.samples}{Measure enrichment of this sample
-  (set) across the observed responses.}
 
   \item{method}{'hypergeometric' measures enrichment of
   factor levels in this response; 'precision' measures
@@ -19,7 +16,11 @@
   and factor level vs. their marginal densities:
   log(P(r,s)/(P(r)P(s)))}
 
-  \item{verbose}{Follow progress by intermediate messages.
+  \item{verbose}{Follow progress by intermediate messages.}
+
+  \item{annotation.vector}{annotation vector}
+
+  \item{level}{level
 
   Returns:}
 }

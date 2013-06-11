@@ -32,8 +32,9 @@ annotation matrix}
   Returns:}
 }
 \value{
-  Table listing all associations between the factor levels
-  and responses
+  A list with two elements: Table listing all associations
+  between the factor levels and responses; multiple p-value
+  adjustment method
 }
 \description{
   Arguments:

@@ -30,8 +30,6 @@
 #' @keywords utilities
 factor.responses.minimal <- function (annotation.vector, groupings, method = "hypergeometric", min.size = 2, data = NULL) {
 
-  # annotation.vector, groupings, method = method, min.size = min.size, data = data			 
-
   responses <- list()
   annotation.vector <- factor(annotation.vector)
   levels <- as.character(na.omit(unique(droplevels(annotation.vector))))
@@ -46,7 +44,9 @@ factor.responses.minimal <- function (annotation.vector, groupings, method = "hy
     }
   
     responses[[as.character(lev)]] <- ors
+
   }
+
 
   # Pick top responses for each factor level
   responses <- responses[!is.na(responses)]
