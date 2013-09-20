@@ -8,7 +8,7 @@
 \arguments{
   \item{sif.file}{Name of network file in SIF format.}
 
-  \item{format}{Output format: igraph0 or graphNEL}
+  \item{format}{Output format: igraph or graphNEL}
 
   \item{directed}{Logical. Directed/undirected graph. Not
   used in the current model.}
@@ -22,7 +22,7 @@
   file reading.}
 }
 \value{
-  R graph object in igraph0 or graphNEL format.
+  R graph object in igraph or graphNEL format.
 }
 \description{
   Function to read network files.
