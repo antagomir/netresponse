@@ -35,7 +35,7 @@
   Plot the color scale used in visualization.
 }
 \note{
-  Depends on Rgraphviz and igraph0 packages.
+  Depends on Rgraphviz and igraph packages.
 }
 \examples{
 #

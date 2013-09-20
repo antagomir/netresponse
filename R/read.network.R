@@ -1,4 +1,4 @@
-# Copyright (C) 2010-2012 Leo Lahti
+# Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,13 @@
 #' @usage read.sif(sif.file, format = "graphNEL", directed = FALSE, header =
 #' TRUE, sep = "\t", ...)
 #' @param sif.file Name of network file in SIF format.
-#' @param format Output format: igraph0 or graphNEL
+#' @param format Output format: igraph or graphNEL
 #' @param directed Logical. Directed/undirected graph. Not used in the current
 #' model.
 #' @param header Logical. Indicate whether the SIF file has header or not.
 #' @param sep Field separator.
 #' @param ... Further optional arguments to be passed for file reading.
-#' @return R graph object in igraph0 or graphNEL format.
+#' @return R graph object in igraph or graphNEL format.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
 #' @export
