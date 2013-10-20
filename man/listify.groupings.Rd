@@ -1,0 +1,31 @@
+\name{listify.groupings}
+\alias{listify.groupings}
+\title{Convert grouping info into a list; each element corresponds to a
+group and lists samples in that group.}
+\usage{
+  listify.groupings(groupings, verbose = FALSE)
+}
+\arguments{
+  \item{groupings}{a list, a vector, or a samplesxmodes
+  assignment matrix}
+
+  \item{verbose}{verbose}
+}
+\value{
+  Group list
+}
+\description{
+  Convert grouping info into a list; each element
+  corresponds to a group and lists samples in that group.
+}
+\examples{
+#
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{utilities}
+

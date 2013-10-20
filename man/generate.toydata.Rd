@@ -1,0 +1,36 @@
+\name{generate.toydata}
+\alias{generate.toydata}
+\title{generate.toydata}
+\usage{
+  D <- generate.toydata()
+}
+\arguments{
+  \item{Dim}{Dimensionality of data}
+
+  \item{Nc}{Number of modes}
+
+  \item{Ns}{Number of data points}
+
+  \item{sd0}{Component spread}
+
+  \item{rgam.shape}{Shape parameter for Gamma distribution}
+
+  \item{rgam.scale}{Scale parameter for Gamma distribution}
+}
+\value{
+  Simulated data matrix (samples x features)
+}
+\description{
+  generate.toydata
+}
+\examples{
+# D <- generate.toydata()
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{internal}
+

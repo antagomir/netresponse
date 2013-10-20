@@ -1,0 +1,299 @@
+%\VignetteIndexEntry{netresponse}
+%The above line is needed to remove a warning in R CMD check
+\documentclass[a4paper]{article}
+
+\title{netresponse\\probabilistic tools for functional network analysis}
+\author{Leo Lahti$^{1,2}$\footnote{leo.lahti@iki.fi}, Olli-Pekka
+Huovilainen$^1$,\\Ant{\'o}nio Gusm{\~a}o$^1$ and Juuso Parkkinen$^1$\\
+\\(1) Dpt. Information and Computer Science, Aalto University,
+Finland\\(2) Wageningen University, Netherlands}
+
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage[authoryear,round]{natbib}
+\usepackage[numbers]{natbib}
+
+\usepackage{hyperref}
+\usepackage{Sweave}
+\usepackage{float}
+
+%\textwidth=6.2in
+%\textheight=8.5in
+%\oddsidemargin=.1in
+%\evensidemargin=.1in
+%\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+
+Condition-specific network activation is characteristic for cellular
+systems and other real-world interaction networks. If measurements of
+network states are available across a versatile set of conditions or
+time points, it becomes possible to construct a global view of network
+activation patterns. Different parts of the network respond to
+different conditions, and in different ways. Systematic, data-driven
+identification of these responses will help to obtain a holistic view
+of network activity \cite{Lahti10bioinf, Lahti10thesis}. This package
+provides robust probabilistic algorithms for functional network
+analysis \cite{Lahti10bioinf, Parkkinen10bmcsysbio}. 
+
+The methods are based on nonparametric probabilistic modeling and
+variational learning, and provide general exploratory tools to
+investigate the structure (ICMg; \cite{Parkkinen10bmcsysbio}) and
+context-specific behavior (NetResponse; \cite{Lahti10bioinf}) of
+interaction networks.  ICMg is used to identify community structure in
+interaction networks; NetResponse detects and characterizes
+subnetworks that exhibit context-specific activation patterns across
+versatile collections of functional measurements, such as gene
+expression data. The implementations are partially based on the
+agglomerative independent variable group analysis \citep{Honkela08}
+and variational Dirichlet process Gaussian mixture models
+\cite{Kurihara07nips}. The tools are particularly useful for global
+exploratory analysis of genome-wide interaction networks and versatile
+collections of gene expression data.
+
+%The package provides also implementations for aivga and vdp. %Further
+%tools %for visualization and analysis will be provided in the %later
+%versions.  %The R package depends on \Rpackage{igraph} and
+%\Rpackage{Rgraphviz} %packages. 
+
+
+\section{Loading the package and example data}
+
+Load the package and toy data set. The {\it toydata} object contains
+the variables {\it D} (gene expression matrix) and {\it netw} (network
+matrix). The data matrix {\it D} describes measurements of the network
+activation over multiple conditions.  This simple toy data will be
+analyzed in the subsequent examples. Note that the method is
+potentially applicable to networks with thousands of nodes and
+conditions; the scalability depends on network connectivity.
+
+<<initial, results = hide>>=
+library(netresponse)
+data(toydata)
+D <- as.matrix(toydata$emat)
+netw <- as.matrix(toydata$netw)
+@
+
+\section{Detecting network responses}
+
+Detect network responses across the different measurement conditions
+in the data matrix D:
+
+<<detect>>=
+model <- detect.responses(D, netw, verbose = FALSE)
+@
+
+Various network formats are supported, see help(detect.responses) for
+details. With large data sets, consider using the 'speedup' option.
+
+
+\section{Investigating the results}
+%
+%Subnetwork statistics: size and number of distinct responses for each subnet%
+%
+%<<stat>>=
+%stat <- model.stats(model) 
+%stat
+%@%
+
+List the detected subnetworks (each is a list of nodes). By default,
+singleton subnetworks (with only one gene) and subnetworks with only a
+single response (no differences between conditions) are excluded. To
+change the defaults, see help(get.subnets). Subnetworks can be
+filtered by size and number of responses. Subnetworks that have only
+one response are not informative of the differences between
+conditions, and typically ignored in subsequent analysis.
+
+<<getsubnets2>>=
+get.subnets(model, min.size = 2, min.responses = 2)
+@ 
+
+%Pick one of the subnets (define by identifier)
+%<<>>=
+%inds <- which(sapply(model@last.grouping, length) > 2)
+%subnet.id <- names(which.min(model@costs[inds]))
+%@
+
+%Check nodes of a particular subnetwork
+%<<getsubnsets3>>=
+%subnet.id <- 'Subnet-2'
+%get.subnets(model)[[subnet.id]]
+%@
+
+Each subnetwork response has a probabilistic association to each
+condition. Get the list of samples corresponding to each response
+(each sample is assigned to the response of the highest probability) with response2sample function.
+
+<<resp, results = hide>>=
+subnet.id <- 'Subnet-2'
+response2sample(model, subnet.id)
+@
+
+Retrieve model parameters of a given subnetwork (Gaussian mixture
+means, covariance diagonal, and component weights):
+<<pars>>=
+pars <- get.model.parameters(model, subnet.id) # model parameters
+pars
+@ 
+
+
+Probabilistic sample-response assignments for a given subnet is retrieved with:
+<<probs>>=
+response.probabilities <- sample2response(model, subnet.id)
+@
+
+\section{Extending the subnetworks}
+
+After identifying the locally connected subnetworks, it is possible to
+search for features (genes) that are similar to a given subnetwork but
+not directly interacting with it. To order the remaining features
+in the input data based on similarity with the subnetwork, type
+
+<<findsimilar>>=
+g <- find.similar.features(model, subnet.id = "Subnet-1")
+subset(g, delta < 0)
+@
+
+This gives a data frame which indicates similarity level with the
+subnetwork for each feature. The smaller, the more similar. Negative
+values of delta indicate the presence of coordinated responses,
+positive values of delta indicate independent responses. The data
+frame is ordered such that the features are listed by decreasing
+similarity.
+
+\section{Nonparametric Gaussian mixture models}
+
+The package provides additional tools for nonparametric Gaussian
+mixture modeling based on variational Dirichlet process mixture models
+and implementations by \citep{Kurihara07nips, Honkela08}. See the
+example in help(vdp.mixt).
+
+\section{Interaction Component Model for Gene Modules}
+
+Interaction Component Model (ICMg) can be used to find functional gene
+modules \cite{Parkkinen10bmcsysbio} from either protein interaction
+data or from combinations of protein interaction and gene expression
+data.
+
+A short example of how to run ICMg and obtain clustering for the nodes:
+
+<<icmg, results = hide>>=
+library(netresponse)
+data(osmo)
+res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
+res$clustering <- apply(res$comp.memb, 2, which.max)
+@
+
+\section{Visualization}
+
+Plot subnetwork responses (Fig.~\ref{fig:responses}). The
+visualization tools depend on {\it Rgraphviz} and {\it igraph}
+packages.
+
+\begin{figure}[H]
+\begin{center}
+<<visu1, fig=true>>=
+subnet.id <- "Subnet-2" # specify the subnet to visualize
+vis <- plot.responses(model, subnet.id)
+@
+\end{center}
+\caption{}
+\label{fig:responses}
+\end{figure}
+
+Plot color scale used in the visualization:
+<<visu2, fig=true>>=
+plot.scale(vis$breaks, vis$palette)
+@
+
+%Plot the subnetwork (Fig.~\ref{fig:subnet}):
+%\begin{figure}[H]
+%\begin{center}
+%<<visu, fig=true>>=
+%# Fix later
+%#tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, colors = FALSE, maintext = paste("Subnetwork", subnet.id))
+%@
+%\end{center}
+%\caption{}
+%\label{fig:subnet}
+%\end{figure}
+
+%Visualize data and centroids for given subnetwork with PCA (Fig.~\ref{fig:pca})
+%
+%\begin{figure}[H]
+%\begin{center}
+%<<fig=true>>=
+%plot.pca(model, subnet.id, D)
+%@
+%\end{center}
+%\caption{}
+%\label{fig:pca}
+%\end{figure}
+
+\section{Citing NetResponse}
+
+Please cite \cite{Lahti10bioinf} with the package. When using the ICMg
+algorithms, additionally cite \cite{Parkkinen10bmcsysbio}.
+
+
+\section{Version information}
+
+This document was written using:
+
+<<details>>=
+sessionInfo()
+@
+
+
+
+%\bibliographystyle[numbers]{natbib} 
+
+\begin{thebibliography}{1}
+
+\bibitem{Lahti10bioinf}
+Leo Lahti {\em et~al.} (2010).
+\newblock Global modeling of transcriptional responses in interaction networks.
+\newblock {\em Bioinformatics} 26(21):2713-20
+\newblock Preprint available at: http://www.cis.hut.fi/lmlahti/publications/Lahti10bioinf-preprint.pdf
+
+\bibitem{Lahti10thesis}
+Leo Lahti (2010).                                     
+\newblock Probabilistic analysis of the human transcriptome with side
+information.                       
+\newblock PhD thesis. TKK Dissertations in Information and Computer
+Science TKK-ICS-D19. Aalto University School of Science and
+Technology, Department of Information and Computer Science, Espoo,
+Finland, December 2010
+\newblock http://lib.tkk.fi/Diss/2010/isbn9789526033686/        
+                    
+\bibitem{Honkela08} Antti Honkela {\em et~al.} (2008). \newblock
+Agglomerative independent variable group analysis. \newblock {\em
+Neurocomputing\/} 71, 1311--20.
+
+\bibitem{Kurihara07nips}
+Kenichi Kurihara {\em et~al.} (2007).
+\newblock Accelerated variational Dirichlet process mixtures.
+\newblock In B.~Sch\"olkopf, J.~Platt, and T.~Hoffman, eds., {\em Advances
+  in Neural Information Processing Systems 19\/}, 761-8. MIT Press,
+  Cambridge, MA.
+
+\bibitem{Parkkinen10bmcsysbio}
+Parkkinen, J. and Kaski, S.
+\newblock Searching for functional gene modules with interaction component models.
+\newblock {\em BMC Systems Biology 4\/} (2010), 4.
+
+\end{thebibliography}
+
+%\bibliographystyle{abbrv}
+%\bibliography{my.bib}
+
+\end{document}

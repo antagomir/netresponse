@@ -1,0 +1,35 @@
+\name{filter.network}
+\alias{filter.network}
+\title{filter.network}
+\usage{
+  filter.network(network, delta, datamatrix, params)
+}
+\arguments{
+  \item{network}{network}
+
+  \item{delta}{associated cost function value changes for
+  each node merge}
+
+  \item{datamatrix}{datamatrix}
+
+  \item{params}{parameters}
+}
+\value{
+  Filtered network
+}
+\description{
+  Include to the network only the edges with the highest
+  mutual information, calculated based on the first
+  principal components.
+}
+\examples{
+#
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{internal}
+

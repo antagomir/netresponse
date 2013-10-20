@@ -1,0 +1,36 @@
+\name{continuous.responses}
+\alias{continuous.responses}
+\title{Description: Quantify association between modes and continuous variable}
+\usage{
+  continuous.responses(annotation.vector, model,
+    method = "t-test", min.size = 2, data = NULL)
+}
+\arguments{
+  \item{annotation.vector}{annotation vector with discrete
+  factor levels, and named by the samples}
+
+  \item{model}{NetResponse model object}
+
+  \item{method}{method for enrichment calculation}
+
+  \item{min.size}{minimum sample size for a response}
+
+  \item{data}{data matrix (samples x features)
+
+  Returns:}
+}
+\value{
+  List with each element corresponding to one variable and
+  listing the responses according to association strength
+}
+\description{
+  Arguments:
+}
+\author{
+  Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{utilities}
+
