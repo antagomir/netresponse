@@ -7,14 +7,14 @@ netresponse provides a global map of network activation patterns. The
 implementation is based on probabilistic models and variational
 learning. Currently available tools include:
 
- * [netresponse] [Lahti et al. Bioinformatics
+ * netresponse ([Lahti et al. Bioinformatics
    2010](http://bioinformatics.oxfordjournals.org/content/26/21/2713))
    to detect and characterize context-specific activation patterns and
    to construct global functional maps of large interaction networks
    by combining functional information with interaction networks
 
- * Interaction Component Model ICMg [Parkkinen and Kaski. BMC Systems
-   Biology 2010](http://www.biomedcentral.com/1752-0509/4/4): to
+ * Interaction Component Model ICMg ([Parkkinen and Kaski. BMC Systems
+   Biology 2010](http://www.biomedcentral.com/1752-0509/4/4)) to
    discover functional network modules, or communities, taking into
    account the uncertainty in network structure. Module discovery can
    be supervised by functional information of the network.
