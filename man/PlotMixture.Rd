@@ -1,0 +1,40 @@
+\name{PlotMixture}
+\alias{PlotMixture}
+\title{PlotMixture}
+\usage{
+  PlotMixture(x, qofz, binwidth = 0.05, xlab.text = NULL,
+    ylab.text = NULL, title.text = NULL)
+}
+\arguments{
+  \item{x}{data vector}
+
+  \item{qofz}{Mode assignment probabilities for each
+  sample. Samples x modes.}
+
+  \item{binwidth}{binwidth for histogram}
+
+  \item{xlab.text}{xlab.text}
+
+  \item{ylab.text}{ylab.text}
+
+  \item{title.text}{title.text
+
+  Return:}
+}
+\value{
+  Used for its side-effects
+}
+\description{
+  Arguments:
+}
+\examples{
+# PlotMixture(x, qofz)
+}
+\author{
+  Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse") for citation details.
+}
+\keyword{utilities}
+

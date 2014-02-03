@@ -1,0 +1,84 @@
+\name{mixture.model}
+\alias{mixture.model}
+\title{Description: Fit Gaussian mixture model}
+\usage{
+  mixture.model(x, mixture.method = "vdp",
+    max.responses = 10, implicit.noise = 0,
+    prior.alpha = 1, prior.alphaKsi = 0.01,
+    prior.betaKsi = 0.01, vdp.threshold = 1e-05,
+    initial.responses = 1, ite = Inf, speedup = TRUE,
+    bic.threshold = 0, pca.basis = FALSE,
+    min.responses = 1, ...)
+}
+\arguments{
+  \item{x}{data matrix (samples x features, for
+  multivariate analysis) or a vector (for univariate
+  analysis)}
+
+  \item{mixture.method}{Specify the approach to use in
+  mixture modeling.  Options. vdp (nonparametric
+  Variational Dirichlet process mixture model); bic (based
+  on Gaussian mixture modeling with EM, using BIC to select
+  the optimal number of components)}
+
+  \item{max.responses}{Maximum number of responses for each
+  subnetwork. Can be used to limit the potential number of
+  network states.}
+
+  \item{implicit.noise}{Implicit noise parameter. Add
+  implicit noise to vdp mixture model. Can help to avoid
+  overfitting to local optima, if this appears to be a
+  problem.}
+
+  \item{prior.alpha,prior.alphaKsi,prior.betaKsi}{Prior
+  parameters for Gaussian mixture model that is calculated
+  for each subnetwork (normal-inverse-Gamma prior). alpha
+  tunes the mean; alphaKsi and betaKsi are the shape and
+  scale parameters of the inverse Gamma function,
+  respectively.}
+
+  \item{vdp.threshold}{Minimal free energy improvement
+  after which the variational Gaussian mixture algorithm is
+  deemed converged.}
+
+  \item{initial.responses}{Initial number of components for
+  each subnetwork model. Used to initialize calculations.}
+
+  \item{ite}{Maximum number of iterations on posterior
+  update (updatePosterior). Increasing this can potentially
+  lead to more accurate results, but computation may take
+  longer.}
+
+  \item{speedup}{Takes advantage of approximations to PCA,
+  mutual information etc in various places to speed up
+  calculations. Particularly useful with large and densely
+  connected networks and/or large sample size.}
+
+  \item{bic.threshold}{BIC threshold which needs to be
+  exceeded before a new mode is added to the mixture with
+  mixture.method = "bic"}
+
+  \item{pca.basis}{pca.basis}
+
+  \item{min.responses}{minimum number of responses}
+
+  \item{...}{Further optional arguments to be passed.
+
+  Returns:}
+}
+\value{
+  List with two elements: model: fitted mixture model
+  (parameters and free energy); model.params: model
+  parameters
+}
+\description{
+  Arguments:
+}
+\author{
+  Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
+\references{
+  See citation("netresponse")
+}
+\keyword{utilities}
+

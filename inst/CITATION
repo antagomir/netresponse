@@ -1,0 +1,22 @@
+citHeader("To cite netrespose (algorithm and package) in publications use:")
+
+citEntry(entry="article",
+         title = "Global modeling of transcriptional responses in interaction networks",
+         author = personList(
+	 	person(given ="Leo", family="Lahti", email = "leo.lahti@iki.fi"),
+	 	person(given ="Juha", family="Knuuttila", middle = "E.A."),
+	 	person(given ="Samuel", family="Kaski")
+	 	  ),
+	 journal = "Bioinformatics",
+	 year = "2010",
+         volume = "26", 
+	 issue = "21", 
+	 pages = "2713--20", 
+         textVersion =
+         paste("Leo Lahti et al.",
+               "Global modeling of transcriptional responses in interaction networks",
+               "Bioinformatics 26(21):2713--20, 2010.",
+               sep=" ")
+         )
+
+citFooter("For ICMg functionality, please cite additionally the references listed in help(ICMg.combined.sampler). Thanks for Olli-Pekka Huovilainen and Antonio Gusmao for contributions to the R/C implementation of the netresponse algorithm.")

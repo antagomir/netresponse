@@ -1,0 +1,4 @@
+all: netresponse.so
+netresponse.so: netresponse.c
+        MAKEFLAGS='CFLAGS=-O2 -Wall' /usr/bin/R CMD SHLIB netresponse.c
+clean:

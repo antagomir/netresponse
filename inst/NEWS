@@ -1,0 +1,392 @@
+CHANGES IN VERSION 1.9.17 (2012-06-28)
+
+  o added remove.negative.edges function 
+  o added positive.edges argument to detect.responses
+
+CHANGES IN VERSION 1.9.15 (2012-05-23)
+
+  o igraph dependency moved to igraph0
+
+CHANGES IN VERSION 1.9.14 (2012-05-14)
+
+  o dmt added to dependencies
+
+CHANGES IN VERSION 1.9.13 (2012-05-04)
+
+USER-VISIBLE CHANGES
+  o added PlotMixtureMultivariate function
+
+
+CHANGES IN VERSION 1.9.12 (2012-05-03)
+
+USER-VISIBLE CHANGES
+
+  o added parallelization on update.model.pair step
+
+BUG FIXES
+  o removed merge updates for potential subnet merges that would exceed max size
+
+
+CHANGES IN VERSION 1.9.10 (2012-04-30)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+  o added bic.threshold option in detect responses and downstream functions
+  o latent.class.analysis function replaced with mixture.model
+
+BUG FIXES
+  o Rd conflicts resolved
+
+CHANGES IN VERSION 1.9.07 (2012-04-25)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+  o changed all documentation into Roxygen
+  o added bic.mixture.univariate function
+  o added argument mixture.method in detect.responses and to consecutive downstream functions
+
+BUG FIXES
+  o added information.criterion option to edge.delta costind.ab calculation
+  o "c.max <- max.responses - 1"--> "c.max <- max.responses" in vdp.mixt
+
+CHANGES IN VERSION 1.9.05 (2012-04-24)
+
+  o added the plot.mode = "pca" in plot.responses function
+  o added tests/mclust-mixture.R example
+
+CHANGES IN VERSION 1.9.04 (2012-04-21)
+
+  o removed the redundant network.nodes parameter from independent.models input 
+
+CHANGES IN VERSION 1.7.38 (2012-03-28)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+ o added the option to ignore network in detect.responses
+    (netw=NULL); then the methods assumes fully connected
+    network. Without speedups the performance may be very slow.
+ o added (optional) initial mutual information based filtering of the network edges
+   also in the first stage where pairwise similarities are calculated for all node pairs
+   This can give considerable speedups with large networks
+ o merged netresponse.visualization package in the netresponse main
+    package
+ o added mode = hard in sample2response function
+ o plot.associations -> plotAssociations
+ o plot.pca -> plotPCA
+ o get.gofz -> getqofz
+
+
+BUG FIXES
+
+ o changed dependency RBGL into RColorBrewer
+ o changed dependencies multicore and doMC into parallel
+ o Modified mk.hp.posterior so as to accommodate 'max number of
+    responses' (c.max) option. Validations in tests/vdpmixture.R 
+    ok
+ o now allowing max.subnet.size = 1 in detect.responses
+ o order.responses: fixed minor bug which occurs when no enrichments are detected
+
+
+CHANGES IN VERSION 1.7.34 (2012-03-28)
+
+  o changed dependency RBGL into RColorBrewer
+
+CHANGES IN VERSION 1.7.33 (2012-03-13)
+
+  o Modified mk.hp.posterior so as to accommodate 'max number of
+    responses' (c.max) option. Validations in tests/vdpmixture.R 
+    ok
+
+CHANGES IN VERSION 1.7.32 (2012-02-21)
+
+  o added the option to ignore network in detect.responses
+    (netw=NULL); then the methods assumes fully connected
+    network. Without speedups the performance may be very slow.
+
+CHANGES IN VERSION 1.7.03 (2012-02-02)
+
+  o merged netresponse.visualization package in the netresponse main
+    package
+
+CHANGES IN VERSION 1.7.02 (2012-02-01)
+
+ o switched to R-2.14.1
+ o now allowing max.subnet.size = 1 in detect.responses
+ o order.responses: fixed minor bug which occurs when no enrichments are detected
+ o added mode = hard in sample2response function
+ o added (optional) initial mutual information based filtering of the network edges
+   also in the first stage where pairwise similarities are calculated for all node pairs
+   This can give considerable speedups with large networks
+ o plot.associations -> plotAssociations
+ o plot.pca -> plotPCA
+ o get.gofz -> getqofz
+
+CHANGES IN VERSION 1.5.14 (2011-10-28)
+
+  o removed compiler package and functions as they are included in
+    R-2.14
+
+CHANGES IN VERSION 1.5.12 (2011-06-29)
+
+  o added options for read.network
+
+CHANGES IN VERSION 1.5.11 (2011-06-28)	
+  
+  o compiler added
+  o corrected weight estimation from vdp.mixt
+
+CHANGES IN VERSION 1.5.09 (2011-06-13)
+
+  o updated toydata
+  o compute.weights: now operating in log-domain to avoid occasional
+  floating point errors
+
+
+CHANGES IN VERSION 1.5.08 (2011-05-27)
+
+  o added plot.pca function to visualize subnets in 2D with ellipsoid
+    confidence intervals and annotation colors
+
+CHANGES IN VERSION 1.5.04 (2011-05-27)
+
+BUG FIXES
+
+  o fixed discretization NAMESPACE issues
+
+CHANGES IN VERSION 1.5.02 (2011-05-18)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o added speedup option speedup.max.edges in detect.responses. To
+    consider only this many most similar neighborghs in merging,
+    similarity is evaluated by empirical mutual information estimate
+    with sqrt(n) bins where n is data sample size
+
+  o changed AIC to default information criterion (previously
+    BIC). Both remain to be available through information.criterion
+    argument
+
+CHANGES IN VERSION 1.3.43 (2011-04-13)
+
+  o updated vignette
+
+CHANGES IN VERSION 1.3.41 (2011-04-08)
+
+  o updated documentation for ICMg functions
+
+CHANGES IN VERSION 1.3.39 (2011-04-07)
+
+  o optimized the code (vdp.mixt, compute.weight,
+  detect.responses:subgraph)
+
+CHANGES IN VERSION 1.3.37 (2011-04-06)
+
+  o read.sif function improved 
+
+CHANGES IN VERSION 1.3.36 (2011-04-04)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o added default speedups (speedup, speedup.max.edges options in
+    detect.responses)
+           
+CHANGES IN VERSION 1.3.35 (2011-04-04)
+
+  o added functions for the ICMg (Interaction Component Model for finding
+  Gene modules) package by Juuso Parkkinen
+
+CHANGES IN VERSION 1.1.34 (2011-04-03)
+
+  o fixed a bug in updatePosterior which caused halt; now trying to
+     increase implicit noise for calculating free energy, if this does
+     not help, merging of the investigated subnetwork pair is
+     prevented (previously all calculations were stopped at this
+     point, which is not practical)
+
+CHANGES IN VERSION 1.1.33 (2011-03-30)
+
+  o added various information criteria for model selection to
+    detect.responses and find.similar.features (AIC, AICc, BIC)
+  o added vignette PDF windows buildcheck seems to require it
+
+CHANGES IN VERSION 1.1.31 (2011-03-26)
+
+  o polished vignette
+  o optimized memory usage 
+
+CHANGES IN VERSION 1.1.29 (2011-03-23)
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+  o package: xadded support for reading in SIF network files through read.sif function
+  o detect.responses: added support for igraph and graphNEL network
+  formats; in detect.responses output the network is now also
+  outputted in graphNEL format. This is more memory-efficient than
+  previous implementation.
+
+OTHER CHANGES
+
+  o within detect.responses now handling the network through edge
+    list; this is considerably more memory-efficient than previous
+    implementation
+  o added dependencies to graph and igraph packages
+
+CHANGES IN VERSION 1.1.28 (2011-03-23)
+
+  o made mixture density functions visible in NAMESPACE as this seems
+    to be required in the new R version even if the functions are used
+    internally.
+
+CHANGES IN VERSION 1.1.27 (2011-03-22)
+
+  o removed nodes and samples from NetResponseModel output
+
+CHANGES IN VERSION 1.1.26 (2011-03-22)
+
+  o moved NetResponseModel functions in AllGenerics.R
+  o removed intermediate matrices from detect.responses.R (costs,
+    Nparams, bic.ind, bic.joint)
+  o added two fields in pick.model.parameters: free.energy and Nparams
+  o added internal function bic for bic calculations
+  o removed costs from NetResponseModel output
+
+CHANGES IN VERSION 1.1.22 (2011-03-13)
+
+USER-VISIBLE CHANGES
+
+  o added support for sparse matrices with the Matrix package (from 
+    CRAN)
+
+
+CHANGES IN VERSION 1.1.19 (2011-01-25)
+
+BUG FIXES
+
+  o now providing names for the elements in model@params list
+  
+USER-VISIBLE CHANGES
+
+  o renamed result.stats into model.stats
+  
+  o now NetResponseModel also return the recalculated models for the
+    responses. No need to recalculate them which speeds up analysis of
+    the end results. Also useful since the result is not completely
+    deterministic due to stochastic initializations in model learning
+    etc., and relearning the models can sometimes produce slightly different results.  
+
+NEW FEATURE
+
+  o added find.similar.features function which can be used to find
+    features (genes) that are similar to the subnetwork but not
+    directly interacting with it
+
+CHANGES IN VERSION 1.1.18 (2011-01-25)
+
+USER-VISIBLE CHANGES
+
+  o in get.subnets function now using default min.responses=2
+    and subnet.size=2 (at least 2 genes in a subnetwork)
+
+  o added 'subnets' field to the NetResponseModel class. This lists
+    the subnetworks by feature names.
+
+BUG FIXES
+
+  o NetResponseModel class now returns the original network used in
+    the experiment (diagonal set to zero, however), previous version
+    returned the agglomerated network
+
+NEW FEATURES
+
+  o added functions order.responses and order.samples
+
+BUG FIXES
+
+  o in result.stats function corrected the minimum responses filtering
+    part
+
+CHANGES IN VERSION 1.1.17 (2011-01-19)
+
+  o users can now give the expression data D in either matrix or
+    data.frame format to detect.responses function, which will
+    automatically convert non-matrix inputs into matrix format.
+
+CHANGES IN VERSION 1.1.16 (2011-01-16)
+
+BUG FIXES 
+
+  o in the last step of the merging stage the network reduced into a
+    numeric which caused error, now corrected by rejecting further
+    operations with completely merged nets in detect.responses
+
+CHANGES IN VERSION 1.1.15 (2011-01-15)
+
+BUG FIXES 
+
+  o in split.qofz minimum cluster size check added. clusters smaller
+    than min.size cannot be splitted any more; this caused problems
+
+
+CHANGES IN VERSION 1.1.13 (2011-01-07)
+
+BUG FIXES 
+
+  o in split.qofz speedup function added the line 'indices <-
+    indices[rinds]'. Without this, an erroneous subset is selected and
+    the program will eventually fail.
+
+
+CHANGES IN VERSION 1.1.12 (2011-01-02)
+
+
+BUG FIXES 
+
+  o in internals.R some functions (mk.qOFz, mk.E.log.q.p.eta,
+    mk.free.energy, mk.hp.posterior, mk.hp.prior, mk.log.lambda) were  defined
+    multiple times.  Removed multiple copies. Also ensuring that no
+    empty clusters are returned; this caused problems in split.qOFz
+    and updatePosterior
+
+OTHER CHANGES
+
+o Code has been optimized for speed
+
+o updated citation info
+
+CHANGES IN VERSION 0.99.3 (2010-10-03)
+
+o Added slots 'datamatrix' and 'network' into NetResponseModel
+  class. These are used to store the input data used to learn the
+  model. Subsequently, removed data inputs from functions such as
+  get.parameters etc. since now they can fetch the data matrix
+  directly from the model object.
+
+o Added project URL address to DESCRIPTION file
+
+o Added 'speedup' option to vdp.mixt
+
+CHANGES IN VERSION 0.99.2 (2010-09-28)
+
+o Fixed bug in C code. The previous version had convergence problems
+  related to PCA initialization of component split during
+  stick-breaking process, and mixture component centroids were
+  subsequently not retrieved optimally 
+
+o changed the output format of function vdp.mixt to focus on variables
+  relevant for the end user.
+
+o updated toydata and man pages according to the change to vdp.mixt output
+
+o added test/demo.R testing and demonstrating vdp.mixt
+
+
+CHANGES IN VERSION 0.99.0 (2010-09-23)
+
+o Improved man pages and examples
+
+o Removed greedy and find.best.splitting from user-visible function
+  space
+
+o Added pre-calculated NetResponseModel object to toydata
+
+CHANGES IN VERSION 0.4.4 (2010-09-17)
+
+o Initial release.
+
