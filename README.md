@@ -35,3 +35,10 @@ implementation](http://www.cis.hut.fi/projects/mi/software/NetResponse)
 is available, but not supported.
 
 
+### Authors
+
+Maintainer: [Leo Lahti](http://antagomir.github.io/info/contact)
+
+Contributors: Olli-Pekka Huovilainen, Antonio Gusmao, Juuso Parkkinen
+
+
