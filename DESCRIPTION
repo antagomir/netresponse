@@ -1,39 +1,32 @@
 Package: netresponse
 Type: Package
 Title: netresponse: functional network analysis
-Version: 1.17.0
-Date: 2014-09-14
+Version: 1.17.1
+Date: 2014-10-27
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
-        implementation of a variational Dirichlet process Gaussian
-        mixture model for nonparametric mixture modeling.
+    implementation of a variational Dirichlet process Gaussian
+    mixture model for nonparametric mixture modeling.
 License: GPL (>=2)
-Depends: R (>= 2.15.1), dmt, igraph, infotheo, ggplot2, graph, mclust,
-        methods, minet, parallel, qvalue, RColorBrewer, reshape,
-        Rgraphviz
+Depends:
+    R (>= 2.15.1),
+Suggests:
+    dmt,
+    igraph,
+    infotheo,
+    ggplot2,
+    graph,
+    mclust,
+    minet,
+    parallel,
+    qvalue,
+    RColorBrewer,
+    reshape,
+    Rgraphviz
 URL: https://github.com/antagomir/netresponse
 BugReports: https://github.com/antagomir/netresponse/issues
 LazyLoad: yes
-Collate: 'AllClasses.R' 'AllGenerics.R' 'continuous.responses.R'
-        'deprecated.R' 'detect.responses.R'
-        'enrichment.list.factor.minimal.R' 'enrichment.list.R'
-        'enrichment.score.R' 'enrichment.list.factor.R'
-        'factor.responses.R' 'firstlib.R'
-        'list.responses.factor.minimal.R' 'listify.groupings.R'
-        'toydata.R' 'ICMg.internals.R' 'information.criteria.R'
-        'internals.R' 'mixture.densities.R' 'mixtures.R'
-        'factor.responses.minimal.R' 'model.stats.R'
-        'NetResponseModel-accessors.R' 'order.responses.R'
-        'plot-methods.R' 'read.network.R' 'response2sample.R'
-        'response.enrichment.R' 'sample2response.R' 'show-methods.R'
-        'utilities.R' 'vdp.mixt.R' 'pkg-package.R' 'ICMg.R'
-        'visualization.R' 'check.matrix.R' 'check.network.R'
-        'filter.netw.R' 'get.mis.R' 'ICMg.get.comp.memberships.R'
-        'independent.models.R' 'update.model.pair.R'
-        'pick.model.pairs.R' 'list.responses.continuous.R'
-        'list.responses.factor.R' 'PlotMixture.R'
-        'PlotMixtureUnivariate.R'
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, Network,
-        GraphAndNetwork, DifferentialExpression, Microarray,
-        Transcription
+    GraphAndNetwork, DifferentialExpression, Microarray,
+    Transcription
