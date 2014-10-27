@@ -1,15 +1,15 @@
-# NetResponse examples
+# netresponse - probabilistic tools for functional network analysis
+
+For maintainer contact details, see the [README](../README.md) file
+
+
+## Usage examples
 
 Examples on running NetResponse algorithm and visualizing the
 results. The algorithm combines network and functional information to
 detect coherent subnetworks that reveal distinct activation modes
 across conditions. Kindly cite [this
 article](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short).
-
-Acknowledgements: This program is based on the AIVGA Agglomerative
-Independent Variable Group Analysis package (v. 1.0) Copyright (C)
-2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
-Seppa, Harri Valpola, and Paul Wagner.
 
 ```{r NetResponse1, warning=FALSE, message=FALSE}
 library(netresponse)
@@ -22,6 +22,8 @@ component.sds   <- res$sds
 sample2comp     <- res$sample2comp
 
 # Fit NetResponse model
+# Various network formats are supported, see help(detect.responses) for
+# details. With large data sets, consider the 'speedup' option.
 set.seed(4243)
 res <- detect.responses(D, mixture.method = "vdp", pca.basis = TRUE)
 
@@ -63,4 +65,20 @@ vis <- plot.responses(res, subnet.id, plot.mode = "response.barplot")
 
 ```{r NetResponse7, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
 plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
+```
+
+
+
+
+### Citing NetResponse
+
+Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
+
+
+### Version information
+
+This document was written using:
+
+```{r version, warning=FALSE, message=FALSE}
+sessionInfo()
 ```

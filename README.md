@@ -39,6 +39,10 @@ is available, but not supported.
 
 Maintainer: [Leo Lahti](http://antagomir.github.io/info/contact)
 
-Contributors: Olli-Pekka Huovilainen, Antonio Gusmao, Juuso Parkkinen
+Contributors: Olli-Pekka Huovilainen, Antonio Gusmao, Juuso Parkkinen  
 
+Acknowledgements: This program is based on the AIVGA Agglomerative
+Independent Variable Group Analysis package (v. 1.0) Copyright (C)
+2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
+Seppa, Harri Valpola, and Paul Wagner.
 
