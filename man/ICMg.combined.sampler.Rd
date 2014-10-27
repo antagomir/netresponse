@@ -3,8 +3,9 @@
 \alias{ICMg.combined.sampler}
 \title{ICMg.combined.sampler}
 \usage{
-ICMg.combined.sampler(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1,
-V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1)
+ICMg.combined.sampler(L, X, C, alpha = 10, beta = 0.01, pm0 = 0, V0 = 1,
+  V = 0.1, B.num = 8, B.size = 100, S.num = 20, S.size = 10,
+  C.boost = 1)
 }
 \arguments{
 \item{L}{N x 2 matrix of link endpoints (N = number of links).}
@@ -67,9 +68,7 @@ rounds and then takes 20 samples with an interval of 10 iterations.
 }
 \examples{
 data(osmo) # Load data set
-
-	## Run ICMg combined sampler
-	res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+  res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
 }
 \author{
 Juuso Parkkinen

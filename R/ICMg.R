@@ -12,8 +12,6 @@
 #' B.num=8, B.size=100, S.num=20, S.size=10, runs 800 burnin iterations in 8
 #' rounds and then takes 20 samples with an interval of 10 iterations.
 #' 
-#' @usage ICMg.combined.sampler(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1,
-#' V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1)
 #' @param L N x 2 matrix of link endpoints (N = number of links).
 #' @param X M x D matrix of gene expression profiles (M = number of nodes, D =
 #' number of observations).
@@ -50,10 +48,8 @@
 #' @keywords methods
 #' @export
 #' @examples
-#' 	data(osmo) # Load data set
-#' 
-#' 	## Run ICMg combined sampler
-#' 	res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10) 
+#'   data(osmo) # Load data set
+#'   res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10) 
 #' 
 ICMg.combined.sampler <- function(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1, V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1) {
 # Sample posterior assignments of data points to the latent components, based on both network and functional data

@@ -16,16 +16,15 @@ Depends:
     methods,
     minet,
     mclust,
-    qvalue
+    reshape
 Imports:
     dmt,
-    infotheo,
     ggplot2,
     graph,
     parallel,
     plyr,
-    RColorBrewer,
-    reshape
+    qvalue,
+    RColorBrewer
 URL: https://github.com/antagomir/netresponse
 BugReports: https://github.com/antagomir/netresponse/issues
 LazyLoad: yes

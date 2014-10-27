@@ -15,7 +15,6 @@
 #' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @keywords internal
-#' @import minet
 #' @examples #
 get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 
@@ -29,7 +28,8 @@ get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
     dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
                  prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
 
-    mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+    #mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+    mis[[mi.cnt]] <- build.mim(dat, estimator="spearman")[1, 2]
 
   }
 
@@ -44,9 +44,9 @@ build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = s
     # This function is licensed under cc-by-sa 3.0
     # Modified from minet 3.6.0 to use discretize correctly (not exported in build.mim which may cause occasional function name conflicts)
 
-    if (disc == "equalfreq" || disc == "equalwidth" || disc == 
-        "globalequalwidth") 
-        dataset <- infotheo::discretize(dataset, disc, nbins)
+    #if (disc == "equalfreq" || disc == "equalwidth" || disc == 
+    #    "globalequalwidth") 
+    #    dataset <- infotheo::discretize(dataset, disc, nbins)
 
     if (estimator == "pearson" || estimator == "spearman" || 
         estimator == "kendall") {

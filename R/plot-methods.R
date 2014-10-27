@@ -276,7 +276,7 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
   
     # Determine the most likely cluster for each sample (-> hard clusters)
     if (is.null(qofz)) {
-      qofz <- netresponse::P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
+      qofz <- P.r.s(t(x), list(mu = means, sd = sds, w = ws), log = TRUE)
       rownames(qofz) <- rownames(x)
       colnames(qofz) <- paste("Mode", 1:ncol(qofz), sep = "-")
     }
@@ -289,7 +289,7 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
   df$mode <- factor(modes)
 
   theme_set(theme_bw(15))
-  p <- ggplot2::ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
+  p <- ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
   print(p)
 
   p
@@ -317,8 +317,6 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
 #' @references See citation("netresponse")
 #' @keywords utilities
 #' @export
-#' @import ggplot2
-#' @import reshape
 #' @examples #
 #' 
 plot.data <- function (x, subnet.id, labels, ...) {
@@ -594,7 +592,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     # Ggplot2 boxplot handy as determines the grid size automatically
     # List samples in each response (hard assignments)
-    dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
+    dat <- t(get.dat(x, subnet.id)) # samples x nodes
     df <- data.frame(list(responses = label, dat))
     dfm <- melt(df, id = "responses")
 
@@ -686,7 +684,6 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 #' @param Nlab Number of labels to plot.
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
-#' @note Depends on Rgraphviz and igraph packages.
 #' @author Leo Lahti <leo.lahti@@iki.fi>
 #' @references See citation("netresponse")
 #' @keywords utilities

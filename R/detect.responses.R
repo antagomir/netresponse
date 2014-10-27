@@ -260,17 +260,16 @@ detect.responses <- function(datamatrix,
             if (speedup && length(merge.edges) > speedup.max.edges) {
 
               # To speed up computation, pre-filter the edge set for which
-              # new models are calculated.  Calculate empirical mutual
-              # information between the first principal components of each
+              # new models are calculated.  Calculate empirical associations
+              # between the first principal components of each
               # subnetwork pair. If number of new subnetwork pairs exceeds
               # the threshold, then calculate new model only for the
-              # subnetwork pairs that have the highest mutual information.
+              # subnetwork pairs that have the highest associations.
               # It is expected that the subnetwork pair that will benefit
-              # most from joint modeling will also be among the top mutual
-              # infomation candidates. This way we can avoid calculating
+              # most from joint modeling will also be among the top 
+              # candidates. This way we can avoid calculating
               # exhaustive many models on large network hubs at each
               # update.
-              # merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
               merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
 	    
 	      # Remove edges that would exceed max.size

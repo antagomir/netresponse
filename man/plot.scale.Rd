@@ -32,9 +32,6 @@ Used for its side-effects.
 \description{
 Plot the color scale used in visualization.
 }
-\note{
-Depends on Rgraphviz and igraph packages.
-}
 \examples{
 #
   #res <- detect.responses(D, netw, verbose = FALSE)

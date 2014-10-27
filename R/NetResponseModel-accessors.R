@@ -194,7 +194,6 @@ setMethod("get.P.rs", "NetResponseModel", function (model, subnet.id, log = FALS
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse").
 #' @keywords utilities internal
-#' @export
 #' @examples
 #' 
 #' # qofz <- getqofz(model, subnet.id, log = FALSE)
@@ -213,31 +212,9 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 })
 
 
-#' get.dat
-#' 
-#' Retrieve data for a given subnetwork.
-#' 
-#' @param model Result from NetResponse (detect.responses function).
-#' @param subnet.id Subnet identifier. A natural number which specifies one of
-#' the subnetworks within the 'model' object.
-#' @param sample Specify samples for which the data will be retrieved.
-#' @return Data matrix features x samples.
-#' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse")
-#' @keywords utilities
-#' @export
-#' @examples
-#' # Load toy data
-#' #data( toydata )          # Load toy data set
-#' #D     <- toydata$emat    # Response matrix (for example, gene expression)
-#' #model <- toydata$model   # Pre-calculated model
-#' # Get model parameters for a given subnet
-#' # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
-#' #get.dat(model, subnet.id = 1)
-#' 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
-  # get.dat(model, subnet.id, sample = NULL)
+  # usage get.dat(model, subnet.id, sample = NULL)
 
   if (is.null(sample)) { sample <- 1:nrow(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
