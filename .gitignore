@@ -1,3 +1,9 @@
 *~
 src/netresponse.o
 src/netresponse.so
+inst/extras/.RData
+inst/extras/document.Rout
+inst/extras/netresponse.Rcheck
+inst/extras/*.tar.gz
+
+
