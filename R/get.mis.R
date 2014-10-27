@@ -18,7 +18,6 @@
 #' @examples #
 get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
 
-  require(minet)          
   mis <- c()          
   mi.cnt <- 0            
   for (edge in which(is.na(delta))){          
@@ -29,7 +28,8 @@ get.mis <- function (datamatrix, network, delta, network.nodes, G, params) {
     dat <- cbind(prcomp(matrix(datamatrix[, network.nodes[G[[a]]]], nrow(datamatrix)), center = TRUE)$x[, 1],
                  prcomp(matrix(datamatrix[, network.nodes[G[[i]]]], nrow(datamatrix)), center = TRUE)$x[, 1])
 
-    mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+    #mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+    mis[[mi.cnt]] <- build.mim(dat, estimator="spearman")[1, 2]
 
   }
 
@@ -44,9 +44,10 @@ build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = s
     # This function is licensed under cc-by-sa 3.0
     # Modified from minet 3.6.0 to use discretize correctly (not exported in build.mim which may cause occasional function name conflicts)
 
-    if (disc == "equalfreq" || disc == "equalwidth" || disc == 
-        "globalequalwidth") 
-        dataset <- infotheo::discretize(dataset, disc, nbins)
+    #if (disc == "equalfreq" || disc == "equalwidth" || disc == 
+    #    "globalequalwidth") 
+    #    dataset <- infotheo::discretize(dataset, disc, nbins)
+
     if (estimator == "pearson" || estimator == "spearman" || 
         estimator == "kendall") {
         mim <- cor(dataset, method = estimator, use = "complete.obs")^2
@@ -54,21 +55,22 @@ build.mim <- function (dataset, estimator = "spearman", disc = "none", nbins = s
         maxi <- 0.999999
         mim[which(mim > maxi)] <- maxi
         mim <- -0.5 * log(1 - mim)
+    } else {
+      stop("unknown estimator")
     }
-    else if (estimator == "mi.mm") 
-        estimator = "mm"
-    else if (estimator == "mi.empirical") 
-        estimator = "emp"
-    else if (estimator == "mi.sg") 
-        estimator = "sg"
-    else if (estimator == "mi.shrink") 
-        estimator = "shrink"
-    else stop("unknown estimator")
-    if (estimator == "mm" || estimator == "emp" || estimator == 
-        "sg" || estimator == "shrink") {
-        mim <- mutinformation(dataset, method = estimator)
-        diag(mim) <- 0
-    }
+    #else if (estimator == "mi.mm") 
+    #    estimator <- "mm"
+    #else if (estimator == "mi.empirical") 
+    #    estimator <- "emp"
+    #else if (estimator == "mi.sg") 
+    #    estimator <- "sg"
+    #else if (estimator == "mi.shrink") 
+    #    estimator = "shrink"
+    #if (estimator == "mm" || estimator == "emp" || estimator == 
+    #    "sg" || estimator == "shrink") {
+    #    mim <- mutinformation(dataset, method = estimator)
+    #    diag(mim) <- 0
+    #}
     mim[mim < 0] <- 0
     mim
 }

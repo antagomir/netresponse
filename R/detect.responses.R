@@ -1,20 +1,4 @@
-# Copyright (C) 2008-2013 Leo Lahti and Olli-Pekka Huovilainen
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# Acknowledgements: This program is based on the AIVGA Agglomerative
-# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
-# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
-# Seppa, Harri Valpola, and Paul Wagner.
+
 
   ######################################################################
 
@@ -103,8 +87,7 @@
 #' @keywords methods iteration
 #' @export
 #' @examples
-#' library(netresponse)
-#' data( toydata )        # Load toy data set
+#' data(toydata)        # Load toy data set
 #' D    <- toydata$emat   # Response matrix (for example, gene expression)
 #' netw <- toydata$netw   # Network
 #' 
@@ -277,17 +260,16 @@ detect.responses <- function(datamatrix,
             if (speedup && length(merge.edges) > speedup.max.edges) {
 
               # To speed up computation, pre-filter the edge set for which
-              # new models are calculated.  Calculate empirical mutual
-              # information between the first principal components of each
+              # new models are calculated.  Calculate empirical associations
+              # between the first principal components of each
               # subnetwork pair. If number of new subnetwork pairs exceeds
               # the threshold, then calculate new model only for the
-              # subnetwork pairs that have the highest mutual information.
+              # subnetwork pairs that have the highest associations.
               # It is expected that the subnetwork pair that will benefit
-              # most from joint modeling will also be among the top mutual
-              # infomation candidates. This way we can avoid calculating
+              # most from joint modeling will also be among the top 
+              # candidates. This way we can avoid calculating
               # exhaustive many models on large network hubs at each
               # update.
-              # merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)[1:speedup.max.edges]]
               merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
 	    
 	      # Remove edges that would exceed max.size

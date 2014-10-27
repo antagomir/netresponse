@@ -1,19 +1,3 @@
-# Copyright (C) 2010-2013 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-
-
-
 # "The language of science is the language of probability, and not of
 #  p-values." -- Luis Pericchi
 
@@ -113,18 +97,12 @@ add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col
   el
 }
 
-
 plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", ylab = "", mypalette = NULL, interval = .1, cex.main = 1, xaxis = FALSE, yaxis = TRUE, row.tick = 1, col.tick = 1, cex.xlab = .9, cex.ylab = .9, cex.lab = .9, limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
 
   # mat: differential expression matrix to plot in two-color palette
   # interval: interval for palette color switches
   # FIXME: synchronize with PlotMatrix in sorvi package  
-    
-  require(graph)
-  #require(RBGL)
-  require(Rgraphviz)
-  require(graphics)
-	   
+   	   
   if (length(mybreaks) == 0)  {
     m <- max(round(max(abs(mat)), limit.trunc) - interval, 0)
     mm <- m + interval/2

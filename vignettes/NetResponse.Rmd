@@ -1,0 +1,84 @@
+# netresponse - probabilistic tools for functional network analysis
+
+For maintainer contact details, see the [README](../README.md) file
+
+
+## Usage examples
+
+Examples on running NetResponse algorithm and visualizing the
+results. The algorithm combines network and functional information to
+detect coherent subnetworks that reveal distinct activation modes
+across conditions. Kindly cite [this
+article](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short).
+
+```{r NetResponse1, warning=FALSE, message=FALSE}
+library(netresponse)
+
+# Generate simulated data
+res <- generate.toydata()
+D <- res$data
+component.means <- res$means
+component.sds   <- res$sds
+sample2comp     <- res$sample2comp
+
+# Fit NetResponse model
+# Various network formats are supported, see help(detect.responses) for
+# details. With large data sets, consider the 'speedup' option.
+set.seed(4243)
+res <- detect.responses(D, mixture.method = "vdp", pca.basis = TRUE)
+
+# List subnets (each is a list of nodes)
+subnet.id <- names(get.subnets(res))[[1]]
+```
+
+### PCA visualization
+
+```{r NetResponse2, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "pca")
+```
+
+### Network visualization
+
+```{r NetResponse3, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "network")
+```
+
+### Heatmap visualization
+
+```{r NetResponse4, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "heatmap")
+```
+
+### Boxplot visualization
+
+```{r NetResponse5, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "boxplot.data")
+```
+
+### Barplot visualization
+
+```{r NetResponse6, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "response.barplot")
+```
+
+### Color scale
+
+```{r NetResponse7, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
+```
+
+
+
+
+### Citing NetResponse
+
+Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
+
+
+### Version information
+
+This document was written using:
+
+```{r version, warning=FALSE, message=FALSE}
+sessionInfo()
+```

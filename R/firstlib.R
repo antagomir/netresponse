@@ -1,17 +1,35 @@
-# Copyright (C) 2008-2013 Olli-Pekka Huovilainen and Leo Lahti 
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+#' @import dmt
+#' @import graph
+#' @import parallel
+#' @import RColorBrewer
+#' @import Rgraphviz
+#' @importFrom igraph igraph.to.graphNEL
+#' @importFrom igraph igraph.from.graphNEL
+#' @import qvalue
+#' @import mclust
+#' @import methods
+#' @importFrom plyr ddply
+#' @importFrom minet build.mim
+#' @importFrom reshape melt
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 theme_set
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 ggtitle
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 geom_histogram
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 geom_boxplot
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 opts
+
+
 
 .onAttach <- function(lib, pkg)
 {
-   packageStartupMessage('\nnetresponse Copyright (C) 2008-2013 Leo Lahti.\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under GNU GPL >=2, see the licensing terms for details.\n')
+   packageStartupMessage('\nnetresponse Copyright (C) 2008-2014 Leo Lahti et al..\nThis program comes with ABSOLUTELY NO WARRANTY.\nThis is free software, and you are welcome to redistribute it under GNU GPL >=2, see the licensing terms for details.\n')
 }

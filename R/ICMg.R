@@ -1,18 +1,3 @@
-# Copyright (C) 2008-2012 Juuso Parkkinen and Leo Lahti
-# Contact: Juuso Parkkinen <juuso.parkkinen@gmail.com>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-
-
 #' ICMg.combined.sampler
 #' 
 #' Main function of the ICMg algorithm. ICMg.combined.sampler computes samples
@@ -27,8 +12,6 @@
 #' B.num=8, B.size=100, S.num=20, S.size=10, runs 800 burnin iterations in 8
 #' rounds and then takes 20 samples with an interval of 10 iterations.
 #' 
-#' @usage ICMg.combined.sampler(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1,
-#' V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1)
 #' @param L N x 2 matrix of link endpoints (N = number of links).
 #' @param X M x D matrix of gene expression profiles (M = number of nodes, D =
 #' number of observations).
@@ -65,12 +48,8 @@
 #' @keywords methods
 #' @export
 #' @examples
-#' 
-#' 	library(netresponse)
-#' 	data(osmo) # Load data set
-#' 
-#' 	## Run ICMg combined sampler
-#' 	res = ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10) 
+#'   data(osmo) # Load data set
+#'   res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10) 
 #' 
 ICMg.combined.sampler <- function(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1, V=0.1, B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1) {
 # Sample posterior assignments of data points to the latent components, based on both network and functional data
@@ -237,12 +216,11 @@ ICMg.combined.sampler <- function(L, X, C, alpha=10, beta=0.01, pm0=0, V0=1, V=0
 #' modules with interaction component models. BMC Systems Biology 4 (2010), 4.
 #' @keywords methods
 #' @export
-#' @examples #
-#' library(netresponse)
+#' @examples
 #' data(osmo) # Load data
 #' 
 #' ## Run ICMg links sampler	
-#' res = ICMg.links.sampler(osmo$ppi, C=10) 
+#' res <- ICMg.links.sampler(osmo$ppi, C=10) 
 #' 
 ICMg.links.sampler <- function(L, C, alpha=10, beta=0.01,  B.num=8, B.size=100, S.num=20, S.size=10, C.boost=1) {
 # Sample posterior assignments of data points to the latent components, based on network data only
