@@ -1,37 +1,4 @@
-%\VignetteIndexEntry{netresponse}
-%The above line is needed to remove a warning in R CMD check
-\documentclass[a4paper]{article}
-
-\title{netresponse\\probabilistic tools for functional network analysis}
-\author{Leo Lahti$^{1,2}$\footnote{leo.lahti@iki.fi}, Olli-Pekka
-Huovilainen$^1$,\\Ant{\'o}nio Gusm{\~a}o$^1$ and Juuso Parkkinen$^1$\\
-\\(1) Dpt. Information and Computer Science, Aalto University,
-Finland\\(2) Wageningen University, Netherlands}
-
-\usepackage{amsmath,amssymb,amsfonts}
-%\usepackage[authoryear,round]{natbib}
-\usepackage[numbers]{natbib}
-
-\usepackage{hyperref}
-\usepackage{Sweave}
-\usepackage{float}
-
-%\textwidth=6.2in
-%\textheight=8.5in
-%\oddsidemargin=.1in
-%\evensidemargin=.1in
-%\headheight=-.3in
-
-\newcommand{\Rfunction}[1]{{\texttt{#1}}}
-\newcommand{\Robject}[1]{{\texttt{#1}}}
-\newcommand{\Rpackage}[1]{{\textit{#1}}}
-
-\begin{document}
-
-\maketitle
-
 \section{Introduction}
-
 
 Condition-specific network activation is characteristic for cellular
 systems and other real-world interaction networks. If measurements of
@@ -59,74 +26,8 @@ and variational Dirichlet process Gaussian mixture models
 exploratory analysis of genome-wide interaction networks and versatile
 collections of gene expression data.
 
-%The package provides also implementations for aivga and vdp. %Further
-%tools %for visualization and analysis will be provided in the %later
-%versions.  %The R package depends on \Rpackage{igraph} and
-%\Rpackage{Rgraphviz} %packages. 
-
 
 \section{Loading the package and example data}
-
-Load the package and toy data set. The {\it toydata} object contains
-the variables {\it D} (gene expression matrix) and {\it netw} (network
-matrix). The data matrix {\it D} describes measurements of the network
-activation over multiple conditions.  This simple toy data will be
-analyzed in the subsequent examples. Note that the method is
-potentially applicable to networks with thousands of nodes and
-conditions; the scalability depends on network connectivity.
-
-<<initial, results = hide>>=
-library(netresponse)
-data(toydata)
-D <- as.matrix(toydata$emat)
-netw <- as.matrix(toydata$netw)
-@
-
-\section{Detecting network responses}
-
-Detect network responses across the different measurement conditions
-in the data matrix D:
-
-<<detect>>=
-model <- detect.responses(D, netw, verbose = FALSE)
-@
-
-Various network formats are supported, see help(detect.responses) for
-details. With large data sets, consider using the 'speedup' option.
-
-
-\section{Investigating the results}
-%
-%Subnetwork statistics: size and number of distinct responses for each subnet%
-%
-%<<stat>>=
-%stat <- model.stats(model) 
-%stat
-%@%
-
-List the detected subnetworks (each is a list of nodes). By default,
-singleton subnetworks (with only one gene) and subnetworks with only a
-single response (no differences between conditions) are excluded. To
-change the defaults, see help(get.subnets). Subnetworks can be
-filtered by size and number of responses. Subnetworks that have only
-one response are not informative of the differences between
-conditions, and typically ignored in subsequent analysis.
-
-<<getsubnets2>>=
-get.subnets(model, min.size = 2, min.responses = 2)
-@ 
-
-%Pick one of the subnets (define by identifier)
-%<<>>=
-%inds <- which(sapply(model@last.grouping, length) > 2)
-%subnet.id <- names(which.min(model@costs[inds]))
-%@
-
-%Check nodes of a particular subnetwork
-%<<getsubnsets3>>=
-%subnet.id <- 'Subnet-2'
-%get.subnets(model)[[subnet.id]]
-%@
 
 Each subnetwork response has a probabilistic association to each
 condition. Get the list of samples corresponding to each response
@@ -193,69 +94,6 @@ res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
 res$clustering <- apply(res$comp.memb, 2, which.max)
 @
 
-\section{Visualization}
-
-Plot subnetwork responses (Fig.~\ref{fig:responses}). The
-visualization tools depend on {\it Rgraphviz} and {\it igraph}
-packages.
-
-\begin{figure}[H]
-\begin{center}
-<<visu1, fig=true>>=
-subnet.id <- "Subnet-2" # specify the subnet to visualize
-vis <- plot.responses(model, subnet.id)
-@
-\end{center}
-\caption{}
-\label{fig:responses}
-\end{figure}
-
-Plot color scale used in the visualization:
-<<visu2, fig=true>>=
-plot.scale(vis$breaks, vis$palette)
-@
-
-%Plot the subnetwork (Fig.~\ref{fig:subnet}):
-%\begin{figure}[H]
-%\begin{center}
-%<<visu, fig=true>>=
-%# Fix later
-%#tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, colors = FALSE, maintext = paste("Subnetwork", subnet.id))
-%@
-%\end{center}
-%\caption{}
-%\label{fig:subnet}
-%\end{figure}
-
-%Visualize data and centroids for given subnetwork with PCA (Fig.~\ref{fig:pca})
-%
-%\begin{figure}[H]
-%\begin{center}
-%<<fig=true>>=
-%plot.pca(model, subnet.id, D)
-%@
-%\end{center}
-%\caption{}
-%\label{fig:pca}
-%\end{figure}
-
-\section{Citing NetResponse}
-
-Please cite \cite{Lahti10bioinf} with the package. When using the ICMg
-algorithms, additionally cite \cite{Parkkinen10bmcsysbio}.
-
-
-\section{Version information}
-
-This document was written using:
-
-<<details>>=
-sessionInfo()
-@
-
-
-
-%\bibliographystyle[numbers]{natbib} 
 
 \begin{thebibliography}{1}
 
@@ -292,8 +130,3 @@ Parkkinen, J. and Kaski, S.
 \newblock {\em BMC Systems Biology 4\/} (2010), 4.
 
 \end{thebibliography}
-
-%\bibliographystyle{abbrv}
-%\bibliography{my.bib}
-
-\end{document}

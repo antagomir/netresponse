@@ -26,7 +26,7 @@ PlotMixture <- function (x, qofz, binwidth = 0.05, xlab.text = NULL, ylab.text =
   df$mode <- factor(sms)
 
   # Histogram and density plot
-  pg <- ggplot2::ggplot(df, aes(x=x)) 
+  pg <- ggplot(df, aes(x=x)) 
   pg <- pg + geom_histogram(aes(fill = mode), binwidth = binwidth) 
   pg <- pg + theme_bw() + xlab(xlab.text) + ylab(ylab.text) 
   pg <- pg + ggtitle(title.text)

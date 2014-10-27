@@ -122,7 +122,6 @@ filter.network <- function (network, delta, datamatrix, params) {
     eds <- which(network[1, ] == a)
 
     # Calculate MI scores
-    #require(minet)
     mis <- c()
     mi.cnt <- 0  
     # FIXME: could be parallelized
@@ -135,7 +134,7 @@ filter.network <- function (network, delta, datamatrix, params) {
       # For singletons
       dat <- cbind(datamatrix[, a], datamatrix[, i])
                    
-      mis[[mi.cnt]] <- build.mim(dat, estimator="mi.empirical", disc = "equalwidth", nbins = params$nbins)[1, 2]
+      mis[[mi.cnt]] <- build.mim(dat, estimator="spearman")[1, 2]
     }
     
     # Edges to remove
