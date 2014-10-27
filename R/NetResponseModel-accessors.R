@@ -1,18 +1,3 @@
-# Copyright (C) 2010-2012 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-
-
 setMethod("get.P.r", "NetResponseModel", function (model, subnet.id, log = TRUE) {
 
   # Prior probability for each response (mixture weights)
@@ -228,14 +213,10 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 })
 
 
-
-
 #' get.dat
 #' 
 #' Retrieve data for a given subnetwork.
 #' 
-#' 
-#' @usage get.dat(model, subnet.id, sample = NULL)
 #' @param model Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet identifier. A natural number which specifies one of
 #' the subnetworks within the 'model' object.
@@ -246,7 +227,6 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 #' @keywords utilities
 #' @export
 #' @examples
-#' 
 #' # Load toy data
 #' #data( toydata )          # Load toy data set
 #' #D     <- toydata$emat    # Response matrix (for example, gene expression)
@@ -255,8 +235,9 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 #' # (Gaussian mixture: mean, covariance diagonal, mixture proportions)
 #' #get.dat(model, subnet.id = 1)
 #' 
-#' 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
+
+  # get.dat(model, subnet.id, sample = NULL)
 
   if (is.null(sample)) { sample <- 1:nrow(model@datamatrix) }    
   nodes <- model@subnets[[subnet.id]]
@@ -267,8 +248,6 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 
   dat
 })
-
-
 
 #' get.subnets
 #' 
@@ -292,7 +271,6 @@ setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NU
 #' @keywords utilities
 #' @export
 #' @examples
-#' # library(netresponse)
 #' ## Load a pre-calculated netresponse model obtained with 
 #' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
 #' # data( toydata ); get.subnets(toydata$model) 

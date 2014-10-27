@@ -49,12 +49,10 @@ B.num=8, B.size=100, S.num=20, S.size=10, runs 800 burnin iterations in 8
 rounds and then takes 20 samples with an interval of 10 iterations.
 }
 \examples{
-#
-library(netresponse)
 data(osmo) # Load data
 
 ## Run ICMg links sampler
-res = ICMg.links.sampler(osmo$ppi, C=10)
+res <- ICMg.links.sampler(osmo$ppi, C=10)
 }
 \author{
 Juuso Parkkinen

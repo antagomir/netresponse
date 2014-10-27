@@ -11,19 +11,21 @@ Description: Algorithms for functional network analysis. Includes an
 License: GPL (>=2)
 Depends:
     R (>= 2.15.1),
-Suggests:
-    dmt,
+    Rgraphviz,
     igraph,
+    methods,
+    minet,
+    mclust,
+    qvalue
+Imports:
+    dmt,
     infotheo,
     ggplot2,
     graph,
-    mclust,
-    minet,
     parallel,
-    qvalue,
+    plyr,
     RColorBrewer,
-    reshape,
-    Rgraphviz
+    reshape
 URL: https://github.com/antagomir/netresponse
 BugReports: https://github.com/antagomir/netresponse/issues
 LazyLoad: yes

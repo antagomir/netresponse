@@ -32,8 +32,6 @@ List the most strongly associated response of a given subnetwork for each
 sample.
 }
 \examples{
-library( netresponse )
-
 # Load example data
 data( toydata )         # Load toy data set
 D    <- toydata$emat    # Response matrix (for example, gene expression)

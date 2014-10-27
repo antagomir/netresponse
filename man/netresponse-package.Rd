@@ -14,9 +14,6 @@ Global modeling of transcriptional responses in interaction networks.
 License: \tab GNU GPL >=2\cr LazyLoad: \tab yes\cr }
 }
 \examples{
-# Load the package
-library(netresponse)
-
 # Define parameters for toy data
 Ns <- 200  # number of samples (conditions)
 Nf <- 10   # number of features (nodes)

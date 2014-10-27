@@ -1,20 +1,4 @@
-# Copyright (C) 2008-2013 Leo Lahti and Olli-Pekka Huovilainen
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# Acknowledgements: This program is based on the AIVGA Agglomerative
-# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
-# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
-# Seppa, Harri Valpola, and Paul Wagner.
+
 
   ######################################################################
 
@@ -103,8 +87,7 @@
 #' @keywords methods iteration
 #' @export
 #' @examples
-#' library(netresponse)
-#' data( toydata )        # Load toy data set
+#' data(toydata)        # Load toy data set
 #' D    <- toydata$emat   # Response matrix (for example, gene expression)
 #' netw <- toydata$netw   # Network
 #' 

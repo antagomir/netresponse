@@ -22,7 +22,6 @@ subnet, listing the probability of each response, given a sample.
 Probabilistic sample-response assignments for given subnet.
 }
 \examples{
-#library(netresponse)
 #data( toydata )        # Load toy data set
 #D    <- toydata$emat   # Response matrix (for example, gene expression)
 #netw <- toydata$netw   # Network

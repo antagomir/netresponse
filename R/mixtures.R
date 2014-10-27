@@ -1,17 +1,3 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-
 # Save the other half of yourselves and your lives for pleasure and
 # adventure. It is not enough to fight for natural land and the west;
 # it is even more important to enjoy it. While you can. While it's
@@ -232,12 +218,11 @@ bic.mixture.multivariate <- function (x, max.modes, bic.threshold = 0, min.modes
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export
+#' @import mclust
 #' @keywords utilities
 bic.mixture.univariate <- function (x, max.modes, bic.threshold = 0, min.modes = 1, ...) { 
 
   # x <- datamatrix[, node];  max.modes = params$max.responses; bic.threshold = params$bic.threshold
-
-  require(mclust)
 
   best.mode <- bic.select.best.mode(x, max.modes, bic.threshold, min.modes = min.modes) 
   mcl <- Mclust(x, G = best.mode)

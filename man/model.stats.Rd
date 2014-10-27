@@ -18,11 +18,9 @@ Subnetwork statistics: size and number of distinct responses for each
 subnet.
 }
 \examples{
-library(netresponse)
-
 # Load a pre-calculated netresponse model obtained with
 # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
-data( toydata )
+data(toydata)
 # Calculate summary statistics for the model
 stat <- model.stats(toydata$model)
 }

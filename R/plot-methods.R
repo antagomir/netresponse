@@ -1,16 +1,3 @@
-# Copyright (C) 2010-2013 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more detail.
-
 # FIXME: make general plot.associations function
 
 #' Association strength between category labels and responses.
@@ -301,7 +288,6 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
   df <- data.frame(list(Comp.1 = pld[, 1], Comp.2 = pld[, 2]))
   df$mode <- factor(modes)
 
-  #require(ggplot2)
   theme_set(theme_bw(15))
   p <- ggplot2::ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
   print(p)
@@ -331,16 +317,16 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
 #' @references See citation("netresponse")
 #' @keywords utilities
 #' @export
+#' @import ggplot2
+#' @import reshape
 #' @examples #
 #' 
 plot.data <- function (x, subnet.id, labels, ...) {
 
     # ggplot2 boxplots for each user-defined sample category (listed in labels)
-    library(ggplot2)
-    library(reshape)
-    dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
+    dat <- t(get.dat(x, subnet.id)) # samples x nodes
     df <- data.frame(list(labels = labels, dat))
-    dfm <- reshape::melt(df, id = "labels")
+    dfm <- melt(df, id = "labels")
     p <- ggplot(dfm) + aes(x = labels, y = dfm$value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": annotation boxplot", sep = ""))    
     print(p)
     p
@@ -412,9 +398,6 @@ plot.expression <- function (x, maintext, ...) { # was: plot.matrix
 #' # net <- plot.subnet(res, subnet.idx = 1)
 #' 
 plot.subnet <- function (x, subnet.id, network, plot.names = TRUE, ...) {
-
-  #require(Rgraphviz)
-  #require(igraph)
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -544,9 +527,6 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     datamatrix <- x@datamatrix
   }
 
-  #require(igraph)
-  #require(Rgraphviz)
-
   value <- tmp <- NULL
 
   if (is.numeric(subnet.id)) {
@@ -614,8 +594,6 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     # Ggplot2 boxplot handy as determines the grid size automatically
     # List samples in each response (hard assignments)
-    #require(ggplot2)
-
     dat <- t(netresponse::get.dat(x, subnet.id)) # samples x nodes
     df <- data.frame(list(responses = label, dat))
     dfm <- melt(df, id = "responses")
@@ -643,13 +621,12 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     df$response <- response
     dfm <- melt(df, id.var = "response")    
 
-    #require(ggplot2)
     ggplot(dfm) + aes(x = response, y = value, fill = response) + facet_wrap(~variable) + geom_bar(stat="identity")
 
     # mean and std of mean
     df <- ddply(dfm, c("response", "variable"), function (dd) {c(mean = mean(dd$value), sd = 1.96*sd(dd$value)/sqrt(sum(x[[subnet.id]]$qofz[, dd$response])))})
 
-    p <- ggplot2::qplot(response, mean, fill=variable, data=df, geom="bar", position="dodge")
+    p <- qplot(response, mean, fill=variable, data=df, geom="bar", position="dodge")
     p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), position="dodge")+theme_bw()
 
     print(p)
@@ -723,9 +700,6 @@ plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval
 
   # x <- tmp$breaks; y <- tmp$palette; m = NULL; cex.axis = 1.5; label.step = 2; interval = .1; two.sided = TRUE; label.start = NULL; Nlab = 3
 
-
-  #require(Rgraphviz)
-  
   if (two.sided) {
     
     if (length(m) > 0) {

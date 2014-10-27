@@ -100,8 +100,7 @@ conditions. Returns a set of subnetworks and their estimated
 context-specific responses.
 }
 \examples{
-library(netresponse)
-data( toydata )        # Load toy data set
+data(toydata)        # Load toy data set
 D    <- toydata$emat   # Response matrix (for example, gene expression)
 netw <- toydata$netw   # Network
 
