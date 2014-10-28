@@ -11,22 +11,25 @@ time points, it becomes possible to construct a global view of network
 activation patterns. Different parts of the network respond to
 different conditions, and in different ways. Systematic, data-driven
 identification of these responses will help to obtain a holistic view
-of network activity \cite{Lahti10bioinf, Lahti10thesis}. This package
-provides robust probabilistic algorithms for functional network
-analysis \cite{Lahti10bioinf, Parkkinen10bmcsysbio}. 
+of network activity
+[[1](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short)-[2](http://lib.tkk.fi/Diss/2010/isbn9789526033686/)]. This
+package provides robust probabilistic algorithms for functional
+network analysis
+[[1](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short),
+[3](http://www.biomedcentral.com/1752-0509/4/4)].
 
 The methods are based on nonparametric probabilistic modeling and
 variational learning, and provide general exploratory tools to
-investigate the structure (ICMg; \cite{Parkkinen10bmcsysbio}) and
-context-specific behavior (NetResponse; \cite{Lahti10bioinf}) of
+investigate the structure ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
+context-specific behavior ([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short)) of
 interaction networks.  ICMg is used to identify community structure in
 interaction networks; NetResponse detects and characterizes
 subnetworks that exhibit context-specific activation patterns across
 versatile collections of functional measurements, such as gene
 expression data. The implementations are partially based on the
-agglomerative independent variable group analysis \citep{Honkela08}
+agglomerative independent variable group analysis ([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
 and variational Dirichlet process Gaussian mixture models
-\cite{Kurihara07nips}. The tools are particularly useful for global
+([Kurihara et al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The tools are particularly useful for global
 exploratory analysis of genome-wide interaction networks and versatile
 collections of gene expression data.
 
@@ -116,9 +119,47 @@ means, covariance diagonal, and component weights):
 get.model.parameters(model, subnet.id) 
 ```
 
+## Extending the subnetworks
+
+After identifying the locally connected subnetworks, it is possible to
+search for features (genes) that are similar to a given subnetwork but
+not directly interacting with it. To order the remaining features
+in the input data based on similarity with the subnetwork, type
+
+```{r NetResponse10, warning=FALSE, message=FALSE}
+g <- find.similar.features(model, subnet.id = "Subnet-1")
+subset(g, delta < 0)
+```
+
+This gives a data frame which indicates similarity level with the
+subnetwork for each feature. The smaller, the more similar. Negative
+values of delta indicate the presence of coordinated responses,
+positive values of delta indicate independent responses. The data
+frame is ordered such that the features are listed by decreasing
+similarity.
 
 
+## Nonparametric Gaussian mixture models
 
+The package provides additional tools for nonparametric Gaussian
+mixture modeling based on variational Dirichlet process mixture models
+and implementations by [Kurihara et al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf) and [Honkela et al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659). See the
+example in help(vdp.mixt).
+
+## Interaction Component Model for Gene Modules
+
+Interaction Component Model ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) can be used to find functional gene
+modules from either protein interaction data or from combinations of
+protein interaction and gene expression data. Run ICMg and cluster the
+nodes:
+
+```{r ICMg, warning=FALSE, message=FALSE}
+library(netresponse)
+data(osmo)
+res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
+res$clustering <- apply(res$comp.memb, 2, which.max)
+```
 
 
 ### Citing NetResponse
