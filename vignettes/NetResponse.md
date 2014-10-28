@@ -2,6 +2,34 @@
 
 For maintainer contact details, see the [README](../README.md) file
 
+## Background 
+
+Condition-specific network activation is characteristic for cellular
+systems and other real-world interaction networks. If measurements of
+network states are available across a versatile set of conditions or
+time points, it becomes possible to construct a global view of network
+activation patterns. Different parts of the network respond to
+different conditions, and in different ways. Systematic, data-driven
+identification of these responses will help to obtain a holistic view
+of network activity \cite{Lahti10bioinf, Lahti10thesis}. This package
+provides robust probabilistic algorithms for functional network
+analysis \cite{Lahti10bioinf, Parkkinen10bmcsysbio}. 
+
+The methods are based on nonparametric probabilistic modeling and
+variational learning, and provide general exploratory tools to
+investigate the structure (ICMg; \cite{Parkkinen10bmcsysbio}) and
+context-specific behavior (NetResponse; \cite{Lahti10bioinf}) of
+interaction networks.  ICMg is used to identify community structure in
+interaction networks; NetResponse detects and characterizes
+subnetworks that exhibit context-specific activation patterns across
+versatile collections of functional measurements, such as gene
+expression data. The implementations are partially based on the
+agglomerative independent variable group analysis \citep{Honkela08}
+and variational Dirichlet process Gaussian mixture models
+\cite{Kurihara07nips}. The tools are particularly useful for global
+exploratory analysis of genome-wide interaction networks and versatile
+collections of gene expression data.
+
 
 ## Usage examples
 
@@ -87,6 +115,46 @@ plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
 ```
 
 ![plot of chunk NetResponse7](figure/NetResponse7.png) 
+
+
+### Cluster assignments
+
+The sample-response assignments from the mixture model are soft
+ie. defined as continuous probabilities. Retrieve the hard clustering
+ie. list of samples for each response, response for each sample, based
+the highest probability:
+
+
+```r
+subnet.id <- 'Subnet-2'
+sample.probs <- response2sample(model, subnet.id)
+```
+
+```
+## Error: object 'model' not found
+```
+
+```r
+response.probs <- sample2response(model, subnet.id)
+```
+
+```
+## Error: error in evaluating the argument 'model' in selecting a method for function 'getqofz': Error: object 'model' not found
+```
+
+Retrieve model parameters for a given subnetwork (Gaussian mixture
+means, covariance diagonal, and component weights):
+
+
+```r
+get.model.parameters(model, subnet.id) 
+```
+
+```
+## Error: object 'model' not found
+```
+
+
 
 
 
