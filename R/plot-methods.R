@@ -638,7 +638,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     if (length(subnet.nodes) == 1) {
 
-      pg <- PlotMixtureUnivariate(dmat, 
+      p <- PlotMixtureUnivariate(dmat, 
       	    			 modes = modes,
 				 title.text = subnet.id,
   				 xlab.text = "Component score", 
@@ -650,7 +650,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
       if (ncol(dmat) > 2) {pca <- TRUE} else {pca <- FALSE}
 
-      pg <- PlotMixtureMultivariate(dmat, 
+      p <- PlotMixtureMultivariate(dmat, 
       	    			 modes = modes,
 				 title = subnet.id, 
 				 pca = pca)
@@ -663,7 +663,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
   }
 
-  list(breaks = mybreaks, palette = mypalette, info = tmp)
+  list(breaks = mybreaks, palette = mypalette, info = tmp, p = p)
 
 }
 
