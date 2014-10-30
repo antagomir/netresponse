@@ -1,0 +1,18 @@
+## Extending the subnetworks
+
+After identifying the locally connected subnetworks, it is possible to
+search for features (genes) that are similar to a given subnetwork but
+not directly interacting with it. To order the remaining features
+in the input data based on similarity with the subnetwork, type
+
+```{r NetResponse10, warning=FALSE, message=FALSE}
+g <- find.similar.features(res, subnet.id = "Subnet-1")
+subset(g, delta < 0)
+```
+
+This gives a data frame which indicates similarity level with the
+subnetwork for each feature. The smaller, the more similar. Negative
+values of delta indicate the presence of coordinated responses,
+positive values of delta indicate independent responses. The data
+frame is ordered such that the features are listed by decreasing
+similarity.
