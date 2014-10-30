@@ -65,8 +65,9 @@ subnet.id <- names(get.subnets(res))[[1]]
 
 ### PCA visualization
 
-```{r NetResponse2, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show = "hold"}
 vis <- plot.responses(res, subnet.id, plot.mode = "pca")
+vis$p + geom_point(size = 3)
 ```
 
 ### Network visualization
@@ -114,7 +115,8 @@ Retrieve model parameters for a given subnetwork (Gaussian mixture
 means, covariance diagonal, and component weights):
 
 ```{r NetResponse9, warning=FALSE, message=FALSE}
-get.model.parameters(res, subnet.id) 
+params <- get.model.parameters(res, subnet.id) 
+names(params)
 ```
 
 
