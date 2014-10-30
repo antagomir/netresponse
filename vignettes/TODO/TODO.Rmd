@@ -1,3 +1,11 @@
+# FIXME: something does not work here !!!
+
+# Compare the real clusters and estimated clusters
+real.clusters <- sample2comp
+estimated.clusters <- sample2response(res, subnet.id, "hard")
+table(real.clusters, estimated.clusters)
+
+
 ## Extending the subnetworks
 
 After identifying the locally connected subnetworks, it is possible to

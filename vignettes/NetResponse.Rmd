@@ -46,7 +46,8 @@ article](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short).
 library(netresponse)
 
 # Generate simulated data
-res <- generate.toydata()
+res <- generate.toydata(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1, rseed = 123456)
+
 D <- res$data
 component.means <- res$means
 component.sds   <- res$sds
