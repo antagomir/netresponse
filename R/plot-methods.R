@@ -602,6 +602,8 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
   } else if (plot.mode == "response.barplot") {
 
+    # FIXME: does not work
+
     # Plot cross-bars for estimated means and 95% intervals for each response for each node
     m <- get.model.parameters(x, subnet.id)
 
