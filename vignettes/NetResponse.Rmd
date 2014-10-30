@@ -86,11 +86,8 @@ vis <- plot.responses(res, subnet.id, plot.mode = "heatmap")
 vis <- plot.responses(res, subnet.id, plot.mode = "boxplot.data")
 ```
 
-### Barplot visualization
+See also mode = "response.barplot" 
 
-```{r NetResponse6, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
-vis <- plot.responses(res, subnet.id, plot.mode = "response.barplot")
-```
 
 ### Color scale
 
@@ -107,36 +104,18 @@ ie. list of samples for each response, response for each sample, based
 the highest probability:
 
 ```{r NetResponse8, warning=FALSE, message=FALSE}
-subnet.id <- 'Subnet-2'
-sample.probs <- response2sample(model, subnet.id)
-response.probs <- sample2response(model, subnet.id)
+subnet.id <- 'Subnet-1'
+sample.probs <- response2sample(res, subnet.id)
+response.probs <- sample2response(res, subnet.id)
 ```
 
 Retrieve model parameters for a given subnetwork (Gaussian mixture
 means, covariance diagonal, and component weights):
 
 ```{r NetResponse9, warning=FALSE, message=FALSE}
-get.model.parameters(model, subnet.id) 
+get.model.parameters(res, subnet.id) 
 ```
 
-## Extending the subnetworks
-
-After identifying the locally connected subnetworks, it is possible to
-search for features (genes) that are similar to a given subnetwork but
-not directly interacting with it. To order the remaining features
-in the input data based on similarity with the subnetwork, type
-
-```{r NetResponse10, warning=FALSE, message=FALSE}
-g <- find.similar.features(model, subnet.id = "Subnet-1")
-subset(g, delta < 0)
-```
-
-This gives a data frame which indicates similarity level with the
-subnetwork for each feature. The smaller, the more similar. Negative
-values of delta indicate the presence of coordinated responses,
-positive values of delta indicate independent responses. The data
-frame is ordered such that the features are listed by decreasing
-similarity.
 
 
 ## Nonparametric Gaussian mixture models
