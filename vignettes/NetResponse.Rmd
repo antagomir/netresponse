@@ -133,7 +133,7 @@ modules from either protein interaction data or from combinations of
 protein interaction and gene expression data. Run ICMg and cluster the
 nodes:
 
-```{r ICMg, warning=FALSE, message=FALSE}
+```{r ICMg, warning=FALSE, message=FALSE, echo=FALSE}
 library(netresponse)
 data(osmo)
 res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
