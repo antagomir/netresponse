@@ -67,19 +67,19 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
     if (is.null(palette)) {
         my.palette <- colorRampPalette(c("blue", "white", "red"), 
                            space = "rgb")
-    } else if (palette == "blue-black-red") {
+    } else if (!class(palette) == "function" && palette == "blue-black-red") {
         my.palette <- colorRampPalette(c("blue", "black", "red"), 
                            space = "rgb")
-    } else if (palette == "blue-white-red") {
+    } else if (!class(palette) == "function" && palette == "blue-white-red") {
         my.palette <- colorRampPalette(c("blue", "white", "red"), 
                            space = "rgb")
-    } else if (palette == "blue-white-yellow") {
+    } else if (!class(palette) == "function" && palette == "blue-white-yellow") {
         my.palette <- colorRampPalette(c("blue", "white", "yellow"), 
                            space = "rgb")
-    } else if (palette == "blue-black-yellow") {
+    } else if (!class(palette) == "function" && palette == "blue-black-yellow") {
         my.palette <- colorRampPalette(c("blue", "black", "yellow"), 
                            space = "rgb")
-    } else if (palette == "bw") {
+    } else if (!class(palette) == "function" && palette == "bw") {
         gray.palette <- function(int) {
             gray(seq(0, 1, length = int))
         }
@@ -109,14 +109,14 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
         breaks = col.breaks, ...)
     
     if (plot.axes == "both" || plot.axes == TRUE) {
-        
+
         if (is.null(xlab)) {
             v <- seq(1, nsamples, col.tick)  # take every nth index
             axis(1, at = seq(0, 1, length = nsamples)[v], 
                  labels = colnames(mat)[v], 
                 cex.axis = cex.xlab, las = 2, ...)
-        } else {
-            axis(1, at = seq(0, 1, length = nsamples), labels = xlab, 
+        } else if (!xlab == "") {
+            axis(1, at = seq(0, 1, length = length(xlab)), labels = xlab, 
                  cex.axis = cex.xlab, 
                 las = 2, ...)
         }
@@ -126,7 +126,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
             axis(2, at = seq(0, 1, length = nfeats)[v], 
                  labels = rev(rownames(mat))[v], 
                  cex.axis = cex.ylab, las = 2, ...)
-        } else {
+        } else if (!ylab == "") {
             axis(2, at = seq(0, 1, length = nfeats), labels = rev(ylab), 
                  cex.axis = cex.ylab, las = 2, ...)
         }
