@@ -220,7 +220,8 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 #' @return Subnet data matrix
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
-#' @keywords internal
+#' @export
+#' @keywords utilities
 #' @examples
 #' ## Load a pre-calculated netresponse model obtained with 
 #' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)

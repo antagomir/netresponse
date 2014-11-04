@@ -99,23 +99,3 @@ add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col
 
 
 
-
-
-
-check.bins <- function (difexp, mybreaks) {
-
-  # check color scale bin for each expression value
-  bins <- c()
-  for (i in 1:length(difexp)) {
-    # which color bins are smaller than our difexp value
-    # (for probet: i, mode:mode)
-    inds <- which(difexp[[i]] > mybreaks)
-    if (length(inds) == 0) {
-      bins[[i]] <- 1
-    } else if (length(inds) > 0)  {
-      bins[[i]] <- max(inds) + 1
-    }
-  }	
-  bins
-}
-
