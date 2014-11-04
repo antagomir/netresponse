@@ -18,6 +18,9 @@ Tools for functional network analysis (follow links for references):
 
 For installation and usage, check the [tutorial page](vignettes/NetResponse.md).
 
+
+### Support
+
 You are welcome to:
   
   * [submit suggestions and bug-reports](https://github.com/antagomir/netresponse/issues)
@@ -25,7 +28,7 @@ You are welcome to:
   * ping antagomir at IRCnet or FreeNode
 
 
-***Authors***
+### Authors
 
 Maintainer: [Leo Lahti](http://antagomir.github.io/info/contact)
 
