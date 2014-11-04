@@ -1,31 +1,30 @@
+<!--[![Build Status](https://api.travis-ci.org/rOpenGov/sorvi.png)](https://travis-ci.org/rOpenGov/sorvi)
+[![Stories in Ready](https://badge.waffle.io/ropengov/sorvi.png?label=Ready)](http://waffle.io/ropengov/sorvi)
+[![DOI](https://zenodo.org/badge/4203/rOpenGov/sorvi.png)](https://github.com/rOpenGov/sorvi)-->
+
 netresponse 
 ===========
 
-Tools for functional network analysis (see the links for references):
+Tools for functional network analysis (follow links for references):
 
- * [netresponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713)
-   to detect and characterize context-specific activation patterns and
-   to construct global functional maps of large interaction networks
-   by combining functional information with interaction networks. The
-   implementation is based on probabilistic models and variational
-   learning.
+ *
+   [netresponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713)
+   to discover context-specific activation patterns in interaction
+   networks
 
  * [Interaction Component Model
-   ICMg](http://www.biomedcentral.com/1752-0509/4/4) for network
-   module discovery taking into account the uncertainty in network
-   structure. Can be supervised by functional information of the
+   ICMg](http://www.biomedcentral.com/1752-0509/4/4) to discover
+   network modules. Can be supervised by functional information of the
    network.
 
-The algorithms have been used to investigate the structure and
-context-specific transcriptional activity of genome-scale interaction
-networks in human body (see the links).
+For installation and usage, check the [tutorial page](vignettes/NetResponse.md).
 
-For further documentation, see the [package
-vignette](vignettes/NetResponse.md).  
+You are welcome to:
+  
+  * [submit suggestions and bug-reports](https://github.com/antagomir/netresponse/issues)
+  * [send a pull request](https://github.com/antagomir/netresponse/)
+  * ping antagomir at IRCnet or FreeNode
 
-[Matlab
-implementation](http://www.cis.hut.fi/projects/mi/software/NetResponse)
-is also available but not supported.
 
 ### Authors
 
@@ -38,4 +37,8 @@ Acknowledgements: This program is partially based on the
 Independent Variable Group Analysis source code (v. 1.0) Copyright (C)
 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias Seppa,
 Harri Valpola, and Paul Wagner.
+
+[Matlab
+implementation](http://www.cis.hut.fi/projects/mi/software/NetResponse)
+is also available but not supported.
 
