@@ -23,7 +23,7 @@
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @examples #
-plotAssociations <- function (x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...) {
+plot_associations <- function (x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...) {
 		  
   names(labels) <- rownames(x@datamatrix) # assumes that labels are in same order as data if names not given
   
@@ -367,7 +367,7 @@ plot.expression <- function (x, maintext, ...) { # was: plot.matrix
   dmat <- t(t(x) - ctrl.state)
 
   # Color plot of the whole expression matrix, ordered by responses
-  tmp <- plotMatrix.2way(dmat, mybreaks = mybreaks, maintext=maintext, cexlab=1, mypalette = mypalette)
+  tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext=maintext, cexlab=1, mypalette = mypalette)
 }
 
 
@@ -520,6 +520,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
   responses <- NULL
   variable <- NULL
+  p <- NULL # return ggplot2 object if available
 
   if (is.null(datamatrix)) {
     datamatrix <- x@datamatrix
@@ -580,9 +581,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     # Color plot of the whole expression matrix, ordered by responses
     if (horiz) {
-      tmp <- plotMatrix.2way(t(dmat), mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", mypalette, xaxis = yaxis, yaxis = xaxis, mar = mar, ...)
+      tmp <- plot_matrix(t(dmat), mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", mypalette, xaxis = yaxis, yaxis = xaxis, mar = mar, ...)
     } else {
-      tmp <- plotMatrix.2way(dmat, mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", mypalette, xaxis = xaxis, yaxis = yaxis, mar = mar, ...)
+      tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", mypalette, xaxis = xaxis, yaxis = yaxis, mar = mar, ...)
     }
 
   } else if (plot.mode == "boxplot.data") {

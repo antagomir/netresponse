@@ -65,9 +65,11 @@ subnet.id <- names(get.subnets(res))[[1]]
 
 ### PCA visualization
 
-```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show = "hold"}
+```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show = "last"}
 library(ggplot2)
 vis <- plot.responses(res, subnet.id, plot.mode = "pca")
+
+# Modify the resulting ggplot2 object to enhance visualization
 vis$p + geom_point(size = 3)
 ```
 
