@@ -649,7 +649,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     df <- ddply(dfm, c("response", "variable"), function (dd) {c(mean = mean(dd$value), sd = 1.96*sd(dd$value)/sqrt(sum(x[[subnet.id]]$qofz[, dd$response])))})
 
     p <- qplot(response, mean, fill=variable, data=df, geom="bar", position="dodge")
-    p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), position="dodge")+theme_bw()
+    p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), position="dodge") + theme_bw()
 
     print(p)
 
