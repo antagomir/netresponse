@@ -449,6 +449,25 @@ plot.response <-
 function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.type = "twopi",
            ...) {
 
+  check.bins <- function (difexp, mybreaks) {
+
+  # check color scale bin for each expression value
+  bins <- c()
+  for (i in 1:length(difexp)) {
+      # which color bins are smaller than our difexp value
+      # (for probet: i, mode:mode)
+      inds <- which(difexp[[i]] > mybreaks)
+      if (length(inds) == 0) {
+        bins[[i]] <- 1
+      } else if (length(inds) > 0)  {
+        bins[[i]] <- max(inds) + 1
+      }
+  }
+
+    bins
+  }
+
+
    # Add node color for specific nodes
    nAttrs <- list()
    if (colors) {
@@ -575,7 +594,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     dmat <- datamatrix[ordered.samples, subnet.nodes]
     dmat <- t(t(dmat) - ctrl.state)
 
-    if (scale) {dmat <- scale(dmat, center = FALSE, scale = TRUE)}
+    if (scale) {
+      dmat <- scale(dmat, center = FALSE, scale = TRUE)
+    }
 
     par(mfrow = c())
 
