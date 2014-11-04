@@ -581,9 +581,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     # Color plot of the whole expression matrix, ordered by responses
     if (horiz) {
-      tmp <- plot_matrix(t(dmat), mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", palette = mypalette, xaxis = yaxis, yaxis = xaxis, mar = mar, ...)
+      tmp <- plot_matrix(t(dmat), mybreaks = mybreaks, maintext = subnet.id, xlab=NULL, ylab=NULL, palette = mypalette, xaxis = yaxis, yaxis = xaxis, mar = mar, ...)
     } else {
-      tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext = subnet.id, xlab="", ylab="", palette = mypalette, xaxis = xaxis, yaxis = yaxis, mar = mar, ...)
+      tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext = subnet.id, xlab=NULL, ylab=NULL, palette = mypalette, xaxis = xaxis, yaxis = yaxis, mar = mar, ...)
     }
 
   } else if (plot.mode == "boxplot.data") {
