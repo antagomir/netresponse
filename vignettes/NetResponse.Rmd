@@ -1,6 +1,6 @@
 # netresponse - probabilistic tools for functional network analysis
 
-For maintainer contact details, see the [README](../README.md) file
+For bug reports and maintainer contact details, see the [README](../README.md) file
 
 ## Background 
 
@@ -66,6 +66,7 @@ subnet.id <- names(get.subnets(res))[[1]]
 ### PCA visualization
 
 ```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show = "hold"}
+library(ggplot2)
 vis <- plot.responses(res, subnet.id, plot.mode = "pca")
 vis$p + geom_point(size = 3)
 ```
