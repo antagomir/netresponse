@@ -5,6 +5,9 @@
 #' @import Rgraphviz
 #' @importFrom igraph igraph.to.graphNEL
 #' @importFrom igraph igraph.from.graphNEL
+#' @importFrom igraph subgraph
+#' @importFrom igraph graph.data.frame
+#' @importFrom igraph graph.edgelist
 #' @import qvalue
 #' @import mclust
 #' @import methods

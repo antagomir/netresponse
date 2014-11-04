@@ -97,51 +97,9 @@ add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col
   el
 }
 
-plotMatrix.2way <- function (mat, mybreaks = NULL, maintext = "", xlab = "", ylab = "", mypalette = NULL, interval = .1, cex.main = 1, xaxis = FALSE, yaxis = TRUE, row.tick = 1, col.tick = 1, cex.xlab = .9, cex.ylab = .9, cex.lab = .9, limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
 
-  # mat: differential expression matrix to plot in two-color palette
-  # interval: interval for palette color switches
-  # FIXME: synchronize with PlotMatrix in sorvi package  
-   	   
-  if (length(mybreaks) == 0)  {
-    m <- max(round(max(abs(mat)), limit.trunc) - interval, 0)
-    mm <- m + interval/2
-    vals <- seq(interval/2,mm,interval)
-    # Set breaks evenly around zero
-    mybreaks  <- c(-(m+1e6),c(-rev(vals),vals),m+1e6)
-  }
-		  
-  if (length(mypalette)==0) {
-    mypalette <- colorRampPalette(c("blue", "black", "red"),space = "rgb")
-    my.colors <- mypalette(length(mybreaks)-1)
-  } else {
-    my.colors <- mypalette(length(mybreaks)-1)
-  }
-		      
-  # transpose and revert row order to plot matrix in the same way it
-  # appears in its numeric form
-  par(mar = mar)
-  image(t(mat[rev(seq(nrow(mat))),]), col = my.colors, xaxt='n', yaxt='n', zlim=range(mybreaks), breaks=mybreaks, main=maintext, xlab=xlab, ylab=ylab, cex.lab = cex.lab, cex.main = cex.main)
 
-  if (yaxis) {
-      
-    v <- seq(1, nrow(mat), row.tick) # take every nth index
-    axis(2, at = seq(0,1,length = nrow(mat))[v], labels = rev(rownames(mat))[v], 
-    	    cex.axis=cex.ylab, las = 2)
-    
-  }
-  
-  if (xaxis) {    
 
-    v <- seq(1, ncol(mat), col.tick) # take every nth index
-    axis(1, at = seq(0,1,length = ncol(mat))[v], labels = colnames(mat)[v], 
-    	    cex.axis = cex.xlab, las=2)
-
-  }
-    
-  return(list(palette = my.colors, breaks = mybreaks))
-      	  
-}
 
 
 check.bins <- function (difexp, mybreaks) {
