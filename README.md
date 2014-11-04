@@ -7,9 +7,8 @@ netresponse
 
 Tools for functional network analysis (follow links for references):
 
- *
-   [netresponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713)
-   to discover context-specific activation patterns in interaction
+ * [netresponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713)
+   discover context-specific activation patterns in interaction
    networks
 
  * [Interaction Component Model
@@ -26,7 +25,7 @@ You are welcome to:
   * ping antagomir at IRCnet or FreeNode
 
 
-### Authors
+***Authors***
 
 Maintainer: [Leo Lahti](http://antagomir.github.io/info/contact)
 
