@@ -64,6 +64,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
         col.breaks <- c(-(m + 1e+06), c(-rev(vals), vals), m + 1e+06)
     }
     
+    my.palette <- palette
     if (is.null(palette)) {
         my.palette <- colorRampPalette(c("blue", "white", "red"), 
                            space = "rgb")
@@ -85,10 +86,12 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
         }
         my.palette <- gray.palette
     }
-    
+
+    palette <- my.palette    
+
     # if mycolors is provided it overrides palette
     if (is.null(colors)) {
-        colors <- my.palette(length(col.breaks) - 1)
+        colors <- palette(length(col.breaks) - 1)
     }
     
     # transpose and revert row order to plot matrix in the same way it
@@ -162,7 +165,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
     par(mar = c(5, 4, 4, 2) + 0.1)
     
     return(list(colors = colors, breaks = col.breaks + midpoint, 
-                palette.function = my.palette))
+                palette.function = palette))
     
 }
 

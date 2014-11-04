@@ -1,21 +1,3 @@
-# Copyright (C) 2008-2012 Leo Lahti and Olli-Pekka Huovilainen
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# Acknowledgements: This program is based on the AIVGA Agglomerative
-# Independent Variable Group Analysis package (v. 1.0) Copyright (C)
-# 2001-2007 Esa Alhoniemi, Antti Honkela, Krista Lagus, Jeremias
-# Seppa, Harri Valpola, and Paul Wagner.
-
 #' pick.model.parameters
 #' 
 #' @param m vdp.mixt output
@@ -334,23 +316,7 @@ join.subnets <- function (network, delta, best.edge) {
 
 
 
-check.bins <- function (difexp, mybreaks) {
 
-  # check color scale bin for each expression value
-  bins <- c()
-  for (i in 1:length(difexp)) {
-      # which color bins are smaller than our difexp value
-      # (for probet: i, mode:mode)
-      inds <- which(difexp[[i]] > mybreaks)
-      if (length(inds) == 0) {
-        bins[[i]] <- 1
-      } else if (length(inds) > 0)  {
-        bins[[i]] <- max(inds) + 1
-      }
-  }
-
-  bins
-}
 
 
 # INPUT: matrix (q_of_z)
