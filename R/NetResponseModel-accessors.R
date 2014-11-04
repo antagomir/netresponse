@@ -212,16 +212,15 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 })
 
 
-#' get.dat
+#' Get subnetwork data
 #' 
-#' @inheritParams
+#' @inheritParams sample2response
 #' @param sample Define the retrieved samples
-#'
+#' @aliases get.dat get.dat,NetResponseModel-method
 #' @return Subnet data matrix
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
-#' @keywords utilities
-#' @export
+#' @keywords internal
 #' @examples
 #' ## Load a pre-calculated netresponse model obtained with 
 #' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)

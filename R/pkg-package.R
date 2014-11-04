@@ -45,8 +45,7 @@ NULL
 #' 
 #' 
 #' @name NetResponseModel-class
-#' @aliases NetResponseModel-class [[,NetResponseModel-method
-#' show,NetResponseModel-method get.dat,NetResponseModel-method
+#' @aliases NetResponseModel-class [[,NetResponseModel-method show,NetResponseModel-method 
 #' @docType class
 #' @section Objects from the Class: Returned by \code{\link{detect.responses}}
 #' function.
