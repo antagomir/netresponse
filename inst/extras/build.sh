@@ -3,5 +3,3 @@
 /usr/bin/R CMD check netresponse_1.17.12.tar.gz
 /usr/bin/R CMD INSTALL netresponse_1.17.12.tar.gz
 #/usr/bin/R CMD BiocCheck netresponse_1.17.12.tar.gz 
-
-
