@@ -21,6 +21,7 @@ Imports:
     ggplot2,
     graph,
     igraph,
+    methods,
     parallel,
     plyr,
     qvalue,
