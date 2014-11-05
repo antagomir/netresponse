@@ -1,17 +1,3 @@
-# Copyright (C) 2008-2012 Olli-Pekka Huovilainen and Leo Lahti 
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-
 # The best academic advice I ever got was: "Spend at least an hour
 # every day on the manuscript closest to publication".
 
@@ -31,7 +17,7 @@
 #' @examples # D <- generate.toydata()
 #' @export
 
-generate.toydata <- function (Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 2, rgam.scale = 2, rseed = 12346) {
+generate.toydata <- function (Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 2, rgam.scale = 2, rseed = 123456) {
 
   set.seed(rseed)
 
