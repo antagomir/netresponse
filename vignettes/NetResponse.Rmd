@@ -20,18 +20,24 @@ network analysis
 
 The methods are based on nonparametric probabilistic modeling and
 variational learning, and provide general exploratory tools to
-investigate the structure ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
-context-specific behavior ([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short)) of
-interaction networks.  ICMg is used to identify community structure in
-interaction networks; NetResponse detects and characterizes
+investigate the structure
+([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
+context-specific behavior
+([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short))
+of interaction networks.  ICMg is used to identify community structure
+in interaction networks; NetResponse detects and characterizes
 subnetworks that exhibit context-specific activation patterns across
 versatile collections of functional measurements, such as gene
 expression data. The implementations are partially based on the
-agglomerative independent variable group analysis ([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
-and variational Dirichlet process Gaussian mixture models
-([Kurihara et al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The tools are particularly useful for global
-exploratory analysis of genome-wide interaction networks and versatile
-collections of gene expression data.
+agglomerative independent variable group analysis
+([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
+and variational Dirichlet process Gaussian mixture models ([Kurihara
+et
+al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The
+tools are particularly useful for global exploratory analysis of
+genome-wide interaction networks and versatile collections of gene
+expression data, and in general to discover subnetworks with
+alternative states.
 
 
 ## Usage examples
@@ -46,7 +52,7 @@ article](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short).
 library(netresponse)
 
 # Generate simulated data
-res <- generate.toydata(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1, rseed = 123456)
+res <- generate.toydata(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
 
 D <- res$data
 component.means <- res$means
@@ -115,26 +121,68 @@ the highest probability:
 
 ```{r NetResponse8, warning=FALSE, message=FALSE}
 subnet.id <- 'Subnet-1'
-sample.probs <- response2sample(res, subnet.id)
+
+# Sample - response hard assignments
+hard.clusters <- response2sample(res, subnet.id)
+print(hard.clusters)
+
+# Sample - response probabilities (soft cluster assignment)
 response.probs <- sample2response(res, subnet.id)
+tail(round(response.probs, 6))
 ```
 
 Retrieve model parameters for a given subnetwork (Gaussian mixture
-means, covariance diagonal, and component weights):
+means, covariance diagonal, and component weights; see
+help(get.model.parameters) for details):
 
 ```{r NetResponse9, warning=FALSE, message=FALSE}
 params <- get.model.parameters(res, subnet.id) 
 names(params)
 ```
 
-
-
 ## Nonparametric Gaussian mixture models
 
-The package provides additional tools for nonparametric Gaussian
-mixture modeling based on variational Dirichlet process mixture models
-and implementations by [Kurihara et al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf) and [Honkela et al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659). See the
-example in help(vdp.mixt).
+Nonparametric Gaussian mixtures with variational Dirichlet processes
+based on implementations by [Kurihara et
+al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)
+and [Honkela et
+al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659).
+
+```{r vdp, warning=FALSE, message=FALSE, results="hide"}
+set.seed(123)
+            
+# Generate 2-dimensional simulated data with 3 clusters
+res <- generate.toydata(Dim = 2, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
+
+D <- res$data
+real.means <- res$means
+real.sds   <- res$sds
+real.sample2comp     <- res$sample2comp
+
+# Infinite Gaussian mixture model with       
+# Variational Dirichlet Process approximation       
+mixt <- vdp.mixt( D )
+            
+# Centroids of the detected Gaussian components       
+estimated.means <- mixt$posterior$centroids
+
+# The colors denote the known clusters
+# The blue ball denotes the original (known) cluster centroids and
+# the triangle denotes the estimated centroids
+plot(D, col = real.sample2comp, pch = 1)
+points(real.means, col = "blue", pch = 16, cex = 2)
+points(estimated.means, col = "blue", pch = 17, cex = 2)
+            
+# Hard mixture component assignment for each sample
+estimated.sample2comp <- apply(mixt$posterior$qOFz, 1, which.max)
+
+# Compare known and estimated mixture components
+# (note that cluster indices may have switched due to unidentifiability)
+# nearly all samples have one-to-one match between the real and estimated 
+# clusters
+head(table(estimated.sample2comp, real.sample2comp))
+```     
+
 
 ## Interaction Component Model for Gene Modules
 
@@ -143,7 +191,7 @@ modules from either protein interaction data or from combinations of
 protein interaction and gene expression data. Run ICMg and cluster the
 nodes:
 
-```{r ICMg, warning=FALSE, message=FALSE, results="hide", echo=FALSE}
+```{r ICMg, warning=FALSE, message=FALSE, results="hide"}
 library(netresponse)
 data(osmo)
 res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
@@ -156,6 +204,9 @@ res$clustering <- apply(res$comp.memb, 2, which.max)
 
 Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
 
+```{r cite, warning=FALSE, message=FALSE}
+citation("netresponse")
+```
 
 ### Version information
 

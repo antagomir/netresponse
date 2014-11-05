@@ -3,6 +3,7 @@
 #' @import parallel
 #' @import RColorBrewer
 #' @import Rgraphviz
+#' @import methods
 #' @importFrom igraph igraph.to.graphNEL
 #' @importFrom igraph igraph.from.graphNEL
 #' @importFrom igraph subgraph
@@ -10,7 +11,6 @@
 #' @importFrom igraph graph.edgelist
 #' @import qvalue
 #' @import mclust
-#' @import methods
 #' @importFrom plyr ddply
 #' @importFrom minet build.mim
 #' @importFrom reshape melt
