@@ -567,7 +567,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
   # Set color breakpoints and palette
   mybreaks <- set.breaks(1, interval = .02)
-  mypalette <- colorRampPalette(c("blue", "black", "red"), space = "rgb")
+  mypalette <- colorRampPalette(c("blue", "white", "red"), space = "rgb")
   
   # compute differential expression in nodes with respect to the mean expression level for each gene
   ctrl.state <- colMeans(datamatrix)
