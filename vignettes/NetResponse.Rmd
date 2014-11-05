@@ -45,8 +45,7 @@ alternative states.
 Examples on running NetResponse algorithm and visualizing the
 results. The algorithm combines network and functional information to
 detect coherent subnetworks that reveal distinct activation modes
-across conditions. Kindly cite [this
-article](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short).
+across conditions. 
 
 ```{r NetResponse1, warning=FALSE, message=FALSE}
 library(netresponse)
@@ -59,11 +58,14 @@ component.means <- res$means
 component.sds   <- res$sds
 sample2comp     <- res$sample2comp
 
+# Use fully connected network
+network <- matrix(rep(1, 9), nrow = 3) 
+
 # Fit NetResponse model
 # Various network formats are supported, see help(detect.responses) for
 # details. With large data sets, consider the 'speedup' option.
 set.seed(4243)
-res <- detect.responses(D, mixture.method = "vdp", pca.basis = TRUE)
+res <- detect.responses(D, network, mixture.method = "vdp", pca.basis = TRUE)
 
 # List subnets (each is a list of nodes)
 subnet.id <- names(get.subnets(res))[[1]]
@@ -122,13 +124,13 @@ the highest probability:
 ```{r NetResponse8, warning=FALSE, message=FALSE}
 subnet.id <- 'Subnet-1'
 
-# Sample - response hard assignments
-hard.clusters <- response2sample(res, subnet.id)
-print(hard.clusters)
-
 # Sample - response probabilities (soft cluster assignment)
 response.probs <- sample2response(res, subnet.id)
 tail(round(response.probs, 6))
+
+# Sample - response hard assignments
+hard.clusters <- response2sample(res, subnet.id)
+print(hard.clusters)
 ```
 
 Retrieve model parameters for a given subnetwork (Gaussian mixture
@@ -148,9 +150,7 @@ al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)
 and [Honkela et
 al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659).
 
-```{r vdp, warning=FALSE, message=FALSE, results="hide"}
-set.seed(123)
-            
+```{r vdp, warning=FALSE, message=FALSE}
 # Generate 2-dimensional simulated data with 3 clusters
 res <- generate.toydata(Dim = 2, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
 
