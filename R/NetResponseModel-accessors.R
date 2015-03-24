@@ -225,7 +225,7 @@ setMethod("getqofz", "NetResponseModel", function (model, subnet.id, log = FALSE
 #' @examples
 #' ## Load a pre-calculated netresponse model obtained with 
 #' # model <- detect.responses(toydata$emat, toydata$netw, verbose = FALSE)
-#' # data( toydata ); get.subnets(toydata$model) 
+#' # data( toydata ); get.dat(toydata$model) 
 setMethod("get.dat", "NetResponseModel", function (model, subnet.id, sample = NULL) {
 
   # usage get.dat(model, subnet.id, sample = NULL)
