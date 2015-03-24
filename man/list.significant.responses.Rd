@@ -18,8 +18,7 @@ calculated. For instance, an annotation category.}
 \item{method}{Enrichment method.}
 }
 \value{
-Table containing statistics of the significantly associated
-responses.
+Statistics of the significantly associated responses.
 }
 \description{
 List responses with significant associations to a given sample group.

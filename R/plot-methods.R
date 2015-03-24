@@ -736,8 +736,7 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE,
 				 pca = pca)
 					  
       # PlotMixtureBivariate(dmat, means, sds, ws, labels = NULL, 
-      				   confidence = 0.95, main = "") 
-
+      #				   confidence = 0.95, main = "") 
       # tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)
 
     }

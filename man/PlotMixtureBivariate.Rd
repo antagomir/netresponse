@@ -12,7 +12,9 @@ PlotMixtureBivariate(x, means, sds, ws, labels = NULL, confidence = 0.95,
 
 \item{means}{mode centroids (modes x features)}
 
-\item{sds}{mode standard deviations, assuming diagonal covariance matrices (modes x features, each row giving the sqrt of covariance diagonal for the corresponding mode)}
+\item{sds}{mode standard deviations, assuming diagonal covariance
+matrices (modes x features, each row giving the sqrt of covariance
+diagonal for the corresponding mode)}
 
 \item{ws}{weight for each mode}
 
@@ -30,8 +32,8 @@ Used for its side-effects.
 }
 \description{
 Visualize data, centroids and response confidence intervals for a given
-Gaussian mixture model in two-dimensional (bivariate) case. Optionally, color the samples according to annotations
-labels.
+Gaussian mixture model in two-dimensional (bivariate) case. Optionally,
+color the samples according to annotations labels.
 }
 \examples{
 #plotMixture(dat, means, sds, ws)

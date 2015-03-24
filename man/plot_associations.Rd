@@ -26,8 +26,8 @@ grouping type.}
 Used for side effect (plotting).
 }
 \description{
-Plot association strength between user-defined category labels and responses
-in a selected subnetwork.
+Plot association strength between user-defined category labels and
+responses in a selected subnetwork.
 }
 \details{
 Associations are showm in terms -log10(p) enrichment values for the
