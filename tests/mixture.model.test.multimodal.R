@@ -13,7 +13,7 @@ D3 <- rbind(matrix(rnorm(Ns*Nd, mean = 0), ncol = Nd),
       	    cbind(rnorm(Ns, mean = -3), rnorm(Ns, mean = 3))
 	    )
 
-X11()
+#X11()
 par(mfrow = c(2,2))
 for (mm in c("vdp", "bic")) {
   for (pp in c(FALSE, TRUE)) {
