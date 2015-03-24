@@ -2,8 +2,8 @@
 
 #' Association strength between category labels and responses.
 #' 
-#' Plot association strength between user-defined category labels and responses
-#' in a selected subnetwork.
+#' Plot association strength between user-defined category labels and 
+#' responses in a selected subnetwork.
 #' 
 #' Associations are showm in terms -log10(p) enrichment values for the
 #' annotation categories for the responses within the specified subnetwork. No
@@ -23,9 +23,12 @@
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @examples #
-plot_associations <- function (x, subnet.id, labels, method = "hypergeometric", mode = "group.by.classes", ...) {
+plot_associations <- function (x, subnet.id, labels, 
+		     	       method = "hypergeometric", 
+			       mode = "group.by.classes", ...) {
 		  
-  names(labels) <- rownames(x@datamatrix) # assumes that labels are in same order as data if names not given
+  # assumes that labels are in same order as data if names not given
+  names(labels) <- rownames(x@datamatrix) 
   
   # Number of responses for this subnet
   N.responses <- length(x@models[[subnet.id]]$w)
@@ -43,7 +46,8 @@ plot_associations <- function (x, subnet.id, labels, method = "hypergeometric", 
     enr <- list()
     for (response in 1:N.responses) {
  
-      enr[[response]] <- response.enrichment(x[[subnet.id]]$qofz, samples, response, method)
+      enr[[response]] <- response.enrichment(x[[subnet.id]]$qofz, 
+      		      	 			samples, response, method)
     }    
     neg.log.p <- -log10(sapply(enr, function (tab) {tab$info["pvalue"]}))
     association.tab[as.character(lab),] <- unname(neg.log.p)
@@ -51,9 +55,13 @@ plot_associations <- function (x, subnet.id, labels, method = "hypergeometric", 
   }
 
   if (mode == "group.by.responses") {
-    barplot(association.tab, beside = TRUE, legend = TRUE, las = 1, cex.names = 0.8, main = "Label/response associations", ylab = "-log10(p)", ...)
+    barplot(association.tab, beside = TRUE, legend = TRUE, las = 1, 
+    	    cex.names = 0.8, main = "Label/response associations", 
+	    ylab = "-log10(p)", ...)
   } else if (mode == "group.by.classes") {
-    barplot(t(association.tab), beside = TRUE, legend = TRUE, las = 1, cex.names = 0.8, main = "Label/response associations", ylab = "-log10(p)", ...)
+    barplot(t(association.tab), beside = TRUE, legend = TRUE, las = 1, 
+    	    cex.names = 0.8, main = "Label/response associations", 
+	    ylab = "-log10(p)", ...)
   }
 
 }
@@ -89,7 +97,8 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+    warning("subnet.id given as numeric; converting to character: ", 
+    		       "Subnet-", subnet.id, sep="")
   }
   
   # model parameters
@@ -122,9 +131,12 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
     cols <- "black"
   }
 
-  plot(dat.pca[1:nrow(dat), ], main = paste("PCA plot: subnetwork ", subnet.id, sep = ""), xaxt = 'n', yaxt = 'n', xlab = "", ylab = "", col = cols, pch = 19)
+  plot(dat.pca[1:nrow(dat), ], main = paste("PCA plot: subnetwork ", 
+  	subnet.id, sep = ""), xaxt = 'n', yaxt = 'n', xlab = "", ylab = "", 
+	col = cols, pch = 19)
 
-  if (nlab > 1) { legend("topleft", legend = as.character(unique(labels)), fill = unique(cols)) }
+  if (nlab > 1) { legend("topleft", 
+     	     legend = as.character(unique(labels)), fill = unique(cols)) }
 
   for (ri in 1:nrow(m$mu)) { 
 
@@ -132,11 +144,13 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
     cmat <- diag(m$sd[ri,]^2)
 
     # Projection of the covariance matrix in the PCA projection space
-    cmat.projection <- diag(diag(t(v)%*%cmat%*%v)) # force it diagonal as it should be
+    # force it diagonal as it should be
+    cmat.projection <- diag(diag(t(v)%*%cmat%*%v)) 
 
     # Indicate estimated responses by ellipses
     if (!is.null(confidence)){
-      add.ellipse(centroid = dat.pca[ri, ], covmat = cmat.projection, confidence = confidence)
+      add.ellipse(centroid = dat.pca[ri, ], covmat = cmat.projection, 
+         confidence = confidence)
     }
   }
 }
@@ -146,12 +160,14 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' PlotMixtureBivariate
 #' 
 #' Visualize data, centroids and response confidence intervals for a given
-#' Gaussian mixture model in two-dimensional (bivariate) case. Optionally, color the samples according to annotations
-#' labels.
+#' Gaussian mixture model in two-dimensional (bivariate) case. Optionally, 
+#' color the samples according to annotations labels.
 #' 
 #' @param x data matrix (samples x features)
 #' @param means mode centroids (modes x features)
-#' @param sds mode standard deviations, assuming diagonal covariance matrices (modes x features, each row giving the sqrt of covariance diagonal for the corresponding mode)
+#' @param sds mode standard deviations, assuming diagonal covariance 
+#'    matrices (modes x features, each row giving the sqrt of covariance 
+#'    diagonal for the corresponding mode)
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param confidence Confidence interval for the responses based on the
@@ -164,7 +180,8 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence = 0.95, main = "", ...) {
+PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, 
+		     confidence = 0.95, main = "", ...) {
 
   if (!is.null(labels)) {
     if (is.null(names(labels))) {
@@ -183,9 +200,11 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
     cols <- "black"
   }
 
-  plot(dat.proj[1:nrow(x), ], main = main, xaxt = 'n', yaxt = 'n', xlab = "", ylab = "", col = cols, pch = 19)
+  plot(dat.proj[1:nrow(x), ], main = main, xaxt = 'n', yaxt = 'n', 
+  			   xlab = "", ylab = "", col = cols, pch = 19)
 
-  if (nlab > 1) { legend("topleft", legend = as.character(unique(labels)), fill = unique(cols)) }
+  if (nlab > 1) { legend("topleft", legend = as.character(unique(labels)), 
+     	     	  		    fill = unique(cols)) }
 
   for (ri in 1:nrow(means)) { 
 
@@ -194,7 +213,8 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 
     # Indicate estimated responses by ellipses
     if (!is.null(confidence)){
-      add.ellipse(centroid = dat.proj[ri, ], covmat = cmat, confidence = confidence)
+      add.ellipse(centroid = dat.proj[ri, ], covmat = cmat, 
+      			   confidence = confidence)
     }
   }
 }
@@ -202,18 +222,24 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' PlotMixtureMultivariate
 #' 
 #' Visualize data, centroids and response confidence intervals for a given
-#' Gaussian mixture model with PCA. Optionally, color the samples according to annotations
-#' labels.
+#' Gaussian mixture model with PCA. Optionally, color the samples according 
+#' to annotations labels.
 #' 
 #' @param x data matrix (samples x features)
 #' @param means mode centroids (modes x features)
-#' @param sds mode standard deviations, assuming diagonal covariance matrices (modes x features, each row giving the sqrt of covariance diagonal for the corresponding mode)
+#' @param sds mode standard deviations, assuming diagonal covariance matrices 
+#'        (modes x features, each row giving the sqrt of covariance diagonal 
+#' 	  for the corresponding mode)
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param title title
-#' @param modes Optional: provide sample modes for visualization already in the input
-#' @param pca The data is projected on PCA plane by default (pca = TRUE). By setting this off (pca = FALSE) it is possible to visualize two-dimensional data in the original domain.
-#' @param qofz Sample-response probabilistic assignments matrix (samples x responses)
+#' @param modes Optional: provide sample modes for visualization already in 
+#' 	  the input
+#' @param pca The data is projected on PCA plane by default (pca = TRUE). 
+#' 	  By setting this off (pca = FALSE) it is possible to visualize 
+#' 	  two-dimensional data in the original domain.
+#' @param qofz Sample-response probabilistic assignments matrix 
+#' 	  (samples x responses)
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -221,9 +247,12 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL, confidence =
 #' @keywords utilities
 #' @export
 #' @examples #plotMixture(dat, means, sds, ws)
-PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = NULL, modes = NULL, pca = FALSE, qofz = NULL, ...) {
+PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, 
+			title = NULL, modes = NULL, pca = FALSE, 
+			qofz = NULL, ...) {
 
-  # x <- t(X); means = model$params$mu; sds = model$params$sd; ws = model$params$w; labels <- NULL; title = ""
+  # x <- t(X); means = model$params$mu; sds = model$params$sd; 
+  # ws = model$params$w; labels <- NULL; title = ""
 
   # Circumvent warnings
   Comp.1 <- Comp.2 <- dat2 <- NULL
@@ -252,7 +281,8 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
       xtitle <- "PCA1"
       ytitle <- "PCA2"
 
-      if (is.null(title)) {title <- paste("PCA (", ncol(x), " features)", sep = "")}
+      if (is.null(title)) {title <- paste("PCA (", ncol(x), " features)", 
+      	 sep = "")}
 
   } else {
 
@@ -289,7 +319,8 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL, title = N
   df$mode <- factor(modes)
 
   theme_set(theme_bw(15))
-  p <- ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
+  p <- ggplot(df, aes(x = Comp.1, y = Comp.2, colour = mode)) + geom_point() 
+  p <- p + ggtitle(title) + xlab(xtitle) + ylab(ytitle)
   print(p)
 
   p
@@ -325,7 +356,9 @@ plot.data <- function (x, subnet.id, labels, ...) {
     dat <- t(get.dat(x, subnet.id)) # samples x nodes
     df <- data.frame(list(labels = labels, dat))
     dfm <- melt(df, id = "labels")
-    p <- ggplot(dfm) + aes(x = labels, y = dfm$value) + facet_wrap(~variable) + geom_boxplot() + opts(title = paste(subnet.id, ": annotation boxplot", sep = ""))    
+    p <- ggplot(dfm) + aes(x = labels, y = dfm$value) + facet_wrap(~variable) 
+    p <- p + geom_boxplot() 
+    p <- p + ggtitle(paste(subnet.id, ": annotation boxplot", sep = ""))
     print(p)
     p
 
@@ -362,12 +395,14 @@ plot.expression <- function (x, maintext, ...) { # was: plot.matrix
   mybreaks <- set.breaks(1, interval = .02)
   mypalette <- colorRampPalette(c("blue", "black", "red"), space = "rgb")
   
-  # compute differential expression in nodes with respect to the mean expression level for each gene
+  # compute differential expression in nodes with respect to the mean 
+  # expression level for each gene
   ctrl.state <- colMeans(x)
   dmat <- t(t(x) - ctrl.state)
 
   # Color plot of the whole expression matrix, ordered by responses
-  tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext=maintext, cexlab=1, mypalette = mypalette)
+  tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext=maintext, cexlab=1, 
+      	 		   mypalette = mypalette)
 }
 
 
@@ -399,13 +434,15 @@ plot.subnet <- function (x, subnet.id, network, plot.names = TRUE, ...) {
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
-    warning("subnet.id given as numeric; converting to character: ", "Subnet-", subnet.id, sep="")
+    warning("subnet.id given as numeric; converting to character: ", 
+    		       "Subnet-", subnet.id, sep="")
   }
 
   subnet.nodes <- get.subnets(x)[[subnet.id]]
   mynet <- network[subnet.nodes, subnet.nodes]
 
-  tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, colors = FALSE, maintext = subnet.id)
+  tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, 
+      	 		 colors = FALSE, maintext = subnet.id)
 
   mynet
 
@@ -441,13 +478,13 @@ plot.subnet <- function (x, subnet.id, network, plot.names = TRUE, ...) {
 #' interaction networks. Submitted.
 #' @keywords utilities
 #' @export
-#' @examples #
-#' 
-#' #tmp <- plot.response(model, mynet, maintext = paste("Subnetwork", subnet.id))
+#' @examples 
+#' #tmp <- plot.response(model, mynet, 
+#' #  	maintext = paste("Subnetwork", subnet.id))
 #' 
 plot.response <-
-function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.type = "twopi",
-           ...) {
+function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, 
+	     plot.type = "twopi", ...) {
 
   check.bins <- function (difexp, mybreaks) {
 
@@ -522,7 +559,8 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' @param mar Figure margins.
 #' @param horiz Logical. Horizontal barplot.
 #' @param datamatrix datamatrix
-#' @param scale scale the phylotypes to unit length (only implemented for plot.mode = "matrix"
+#' @param scale scale the phylotypes to unit length (only implemented for 
+#' 	  plot.mode = "matrix"
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
@@ -533,9 +571,15 @@ function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, plot.
 #' @examples #
 #' #res <- detect.responses(D, netw)
 #' #vis <- plot.responses(res, subnet.id)
-plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...) {
+plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, 
+	                    plot.mode = "network", xaxis = TRUE, yaxis = TRUE, 
+			    plot.type = "twopi", mar = c(5, 4, 4, 2), 
+			    horiz = TRUE, datamatrix = NULL, 
+			    scale = FALSE, ...) {
 
-  # xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); horiz = TRUE; datamatrix = NULL; scale = FALSE; x <- res; nc <- 3; plot.names = TRUE; plot.mode = "pca"; main = paste("NoPCA; NoDM")
+  # xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); 
+  # horiz = TRUE; datamatrix = NULL; scale = FALSE; x <- res; nc <- 3; 
+  # plot.names = TRUE; plot.mode = "pca"; main = paste("NoPCA; NoDM")
 
   responses <- NULL
   variable <- NULL
@@ -569,7 +613,8 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
   mybreaks <- set.breaks(1, interval = .02)
   mypalette <- colorRampPalette(c("blue", "white", "red"), space = "rgb")
   
-  # compute differential expression in nodes with respect to the mean expression level for each gene
+  # compute differential expression in nodes with respect to the mean 
+  # expression level for each gene
   ctrl.state <- colMeans(datamatrix)
   centroids <- t(pars$mu)
   difexp <- apply(centroids, 2, function(x){ x - ctrl.state })
@@ -582,8 +627,10 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
   if (plot.mode == "network") {
     par(mfrow = c(ceiling(length(pars$w)/nc), nc))
     for (comp in 1:length(pars$w)) {
-      tmp <- plot.response(difexp[,comp], mynet, mybreaks, mypalette, plot.names,
-                          main = paste(subnet.id, "/Response-", comp, sep=""), plot.type = plot.type, ...)
+      tmp <- plot.response(difexp[,comp], mynet, mybreaks, mypalette, 
+      	     		   plot.names,
+                           main = paste(subnet.id, "/Response-", comp, sep=""), 
+			   plot.type = plot.type, ...)
     }
   } else if (plot.mode == "matrix" || plot.mode == "heatmap") {
 
@@ -604,7 +651,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     if (horiz) {
       tmp <- plot_matrix(t(dmat), mybreaks = mybreaks, maintext = subnet.id, xlab=NULL, ylab=NULL, palette = mypalette, xaxis = yaxis, yaxis = xaxis, mar = mar, ...)
     } else {
-      tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext = subnet.id, xlab=NULL, ylab=NULL, palette = mypalette, xaxis = xaxis, yaxis = yaxis, mar = mar, ...)
+      tmp <- plot_matrix(dmat, mybreaks = mybreaks, maintext = subnet.id, 
+      xlab=NULL, ylab=NULL, palette = mypalette, xaxis = xaxis, yaxis = yaxis, 
+      mar = mar, ...)
     }
 
   } else if (plot.mode == "boxplot.data") {
@@ -618,7 +667,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     df <- data.frame(list(responses = label, dat))
     dfm <- melt(df, id = "responses")
 
-    p <- ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) + geom_boxplot() + ggtitle(paste(subnet.id, ": response boxplot", sep = ""))
+    p <- ggplot(dfm) + aes(x = responses, y = value) + facet_wrap(~variable) 
+    p <- p + geom_boxplot() 
+    p <- p + ggtitle(paste(subnet.id, ": response boxplot", sep = ""))
 
     print(p)
 
@@ -626,7 +677,8 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 
     # FIXME: does not work
 
-    # Plot cross-bars for estimated means and 95% intervals for each response for each node
+    # Plot cross-bars for estimated means and 95% intervals for each 
+    # response for each node
     m <- get.model.parameters(x, subnet.id)
 
     # Use 1.96*std of the mean (95% quantile) for error limits
@@ -638,18 +690,24 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
     s2r <- apply(x[[subnet.id]]$qofz, 1, which.max)
 
     dat <- t(get.dat(x, subnet.id)) # samples x nodes
-    response <- factor(s2r) #factor(apply(sample2response(x, subnet.id), 1, which.max))
+    response <- factor(s2r) 
+    #factor(apply(sample2response(x, subnet.id), 1, which.max))
     df <- data.frame(dat)
     df$response <- response
     dfm <- melt(df, id.var = "response")    
 
-    ggplot(dfm) + aes(x = response, y = value, fill = response) + facet_wrap(~variable) + geom_bar(stat="identity")
+    ggplot(dfm) + aes(x = response, y = value, fill = response) + 
+    facet_wrap(~variable) + geom_bar(stat="identity")
 
     # mean and std of mean
-    df <- ddply(dfm, c("response", "variable"), function (dd) {c(mean = mean(dd$value), sd = 1.96*sd(dd$value)/sqrt(sum(x[[subnet.id]]$qofz[, dd$response])))})
+    df <- ddply(dfm, c("response", "variable"), function (dd) {
+       c(mean = mean(dd$value), 
+         sd = 1.96*sd(dd$value)/sqrt(sum(x[[subnet.id]]$qofz[, dd$response])))})
 
-    p <- qplot(response, mean, fill=variable, data=df, geom="bar", position="dodge")
-    p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), position="dodge") + theme_bw()
+    p <- qplot(response, mean, fill=variable, data=df, geom="bar", 
+      	 		 position="dodge")
+    p <- p + geom_errorbar(aes(ymax=mean+sd, ymin=mean-sd), 
+      	     		 position="dodge") + theme_bw()
 
     print(p)
 
@@ -677,7 +735,8 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 				 title = subnet.id, 
 				 pca = pca)
 					  
-      # PlotMixtureBivariate(dmat, means, sds, ws, labels = NULL, confidence = 0.95, main = "") 
+      # PlotMixtureBivariate(dmat, means, sds, ws, labels = NULL, 
+      				   confidence = 0.95, main = "") 
 
       # tmp <- plotPCA(x, subnet.id, labels = NULL, confidence = 0.95)
 
@@ -696,7 +755,9 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 #' Plot the color scale used in visualization.
 #' 
 #' 
-#' @usage \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = 0.1, two.sided = TRUE, label.start = NULL, Nlab = 3, ...)
+#' @usage \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5, 
+#'        label.step = 2, interval = 0.1, two.sided = TRUE, 
+#' 	  label.start = NULL, Nlab = 3, ...)
 #' @param x Breakpoints for the plot.
 #' @param y Color palette.
 #' @param m Breakpoints' upper limit.
@@ -717,9 +778,13 @@ plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, plot.mode =
 #'   #vis <- plot.responses(res, subnet.idx)
 #'   #plot.scale(vis$breaks, vis$palette)
 #' 
-plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, interval = .1, two.sided = TRUE, label.start = NULL, Nlab = 3, ...) {
+plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, 
+	      interval = .1, two.sided = TRUE, label.start = NULL, 
+	      Nlab = 3, ...) {
 
-  # x <- tmp$breaks; y <- tmp$palette; m = NULL; cex.axis = 1.5; label.step = 2; interval = .1; two.sided = TRUE; label.start = NULL; Nlab = 3
+  # x <- tmp$breaks; y <- tmp$palette; m = NULL; cex.axis = 1.5; 
+  # label.step = 2; interval = .1; two.sided = TRUE; 
+  # label.start = NULL; Nlab = 3
 
   if (two.sided) {
     
