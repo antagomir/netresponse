@@ -36,7 +36,8 @@ two-dimensional case the original coordinates are used.}
 
 \item{datamatrix}{datamatrix}
 
-\item{scale}{scale the phylotypes to unit length (only implemented for plot.mode = "matrix"}
+\item{scale}{scale the phylotypes to unit length (only implemented for
+plot.mode = "matrix"}
 
 \item{...}{Further arguments for plot function.}
 }

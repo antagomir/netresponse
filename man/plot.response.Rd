@@ -31,9 +31,8 @@ Used for its side-effects.
 Plot a specific transcriptional response for a given subnetwork.
 }
 \examples{
-#
-
-#tmp <- plot.response(model, mynet, maintext = paste("Subnetwork", subnet.id))
+#tmp <- plot.response(model, mynet,
+#  	maintext = paste("Subnetwork", subnet.id))
 }
 \author{
 Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
