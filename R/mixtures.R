@@ -49,10 +49,6 @@
 
 mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01, vdp.threshold = 1.0e-5, initial.responses = 1, ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE, min.responses = 1, ...) {
 
-  # x <- D; mixture.method = "vdp"; max.responses = 10; implicit.noise = 0; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi = 0.01; vdp.threshold = 1.0e-5; initial.responses = 1; ite = Inf; speedup = TRUE; bic.threshold = 0; pca.basis = FALSE
-
-  # x = mat; mixture.method = params$mixture.method; max.responses = params$max.responses; implicit.noise = params$implicit.noise; prior.alpha = params$prior.alpha; prior.alphaKsi = params$prior.alphaKsi; prior.betaKsi = params$prior.betaKsi; vdp.threshold = params$vdp.threshold; initial.responses = params$initial.responses; ite = params$ite; speeup = params$speedup; bic.threshold = params$bic.threshold; pca.basis = params$pca.basis
-
   # Present data in PCA space to cope with diagonality of the covariances
   if (pca.basis) {    
     if (nrow(x) > ncol(x)) {
