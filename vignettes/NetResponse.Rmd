@@ -1,0 +1,217 @@
+# netresponse - probabilistic tools for functional network analysis
+
+For bug reports and maintainer contact details, see the [README](../README.md) file
+
+## Background 
+
+Condition-specific network activation is characteristic for cellular
+systems and other real-world interaction networks. If measurements of
+network states are available across a versatile set of conditions or
+time points, it becomes possible to construct a global view of network
+activation patterns. Different parts of the network respond to
+different conditions, and in different ways. Systematic, data-driven
+identification of these responses will help to obtain a holistic view
+of network activity
+[[1](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short)-[2](http://lib.tkk.fi/Diss/2010/isbn9789526033686/)]. This
+package provides robust probabilistic algorithms for functional
+network analysis
+[[1](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short),
+[3](http://www.biomedcentral.com/1752-0509/4/4)].
+
+The methods are based on nonparametric probabilistic modeling and
+variational learning, and provide general exploratory tools to
+investigate the structure
+([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
+context-specific behavior
+([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short))
+of interaction networks.  ICMg is used to identify community structure
+in interaction networks; NetResponse detects and characterizes
+subnetworks that exhibit context-specific activation patterns across
+versatile collections of functional measurements, such as gene
+expression data. The implementations are partially based on the
+agglomerative independent variable group analysis
+([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
+and variational Dirichlet process Gaussian mixture models ([Kurihara
+et
+al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The
+tools are particularly useful for global exploratory analysis of
+genome-wide interaction networks and versatile collections of gene
+expression data, and in general to discover subnetworks with
+alternative states.
+
+
+## Usage examples
+
+Examples on running NetResponse algorithm and visualizing the
+results. The algorithm combines network and functional information to
+detect coherent subnetworks that reveal distinct activation modes
+across conditions. 
+
+```{r NetResponse1, warning=FALSE, message=FALSE}
+library(netresponse)
+
+# Generate simulated data
+res <- generate.toydata(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
+
+D <- res$data
+component.means <- res$means
+component.sds   <- res$sds
+sample2comp     <- res$sample2comp
+
+# Use fully connected network
+network <- matrix(rep(1, 9), nrow = 3) 
+
+# Fit NetResponse model
+# Various network formats are supported, see help(detect.responses) for
+# details. With large data sets, consider the 'speedup' option.
+set.seed(4243)
+res <- detect.responses(D, network, mixture.method = "vdp", pca.basis = TRUE)
+
+# List subnets (each is a list of nodes)
+subnet.id <- names(get.subnets(res))[[1]]
+```
+
+### PCA visualization
+
+```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show="hide"}
+library(ggplot2)
+vis <- plot.responses(res, subnet.id, plot.mode = "pca")
+```
+
+```{r NetResponse2b, fig.width=6, fig.height=5, warning=FALSE, message=FALSE}
+# Modify the resulting ggplot2 object to enhance visualization
+p <- vis$p # Pick the ggplot2 object from results
+p <- p + geom_point(size = 3) # Modify point size
+print(p) # Plot
+```
+
+
+### Network visualization
+
+```{r NetResponse3, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "network")
+```
+
+### Heatmap visualization
+
+```{r NetResponse4, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "heatmap")
+```
+
+### Boxplot visualization
+
+```{r NetResponse5, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+vis <- plot.responses(res, subnet.id, plot.mode = "boxplot.data")
+```
+
+See also mode = "response.barplot" 
+
+
+### Color scale
+
+```{r NetResponse7, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
+plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
+```
+
+
+### Cluster assignments
+
+The sample-response assignments from the mixture model are soft
+ie. defined as continuous probabilities. Retrieve the hard clustering
+ie. list of samples for each response, response for each sample, based
+the highest probability:
+
+```{r NetResponse8, warning=FALSE, message=FALSE}
+subnet.id <- 'Subnet-1'
+
+# Sample - response probabilities (soft cluster assignment)
+response.probs <- sample2response(res, subnet.id)
+tail(round(response.probs, 6))
+
+# Sample - response hard assignments
+hard.clusters <- response2sample(res, subnet.id)
+print(hard.clusters)
+```
+
+Retrieve model parameters for a given subnetwork (Gaussian mixture
+means, covariance diagonal, and component weights; see
+help(get.model.parameters) for details):
+
+```{r NetResponse9, warning=FALSE, message=FALSE}
+params <- get.model.parameters(res, subnet.id) 
+names(params)
+```
+
+## Nonparametric Gaussian mixture models
+
+Nonparametric Gaussian mixtures with variational Dirichlet processes
+based on implementations by [Kurihara et
+al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)
+and [Honkela et
+al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659).
+
+```{r vdp, warning=FALSE, message=FALSE}
+# Generate 2-dimensional simulated data with 3 clusters
+res <- generate.toydata(Dim = 2, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
+
+D <- res$data
+real.means <- res$means
+real.sds   <- res$sds
+real.sample2comp     <- res$sample2comp
+
+# Infinite Gaussian mixture model with       
+# Variational Dirichlet Process approximation       
+mixt <- vdp.mixt( D )
+            
+# Centroids of the detected Gaussian components       
+estimated.means <- mixt$posterior$centroids
+
+# The colors denote the known clusters
+# The blue ball denotes the original (known) cluster centroids and
+# the triangle denotes the estimated centroids
+plot(D, col = real.sample2comp, pch = 1)
+points(real.means, col = "blue", pch = 16, cex = 2)
+points(estimated.means, col = "blue", pch = 17, cex = 2)
+            
+# Hard mixture component assignment for each sample
+estimated.sample2comp <- apply(mixt$posterior$qOFz, 1, which.max)
+
+# Compare known and estimated mixture components
+# (note that cluster indices may have switched due to unidentifiability)
+# nearly all samples have one-to-one match between the real and estimated 
+# clusters
+head(table(estimated.sample2comp, real.sample2comp))
+```     
+
+
+## Interaction Component Model for Gene Modules
+
+Interaction Component Model ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) can be used to find functional gene
+modules from either protein interaction data or from combinations of
+protein interaction and gene expression data. Run ICMg and cluster the
+nodes:
+
+```{r ICMg, warning=FALSE, message=FALSE, results="hide"}
+library(netresponse)
+data(osmo)
+res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
+res$clustering <- apply(res$comp.memb, 2, which.max)
+```
+
+
+### Citing NetResponse
+
+Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
+
+```{r cite, warning=FALSE, message=FALSE}
+citation("netresponse")
+```
+
+### Version information
+
+This document was written using:
+
+```{r version, warning=FALSE, message=FALSE}
+sessionInfo()
+```
