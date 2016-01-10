@@ -1,14 +1,5 @@
-#' Dna damage data set (PPI and expression)
-#' 
-#' A combined yeast data set with protein-protein interactions and gene
-#' expression (dna damage). Gene expression profiles are transformed into links
-#' by computing a Pearson correlation for all pairs of genes and treating all
-#' correlations above 0.85 as additional links.
-#' 
-#' Number of genes: 1823, number of interactions: 12382, number of gene
-#' expression observations: 52, number of total links with PPI and expression
-#' links: 15547.
-#' 
+#' @title Dna damage data set (PPI and expression) 
+#' @description A combined yeast data set with protein-protein interactions and gene expression (dna damage). Gene expression profiles are transformed into links by computing a Pearson correlation for all pairs of genes and treating all correlations above 0.85 as additional links. Number of genes: 1823, number of interactions: 12382, number of gene expression observations: 52, number of total links with PPI and expression links: 15547.
 #' @name dna
 #' @docType data
 #' @usage data(dna)
@@ -32,18 +23,12 @@
 #' @source PPI data pooled from yeast data sets of [1] and [2]. Dna damage
 #' expression set of [3].
 #' @keywords datasets
-#' @examples
-#' 
-#' data(dna)
-#' 
+#' @examples data(dna)
 NULL
 
 
-#' Class "NetResponseModel"
-#' 
-#' A NetResponse model.
-#' 
-#' 
+#' @title Class "NetResponseModel"
+#' @description A NetResponse model.
 #' @name NetResponseModel-class
 #' @aliases NetResponseModel-class [[,NetResponseModel-method show,NetResponseModel-method 
 #' @docType class
@@ -51,20 +36,15 @@ NULL
 #' function.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords classes
-#' @examples
-#' showClass("NetResponseModel")
+#' @examples showClass("NetResponseModel")
 NULL
 
 
-#' NetResponse: Global modeling of transcriptional responses in interaction
-#' networks
-#' 
-#' Global modeling of transcriptional responses in interaction networks.
-#' 
+#' @title NetResponse: Global modeling of transcriptional responses in interaction networks
+#' @description Global modeling of transcriptional responses in interaction networks.
 #' \tabular{ll}{ Package: \tab netresponse\cr Type: \tab Package\cr Version:
 #' \tab See sessionInfo() or DESCRIPTION file\cr Date: \tab 2011-02-03\cr
 #' License: \tab GNU GPL >=2\cr LazyLoad: \tab yes\cr }
-#' 
 #' @name netresponse-package
 #' @aliases netresponse-package netresponse
 #' @docType package
@@ -76,29 +56,23 @@ NULL
 #' for details.
 #' @keywords package
 #' @examples
-#' 
 #' # Define parameters for toy data
 #' Ns <- 200  # number of samples (conditions)
 #' Nf <- 10   # number of features (nodes)
 #' feature.names <- paste("feat", seq(Nf), sep="")
 #' sample.names  <- paste("sample", seq(Ns), sep="") 
-#' 
 #' # random seed
 #' set.seed( 123 )
-#' 
 #' # Random network
 #' netw <- pmax(array(sign(rnorm(Nf^2)), dim = c(Nf, Nf)), 0)
 #' # in pathway analysis nodes correspond to genes
 #' rownames(netw) <- colnames(netw) <- feature.names
-#' 
 #' # Random responses of the nodes across conditions 
 #' D <- array(rnorm(Ns*Nf), dim = c(Ns,Nf), dimnames = list(sample.names, feature.names))
 #' D[1:100, 4:6]  <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 1:3)}))
 #' D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
-#' 
 #' # Calculate the model
 #' model <- detect.responses(D, netw)
-#' 
 #' # Subnets (each is a list of nodes)
 #' get.subnets( model )
 #' 
@@ -108,20 +82,10 @@ NULL
 #' subnet.id <- names(model@@subnets)[[1]]
 #' m <- get.model.parameters(model, subnet.id) 
 #' print(m)
-#' 
 NULL
 
-#' Osmoshock data set (PPI and expression)
-#' 
-#' A combined yeast data set with protein-protein interactions and gene
-#' expression (osmotick shock response). Gene expression profiles are
-#' transformed into links by computing a Pearson correlation for all pairs of
-#' genes and treating all correlations above 0.85 as additional links.
-#' 
-#' Number of genes: 1711, number of interactions: 10250, number of gene
-#' expression observations: 133, number of total links with PPI and expression
-#' links: 14256.
-#' 
+#' @title Osmoshock data set (PPI and expression)
+#' @description A combined yeast data set with protein-protein interactions and gene expression (osmotick shock response). Gene expression profiles are transformed into links by computing a Pearson correlation for all pairs of genes and treating all correlations above 0.85 as additional links. Number of genes: 1711, number of interactions: 10250, number of gene expression observations: 133, number of total links with PPI and expression links: 14256.
 #' @name osmo
 #' @docType data
 #' @usage data(osmo)
@@ -144,24 +108,17 @@ NULL
 #' @source PPI data pooled from yeast data sets of [1] and [2]. Dna damage
 #' expression set of [3].
 #' @keywords datasets
-#' @examples
-#' 
-#' data(osmo)
-#' 
+#' @examples data(osmo)
 NULL
 
 
 
-#' toydata
-#' 
-#' Toy data for NetResponse examples.
-#' 
-#' 
+#' @title toydata
+#' @description Toy data for NetResponse examples.
 #' @name toydata
 #' @docType data
 #' @usage data(toydata)
 #' @format
-#' 
 #' Toy data: a list with three elements:
 #' 
 #' emat: Data matrix (samples x features). This contains the same features that
@@ -179,13 +136,11 @@ NULL
 #' in interaction networks. Bioinformatics (2010).
 #' @keywords misc
 #' @examples
-#' 
 #'   data(toydata)
 #'   D    <- toydata$emat   # Response matrix (samples x features)
 #'   netw <- toydata$netw   # Network between the features
 #'   model <- toydata$model # Pre-calculated NetResponseModel obtained with
 #'                          # model <- detect.responses(D, netw)
-#' 
 NULL
 
 

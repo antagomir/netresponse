@@ -19,4 +19,4 @@ citEntry(entry="article",
                sep=" ")
          )
 
-citFooter("For ICMg functionality, please cite additionally the references listed in help(ICMg.combined.sampler). Thanks for Olli-Pekka Huovilainen and Antonio Gusmao for contributions to the R/C implementation of the netresponse algorithm.")
+citFooter("For ICMg functionality, please cite additionally the references listed in help(ICMg.combined.sampler). Thanks for Olli-Pekka Huovilainen and Antonio Gusmao for contributions to the R/C implementation of the netresponse algorithm and Juuso Parkkinen for ICMg.")
