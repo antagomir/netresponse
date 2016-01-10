@@ -17,10 +17,8 @@
 # Seppa, Harri Valpola, and Paul Wagner.
 
 
-#' pick.model.pairs
-#' 
-#' Mainly for internal use. Calculate joint model for each node pair
-#' 
+#' @title Pick model pairs
+#' @description Mainly for internal use. Calculate joint model for each node pair
 #' @param network network
 #' @param network.nodes network.nodes
 #' @param node.models node.models

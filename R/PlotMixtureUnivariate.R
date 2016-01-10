@@ -1,9 +1,5 @@
-#' PlotMixtureUnivariate
-#' 
-#' Visualize data, centroids and stds for a given univariate
-#' Gaussian mixture model with PCA.
-#'
-#' Arguments:
+#' @title Plot univariate mixtures
+#' @description Visualize data, centroids and stds for a given univariate Gaussian mixture model with PCA.
 #' @param x data vector
 #' @param means mode centroids
 #' @param sds mode standard deviations
@@ -16,12 +12,8 @@
 #' @param density.color Color for density lines
 #' @param cluster.assignments Vector of cluster indices, indicating cluster for each data point
 #' @param ... Further arguments for plot function.
-#'
-#' Return:
 #' @return Used for its side-effects
-#'
 #' @export
-#'
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
