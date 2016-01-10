@@ -1,20 +1,5 @@
-# Copyright (C) 2010-2013 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-#' Description: List significantly associated responses for all factors and levels in the given
-#' annotation matrix
-#' 
-#' Arguments:  
+#' @title List factor responses (minimal)
+#' @description List significantly associated responses for all factors and levels in the given annotation matrix
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #'   named by the samples
 #' @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
@@ -24,18 +9,12 @@
 #' @param verbose verbose 
 #' @param data data (samples x features; or a vector in univariate case) 
 #' @param rounding rounding digits 
-#'
-#' Returns:
-#' @return A list with two elements: Table listing all associations between the factor levels and
-#'   responses; multiple p-value adjustment method
+#' @return A list with two elements: Table listing all associations between the factor levels and responses; multiple p-value adjustment method
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
-
 list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
-
-  #annotation.df <- my.annot2; groupings <- groupings.listing2; method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
 
   # samples x features
   if(is.vector(data)) {
@@ -95,7 +74,7 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
-      collected.table$p.adj <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+      collected.table$p.adj <- qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
       p.adj.method <- "qvalue"
     } else {
       collected.table$p.adj <- p.adjust(collected.table$pvalue, method = "BH")

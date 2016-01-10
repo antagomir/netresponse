@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: Functional Network Analysis
-Version: 1.19.0
-Date: 2015-03-24
+Version: 1.21.11
+Date: 2016-01-09
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
@@ -15,7 +15,7 @@ Depends:
     methods,
     minet,
     mclust,
-    reshape
+    reshape2
 Imports:
     dmt,
     ggplot2,
@@ -30,3 +30,4 @@ BugReports: https://github.com/antagomir/netresponse/issues
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, Network,
     GraphAndNetwork, DifferentialExpression, Microarray,
     Transcription
+RoxygenNote: 5.0.0

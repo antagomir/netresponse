@@ -1,3 +1,4 @@
+#' @import methods
 #' @import dmt
 #' @import graph
 #' @import parallel
@@ -8,13 +9,12 @@
 #' @importFrom igraph subgraph
 #' @importFrom igraph graph.data.frame
 #' @importFrom igraph graph.edgelist
-#' @import qvalue
 #' @import mclust
-#' @import methods
 #' @importFrom plyr ddply
 #' @importFrom minet build.mim
-#' @importFrom reshape melt
+#' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 qplot
 #' @importFrom ggplot2 theme_set
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 aes
@@ -28,11 +28,11 @@
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 opts
+
 
 
 
 .onAttach <- function(lib, pkg)
 {
-   packageStartupMessage('\nnetresponse (C) 2008-2015 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse')
+   packageStartupMessage('\nnetresponse (C) 2008-2016 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse')
 }

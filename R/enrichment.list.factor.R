@@ -1,21 +1,12 @@
-#' Description: enrichment.list.factor
-#' 
-#' Orders the responses by association strength (enrichment score) to a given
-#' sample set. For instance, if the samples correspond to a particular
-#' experimental factor, this function can be used to prioritize the responses
-#' according to their association strength to this factor.
-#'  
-#' Arguments:
+#' @title enrichment.list.factor
+#' @description Orders the responses by association strength (enrichment score) to a given sample set. For instance, if the samples correspond to a particular experimental factor, this function can be used to prioritize the responses according to their association strength to this factor.
 #' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
-#' @param level.samples Measure enrichment of this sample (set) across the observed
-#'   responses.
+#' @param level.samples Measure enrichment of this sample (set) across the observed responses.
 #' @param method 'hypergeometric' measures enrichment of factor levels in this
 #'   response; 'precision' measures response purity for each factor level;
 #'   'dependency' measures logarithm of the joint density between response and
 #'   factor level vs. their marginal densities: log(P(r,s)/(P(r)P(s)))
 #' @param verbose Follow progress by intermediate messages.
-#'
-#' Returns:
 #' @return A data frame which gives a data
 #'   frame of responses ordered by enrichment score for the investigated sample.
 #'   The model, response id and enrichment score are shown. The method field
@@ -25,9 +16,9 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
+#' @importFrom qvalue qvalue
 #' @export
 #' @examples #
-#'
 enrichment.list.factor <- function (models, level.samples, method, verbose = FALSE) {
 
   # models; level.samples <- level.samples; method = method		       		       
@@ -68,9 +59,9 @@ enrichment.list.factor <- function (models, level.samples, method, verbose = FAL
         
       if (length(enr$pvalue) > 100) {
         # calculate q-values
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
       } else if (length(enr$pvalue) > 10) {
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
+        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
       } else {
 
         warning("Not enough p-values for q-value estimation")
