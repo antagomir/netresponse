@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-
-
-=======
->>>>>>> master
   ######################################################################
 
   # Before I put a sketch on paper, the whole idea is worked out
@@ -341,17 +336,10 @@ detect.responses <- function(datamatrix,
   }
 
   # FIXME: if all nodes will be combined (merging.threshold = -Inf), there will be an error. Fix.
-<<<<<<< HEAD
-  #'  costs: cost function values at each state
-  #'  moves: indices of groups joined at each state in its columns
-  #'  groupings: groupings at each level of the hierarchy
-  #'  models: compressed representations of the models from each step
-=======
   #  costs: cost function values at each state
   #  moves: indices of groups joined at each state in its columns
   #  groupings: groupings at each level of the hierarchy
   #  models: compressed representations of the models from each step
->>>>>>> master
 
   model <- new("NetResponseModel",
       moves = matrix(move.cost.hist, 3),

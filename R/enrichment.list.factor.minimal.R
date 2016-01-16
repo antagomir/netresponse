@@ -1,16 +1,5 @@
-<<<<<<< HEAD
-#' Description: enrichment.list.factor
-#' 
-#' Orders the responses by association strength (enrichment score) to a given
-#' sample set. For instance, if the samples correspond to a particular
-#' experimental factor, this function can be used to prioritize the responses
-#' according to their association strength to this factor.
-#'  
-#' Arguments:
-=======
 #' @title enrichment.list.factor
 #' @description Orders the responses by association strength (enrichment score) to a given sample set. For instance, if the samples correspond to a particular experimental factor, this function can be used to prioritize the responses according to their association strength to this factor.
->>>>>>> master
 #' @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz.
 #' @param method 'hypergeometric' measures enrichment of factor levels in this
 #'   response; 'precision' measures response purity for each factor level;
@@ -19,11 +8,6 @@
 #' @param verbose Follow progress by intermediate messages.
 #' @param annotation.vector annotation vector
 #' @param level level
-<<<<<<< HEAD
-#' 
-#' Returns:
-=======
->>>>>>> master
 #' @return A data frame which gives a data
 #'   frame of responses ordered by enrichment score for the investigated sample.
 #'   The model, response id and enrichment score are shown. The method field
@@ -33,15 +17,9 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
-<<<<<<< HEAD
-#' @export
-#' @examples #
-#'
-=======
 #' @importFrom qvalue qvalue
 #' @export
 #' @examples #
->>>>>>> master
 enrichment.list.factor.minimal <- function (groupings, method, verbose = FALSE, annotation.vector, level) {
 
   # groupings, level.samples, method = method
@@ -82,15 +60,9 @@ enrichment.list.factor.minimal <- function (groupings, method, verbose = FALSE, 
         
       if (length(enr$pvalue) > 100) {
         # calculate q-values
-<<<<<<< HEAD
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
-      } else if (length(enr$pvalue) > 10) {
-        enr$qvalue <- qvalue::qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
-=======
         enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
       } else if (length(enr$pvalue) > 10) {
         enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
->>>>>>> master
       } else {
 
         warning("Not enough p-values for q-value estimation")

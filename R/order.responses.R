@@ -15,18 +15,8 @@
 #}
 
 
-<<<<<<< HEAD
-#' order.responses
-#' 
-#' Orders the responses by association strength (enrichment score) to a given
-#' sample set. For instance, if the samples correspond to a particular
-#' experimental factor, this function can be used to prioritize the responses
-#' according to their association strength to this factor.
-#'  
-=======
 #' @title order.responses
 #' @description Orders the responses by association strength (enrichment score) to a given sample set. For instance, if the samples correspond to a particular experimental factor, this function can be used to prioritize the responses according to their association strength to this factor.
->>>>>>> master
 #' @param models List of models. Each model should have a sample-cluster assignment matrix qofz.
 #' @param sample Measure enrichment of this sample (set) across the observed
 #'   responses.
@@ -40,10 +30,6 @@
 #'   By default, use all subnets.
 #' @param verbose Follow progress by intermediate messages.
 #' @param data data (samples x features; or a vector in univariate case)
-<<<<<<< HEAD
-#'
-=======
->>>>>>> master
 #' @return A data frame with elements 'ordered.responses' which gives a data
 #'   frame of responses ordered by enrichment score for the investigated sample.
 #'   The subnetwork, response id and enrichment score are shown. 
@@ -55,10 +41,7 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse") for citation details.
 #' @keywords utilities
-<<<<<<< HEAD
-=======
 #' @importFrom qvalue qvalue
->>>>>>> master
 #' @export
 #' @examples #
 #' # - for given sample/s (factor level), 
@@ -94,14 +77,8 @@ order.responses <- function (models, sample, method = "hypergeometric",
 
 }
 			    
-<<<<<<< HEAD
-
-#' List responses with significant associations to a given sample group.
-#' 
-=======
 #' @title Listing significant responses
 #' @description List responses with significant associations to a given sample group.
->>>>>>> master
 #' @param model NetResponseModel object.
 #' @param sample User-specified samples group for which the enrichments are
 #' calculated. For instance, an annotation category.

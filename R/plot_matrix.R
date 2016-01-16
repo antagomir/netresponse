@@ -1,15 +1,5 @@
-<<<<<<< HEAD
-#' Visualize a matrix with one or two-way color scale. 
-#' TODO: one-way color scale
-#'
-#' Fast investigation of matrix objects; standard visualization choices are 
-#' made automatically; fast and easy-to-use but does not necessarily provide 
-#' optimal visualization.
-#'
-=======
 #' @title Visualize a matrix with one or two-way color scale. 
 #' @description Fast investigation of matrix objects; standard visualization choices are made automatically; fast and easy-to-use but does not necessarily provide optimal visualization.
->>>>>>> master
 #' @param mat matrix
 #' @param type String. Specifies visualization type. Options: 'oneway' 
 #'                       (color scale ranges from white to dark red; 
@@ -17,26 +7,14 @@
 #'               'twoway' (color scale ranges from dark blue 
 #'               through white to dark red; colors can be changed 
 #'               if needed)
-<<<<<<< HEAD
-#'
 #' @param midpoint middle point for the color plot: smaller values are 
 #'              shown with blue, larger are shown with red 
 #'           in type = 'twoway'
-#'
-=======
-#' @param midpoint middle point for the color plot: smaller values are 
-#'              shown with blue, larger are shown with red 
-#'           in type = 'twoway'
->>>>>>> master
 #' @param palette Optional. Color palette.
 #' @param colors Optional. Colors.
 #' @param col.breaks breakpoints for the color palette
 #' @param interval interval for palette color switches
-<<<<<<< HEAD
-#' @param plot.axes String. Indicates whether to plot 
-=======
 #' @param plot_axes String. Indicates whether to plot 
->>>>>>> master
 #'               x-axis ('x'), y-axis ('y'), or both ('both').
 #' @param row.tick interval for plotting row axis texts
 #' @param col.tick interval for plotting column axis texts
@@ -46,35 +24,19 @@
 #' @param ylab optional y axis labels
 #' @param limit.trunc color scale limit breakpoint
 #' @param mar image margins
-<<<<<<< HEAD
-#' @param ... optional parameters to be passed to function 'image', 
-#'           see help(image) for further details
-#' @return A list with the color palette (colors), 
-#'        color breakpoints (breaks), and palette function (palette.function)
-#' @export
-#' 
-=======
 #' @param ... optional parameters to be passed to function 'image', see help(image) for further details
 #' @return A list with the color palette (colors), 
 #'        color breakpoints (breaks), and palette function (palette.function)
 #' @export
->>>>>>> master
 #' @references See citation('microbiome') 
 #' @author Leo Lahti \email{microbiome-admin@@googlegroups.com}
 #' @examples 
 #'   mat <- rbind(c(1,2,3,4,5), c(1, 3, 1), c(4,2,2))
 #'   plot_matrix(mat, 'twoway', midpoint = 3) 
 #' @keywords utilities
-<<<<<<< HEAD
-
-plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL, 
-                       colors = NULL, 
-    col.breaks = NULL, interval = 0.1, plot.axes = "both", row.tick = 1, 
-=======
 plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL, 
                        colors = NULL, 
     col.breaks = NULL, interval = 0.1, plot_axes = "both", row.tick = 1, 
->>>>>>> master
     col.tick = 1, cex.xlab = 0.9, cex.ylab = 0.9, xlab = NULL, ylab = NULL, 
     limit.trunc = 0, mar = c(5, 4, 4, 2), ...) {
     
@@ -139,11 +101,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
           zlim = range(col.breaks), 
         breaks = col.breaks, ...)
     
-<<<<<<< HEAD
-    if (plot.axes == "both" || plot.axes == TRUE) {
-=======
     if (plot_axes == "both" || plot_axes == TRUE) {
->>>>>>> master
 
         if (is.null(xlab)) {
             v <- seq(1, nsamples, col.tick)  # take every nth index
@@ -166,11 +124,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
                  cex.axis = cex.ylab, las = 2, ...)
         }
         
-<<<<<<< HEAD
-    } else if (plot.axes == "x") {
-=======
     } else if (plot_axes == "x") {
->>>>>>> master
         
         if (is.null(xlab)) {
             v <- seq(1, nsamples, col.tick)  # take every nth index
@@ -183,11 +137,7 @@ plot_matrix <- function(mat, type = "twoway", midpoint = 0, palette = NULL,
                 las = 2)
         }
         
-<<<<<<< HEAD
-    } else if (plot.axes == "y") {
-=======
     } else if (plot_axes == "y") {
->>>>>>> master
         
         if (is.null(ylab)) {
             v <- seq(1, nfeats, row.tick)  # take every nth index

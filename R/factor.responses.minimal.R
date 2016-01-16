@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Copyright (C) 2010-2013 Leo Lahti
-=======
 # Copyright (C) 2010-2016 Leo Lahti
->>>>>>> master
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,21 +11,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-<<<<<<< HEAD
-
-#' Description: List responses for each level of the given factor
-#' 
-#' Arguments:
-#'   @param annotation.vector annotation vector with discrete factor levels, and named by the samples
-#'   @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
-#'   @param method method for enrichment calculation
-#'   @param min.size minimum sample size for a response 
-#'   @param data data (samples x features; or a vector in univariate case)
-#'
-#' Returns:
-#'   @return List with each element corresponding to one factor level and listing the responses according to association strength
-#'            
-=======
 #' @title Factor responses (minimal)
 #' @description List responses for each level of the given factor
 #' @param annotation.vector annotation vector with discrete factor levels, and named by the samples
@@ -38,7 +19,6 @@
 #' @param min.size minimum sample size for a response 
 #' @param data data (samples x features; or a vector in univariate case)
 #' @return List with each element corresponding to one factor level and listing the responses according to association strength
->>>>>>> master
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export

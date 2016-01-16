@@ -1,19 +1,5 @@
-<<<<<<< HEAD
-# FIXME: make general plot.associations function
-
-#' Association strength between category labels and responses.
-#' 
-#' Plot association strength between user-defined category labels and 
-#' responses in a selected subnetwork.
-#' 
-#' Associations are showm in terms -log10(p) enrichment values for the
-#' annotation categories for the responses within the specified subnetwork. No
-#' correction for multiple testing.
-#' 
-=======
 #' @title Association strength between category labels and responses.
 #' @description Plot association strength between user-defined category labels and responses in a selected subnetwork. Associations are showm in terms -log10(p) enrichment values for the annotation categories for the responses within the specified subnetwork. No correction for multiple testing. 
->>>>>>> master
 #' @param x NetResponseModel object
 #' @param subnet.id Subnetwork.
 #' @param labels Factor. Labels for the data samples. Name by samples, or
@@ -21,17 +7,10 @@
 #' @param method Method to calculate association strength.
 #' @param mode group.by.responses or group.by.classes: indicate barplot
 #' grouping type.
-<<<<<<< HEAD
-#' @param ... Other arguments to be passed for plot.
-#' @return Used for side effect (plotting).
-#' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @seealso plot.responses
-=======
 #' @param ... Other arguments to be passed for plot_
 #' @return Used for side effect (plotting).
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @seealso plot_responses
->>>>>>> master
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @examples #
@@ -81,19 +60,10 @@ plot_associations <- function (x, subnet.id, labels,
 
 
 
-<<<<<<< HEAD
-#' plotPCA
-#' 
-#' Visualize data, centroids and response confidence intervals for a given
-#' subnetwork with PCA. Optionally, color the samples according to annotations
-#' labels.
-#' 
-=======
 #' @title plotPCA
 #' @description Visualize data, centroids and response confidence intervals for a given
 #' subnetwork with PCA. Optionally, color the samples according to annotations
 #' labels.
->>>>>>> master
 #' @param x NetResponseModel object. Output from the detect.responses function.
 #' @param subnet.id Subnetwork id. Either character as 'Subnetwork-2' or
 #' numeric as 2, which is then converted to character.
@@ -176,19 +146,10 @@ plotPCA <- function (x, subnet.id, labels = NULL, confidence = 0.95, ...) {
 
 
 
-<<<<<<< HEAD
-#' PlotMixtureBivariate
-#' 
-#' Visualize data, centroids and response confidence intervals for a given
-#' Gaussian mixture model in two-dimensional (bivariate) case. Optionally, 
-#' color the samples according to annotations labels.
-#' 
-=======
 #' @title PlotMixtureBivariate
 #' @description Visualize data, centroids and response confidence intervals for a given
 #' Gaussian mixture model in two-dimensional (bivariate) case. Optionally, 
 #' color the samples according to annotations labels.
->>>>>>> master
 #' @param x data matrix (samples x features)
 #' @param means mode centroids (modes x features)
 #' @param sds mode standard deviations, assuming diagonal covariance 
@@ -245,19 +206,10 @@ PlotMixtureBivariate <- function (x, means, sds, ws, labels = NULL,
   }
 }
 
-<<<<<<< HEAD
-#' PlotMixtureMultivariate
-#' 
-#' Visualize data, centroids and response confidence intervals for a given
-#' Gaussian mixture model with PCA. Optionally, color the samples according 
-#' to annotations labels.
-#' 
-=======
 #' @title PlotMixtureMultivariate
 #' @description Visualize data, centroids and response confidence intervals for a given
 #' Gaussian mixture model with PCA. Optionally, color the samples according 
 #' to annotations labels.
->>>>>>> master
 #' @param x data matrix (samples x features)
 #' @param means mode centroids (modes x features)
 #' @param sds mode standard deviations, assuming diagonal covariance matrices 
@@ -360,47 +312,22 @@ PlotMixtureMultivariate <- function (x, means, sds, ws, labels = NULL,
 
 }
 
-<<<<<<< HEAD
-#' Plot observed data.
-#' 
-#' Plotting tool for measurement data.
-#' 
-#' Produces boxplot for each feature in each annotation category for the
-#' selected subnetwork.
-#'
-#' @usage \method{plot}{data}(x, subnet.id, labels, ...)
-#'
-=======
 #' @title Plot observed data. 
 #' @description Plotting tool for measurement data.
 #' Produces boxplot for each feature in each annotation category for the
 #' selected subnetwork.
->>>>>>> master
 #' @param x NetResponseModel object.
 #' @param subnet.id Specify the subnetwork.
 #' @param labels Annotation categories.
 #' @param ... Further arguments for plot function.
-<<<<<<< HEAD
-#'
-#' Return:
-#' @return ggplot2 plot object
-#' @author Leo Lahti <leo.lahti@@iki.fi>
-#' @seealso plot.responses
-=======
 #' @return ggplot2 plot object
 #' @author Leo Lahti <leo.lahti@@iki.fi>
 #' @seealso plot_responses
->>>>>>> master
 #' @references See citation("netresponse")
 #' @keywords utilities
 #' @export
 #' @examples #
-<<<<<<< HEAD
-#' 
-plot.data <- function (x, subnet.id, labels, ...) {
-=======
 plot_data <- function (x, subnet.id, labels, ...) {
->>>>>>> master
 
     # ggplot2 boxplots for each user-defined sample category (listed in labels)
     dat <- t(get.dat(x, subnet.id)) # samples x nodes
@@ -416,47 +343,23 @@ plot_data <- function (x, subnet.id, labels, ...) {
 
 
 
-<<<<<<< HEAD
-#' plot.expression
-#' 
-#' Plot expression matrix in color scale. For one-channel data; plot expression
-=======
 #' @title plot_expression
 #' @description Plot expression matrix in color scale. For one-channel data; plot expression
->>>>>>> master
 #' of each gene relative to its mean expression level over all samples. Blue
 #' indicates decreased expression and red indicates increased expression.
 #' Brightness of the color indicates magnitude of the change. Black denotes no
 #' change.
-<<<<<<< HEAD
-#' 
-#' 
-#' @usage \method{plot}{expression}(x, maintext, ...)
-=======
->>>>>>> master
 #' @param x samples x features matrix
 #' @param maintext main title
 #' @param ... optional arguments
 #' @return Used for its side effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
-<<<<<<< HEAD
-#' @seealso \code{\link{plot.scale}}
-#' @references See citation("netresponse").
-#' @keywords utilities
-#' @export
-#' @examples #
-#' 
-#' #plot.expression(x)
-#' 
-plot.expression <- function (x, maintext, ...) { # was: plot.matrix
-=======
 #' @seealso \code{\link{plot_scale}}
 #' @references See citation("netresponse").
 #' @keywords utilities
 #' @export
 #' @examples #plot_expression(x)
 plot_expression <- function (x, maintext, ...) { # was: plot_matrix
->>>>>>> master
 		  
   # set color breakpoints and palette
   mybreaks <- set.breaks(1, interval = .02)
@@ -473,25 +376,12 @@ plot_expression <- function (x, maintext, ...) { # was: plot_matrix
 }
 
 
-<<<<<<< HEAD
-#' plot.subnet
-#' 
-#' Plot the given subnetwork.
-#' 
-#' 
-#' @usage \method{plot}{subnet}(x, subnet.id, network, plot.names = TRUE, ...)
-#' @param x Result from NetResponse (detect.responses function).
-#' @param subnet.id Subnet id.
-#' @param network Original network used in the modelling.
-#' @param plot.names Plot node names (TRUE) or indices (FALSE).
-=======
 #' @title plot_subnet
 #' @description Plot the given subnetwork.
 #' @param x Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet id.
 #' @param network Original network used in the modelling.
 #' @param plot_names Plot node names (TRUE) or indices (FALSE).
->>>>>>> master
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects. Returns a matrix that describes the
 #' investigated subnetwork.
@@ -502,17 +392,9 @@ plot_expression <- function (x, maintext, ...) { # was: plot_matrix
 #' @keywords utilities
 #' @export
 #' @examples #
-<<<<<<< HEAD
-#' 
-#' # res <- detect.responses(D, netw, verbose = FALSE)
-#' # net <- plot.subnet(res, subnet.idx = 1)
-#' 
-plot.subnet <- function (x, subnet.id, network, plot.names = TRUE, ...) {
-=======
 #' # res <- detect.responses(D, netw, verbose = FALSE)
 #' # net <- plot_subnet(res, subnet.idx = 1)
 plot_subnet <- function (x, subnet.id, network, plot_names = TRUE, ...) {
->>>>>>> master
 
   if (is.numeric(subnet.id)) {
     subnet.id <- paste("Subnet", subnet.id, sep = "-")
@@ -523,11 +405,7 @@ plot_subnet <- function (x, subnet.id, network, plot_names = TRUE, ...) {
   subnet.nodes <- get.subnets(x)[[subnet.id]]
   mynet <- network[subnet.nodes, subnet.nodes]
 
-<<<<<<< HEAD
-  tmp <- plot.response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, 
-=======
   tmp <- plot_response(x = NULL, mynet, mybreaks = NULL, mypalette = NULL, 
->>>>>>> master
       	 		 colors = FALSE, maintext = subnet.id)
 
   mynet
@@ -542,22 +420,6 @@ plot_subnet <- function (x, subnet.id, network, plot_names = TRUE, ...) {
 
 
 
-<<<<<<< HEAD
-#' plot.response
-#' 
-#' Plot a specific transcriptional response for a given subnetwork.
-#' 
-#' 
-#' @usage \method{plot}{response}(x, mynet, mybreaks, mypalette, plot.names =
-#' TRUE, colors = TRUE, plot.type = "twopi", ...)
-#' @param x A numerical vector, or NULL.
-#' @param mynet Binary matrix specifying the interactions between nodes.
-#' @param mybreaks Specify breakpoints for color plot.
-#' @param mypalette Specify palette for color plot.
-#' @param plot.names Plot node names (TRUE) or indices (FALSE).
-#' @param colors Plot colors. Logical.
-#' @param plot.type Network plot mode. For instance, 'neato' or 'twopi'.
-=======
 #' @title plot_response
 #' @description Plot a specific transcriptional response for a given subnetwork.
 #' TRUE, colors = TRUE, plot_type = "twopi", ...)
@@ -568,7 +430,6 @@ plot_subnet <- function (x, subnet.id, network, plot_names = TRUE, ...) {
 #' @param plot_names Plot node names (TRUE) or indices (FALSE).
 #' @param colors Plot colors. Logical.
 #' @param plot_type Network plot mode. For instance, 'neato' or 'twopi'.
->>>>>>> master
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
@@ -578,19 +439,10 @@ plot_subnet <- function (x, subnet.id, network, plot_names = TRUE, ...) {
 #' @keywords utilities
 #' @export
 #' @examples 
-<<<<<<< HEAD
-#' #tmp <- plot.response(model, mynet, 
-#' #  	maintext = paste("Subnetwork", subnet.id))
-#' 
-plot.response <-
-function (x, mynet, mybreaks, mypalette, plot.names = TRUE, colors = TRUE, 
-	     plot.type = "twopi", ...) {
-=======
 #' #tmp <- plot_response(model, mynet, 
 #' #  	maintext = paste("Subnetwork", subnet.id))
 plot_response <- function (x, mynet, mybreaks, mypalette, plot_names = TRUE, colors = TRUE, 
 	     plot_type = "twopi", ...) {
->>>>>>> master
 
   check.bins <- function (difexp, mybreaks) {
 
@@ -622,11 +474,7 @@ plot_response <- function (x, mynet, mybreaks, mypalette, plot_names = TRUE, col
    names(nAttrs$fillcolor) <- rownames(mynet)
 
    # add node names for all nodes
-<<<<<<< HEAD
-   if (plot.names) {
-=======
    if (plot_names) {
->>>>>>> master
      nodenames <- rownames(mynet)
    } else {
      nodenames <- rep("", nrow(mynet))
@@ -637,11 +485,7 @@ plot_response <- function (x, mynet, mybreaks, mypalette, plot_names = TRUE, col
 
    myg <- as(new("graphAM", mynet, "undirected"), "graphNEL")
    
-<<<<<<< HEAD
-   plot(myg, y = plot.type, nodeAttrs = nAttrs, ...)
-=======
    plot(myg, y = plot_type, nodeAttrs = nAttrs, ...)
->>>>>>> master
 
  }
 
@@ -649,52 +493,23 @@ plot_response <- function (x, mynet, mybreaks, mypalette, plot_names = TRUE, col
 
 
 
-<<<<<<< HEAD
-#' plot.responses
-#' 
-#' Plot the detected transcriptional responses for a given subnetwork.
-#' 
-#' @usage \method{plot}{responses}(x, subnet.id, nc = 3, plot.names = TRUE,
-#' plot.mode = "network", xaxis = TRUE, yaxis = TRUE, plot.type = "twopi", mar
-=======
 #' @title plot_responses
 #' @description Plot the detected transcriptional responses for a given subnetwork.
 #' plot_mode = "network", xaxis = TRUE, yaxis = TRUE, plot_type = "twopi", mar
->>>>>>> master
 #' = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...)
 #' @param x Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet id.
 #' @param nc Number of columns for an array of images.
-<<<<<<< HEAD
-#' @param plot.names Plot node names (TRUE) or indices (FALSE).
-#' @param plot.mode network: plot responses as a subnetwork graph; matrix,
-#' heatmap: plot subnetwork expression matrix. For both, expression of each
-#' gene is shown relative to the mean expression level of the gene;
-#' boxplot.data: feature-wise boxplots for hard sample-to-response assignments;
-=======
 #' @param plot_names Plot node names (TRUE) or indices (FALSE).
 #' @param plot_mode network: plot responses as a subnetwork graph; matrix,
 #' heatmap: plot subnetwork expression matrix. For both, expression of each
 #' gene is shown relative to the mean expression level of the gene;
 #' boxplot_data: feature-wise boxplots for hard sample-to-response assignments;
->>>>>>> master
 #' response.barplot: estimated response centroids as barplot including 95%
 #' confidence intervals for the means; pca: PCA projection with estimated
 #' centroids and 95% intervals. In 1-dimensional case a histogram is drawn. In
 #' two-dimensional case the original coordinates are used.
 #' @param xaxis,yaxis Logical. Plot row/column names.
-<<<<<<< HEAD
-#' @param plot.type Network plot mode. For instance, 'neato' or 'twopi'.
-#' @param mar Figure margins.
-#' @param horiz Logical. Horizontal barplot.
-#' @param datamatrix datamatrix
-#' @param scale scale the phylotypes to unit length (only implemented for 
-#' 	  plot.mode = "matrix"
-#' @param ... Further arguments for plot function.
-#' @return Used for its side-effects.
-#' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @seealso \code{\link{plot.scale}}
-=======
 #' @param plot_type Network plot mode. For instance, 'neato' or 'twopi'.
 #' @param mar Figure margins.
 #' @param horiz Logical. Horizontal barplot_
@@ -704,24 +519,11 @@ plot_response <- function (x, mynet, mybreaks, mypalette, plot_names = TRUE, col
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @seealso \code{\link{plot_scale}}
->>>>>>> master
 #' @references See citation("netresponse")
 #' @keywords utilities
 #' @export
 #' @examples #
 #' #res <- detect.responses(D, netw)
-<<<<<<< HEAD
-#' #vis <- plot.responses(res, subnet.id)
-plot.responses <- function (x, subnet.id, nc = 3, plot.names = TRUE, 
-	                    plot.mode = "network", xaxis = TRUE, yaxis = TRUE, 
-			    plot.type = "twopi", mar = c(5, 4, 4, 2), 
-			    horiz = TRUE, datamatrix = NULL, 
-			    scale = FALSE, ...) {
-
-  # xaxis = TRUE; yaxis = TRUE; plot.type = "twopi"; mar = c(5, 4, 4, 2); 
-  # horiz = TRUE; datamatrix = NULL; scale = FALSE; x <- res; nc <- 3; 
-  # plot.names = TRUE; plot.mode = "pca"; main = paste("NoPCA; NoDM")
-=======
 #' #vis <- plot_responses(res, subnet.id)
 plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE, 
 	                    plot_mode = "network", xaxis = TRUE, yaxis = TRUE, 
@@ -732,7 +534,6 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
   # xaxis = TRUE; yaxis = TRUE; plot_type = "twopi"; mar = c(5, 4, 4, 2); 
   # horiz = TRUE; datamatrix = NULL; scale = FALSE; x <- res; nc <- 3; 
   # plot_names = TRUE; plot_mode = "pca"; main = paste("NoPCA; NoDM")
->>>>>>> master
 
   responses <- NULL
   variable <- NULL
@@ -777,17 +578,6 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
   qofz <- x@models[[subnet.id]]$qofz
   modes <- apply(qofz, 1, which.max)
 
-<<<<<<< HEAD
-  if (plot.mode == "network") {
-    par(mfrow = c(ceiling(length(pars$w)/nc), nc))
-    for (comp in 1:length(pars$w)) {
-      tmp <- plot.response(difexp[,comp], mynet, mybreaks, mypalette, 
-      	     		   plot.names,
-                           main = paste(subnet.id, "/Response-", comp, sep=""), 
-			   plot.type = plot.type, ...)
-    }
-  } else if (plot.mode == "matrix" || plot.mode == "heatmap") {
-=======
   if (plot_mode == "network") {
     par(mfrow = c(ceiling(length(pars$w)/nc), nc))
     for (comp in 1:length(pars$w)) {
@@ -797,7 +587,6 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
 			   plot_type = plot_type, ...)
     }
   } else if (plot_mode == "matrix" || plot_mode == "heatmap") {
->>>>>>> master
 
     # order samples according to responses
     s2r <- apply(x[[subnet.id]]$qofz, 1, which.max) 
@@ -821,11 +610,7 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
       mar = mar, ...)
     }
 
-<<<<<<< HEAD
-  } else if (plot.mode == "boxplot.data") {
-=======
   } else if (plot_mode == "boxplot_data") {
->>>>>>> master
 
     s2r <- apply(x[[subnet.id]]$qofz, 1, which.max)
     label <- factor(s2r)  
@@ -842,11 +627,7 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
 
     print(p)
 
-<<<<<<< HEAD
-  } else if (plot.mode == "response.barplot") {
-=======
   } else if (plot_mode == "response.barplot") {
->>>>>>> master
 
     # FIXME: does not work
 
@@ -885,11 +666,7 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
     print(p)
 
 
-<<<<<<< HEAD
-  } else if (plot.mode == "pca") {
-=======
   } else if (plot_mode == "pca") {
->>>>>>> master
     
     dmat <- datamatrix[, subnet.nodes]
 
@@ -926,21 +703,9 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
 
 
 
-<<<<<<< HEAD
-#' plot.scale
-#' 
-#' Plot the color scale used in visualization.
-#' 
-#' 
-#' @usage \method{plot}{scale}(x, y, m = NULL, cex.axis = 1.5, 
-#'        label.step = 2, interval = 0.1, two.sided = TRUE, 
-#' 	  label.start = NULL, Nlab = 3, ...)
-#' @param x Breakpoints for the plot.
-=======
 #' @title plot_scale
 #' @description Plot the color scale used in visualization.
 #' @param x Breakpoints for the plot_
->>>>>>> master
 #' @param y Color palette.
 #' @param m Breakpoints' upper limit.
 #' @param cex.axis Axis scale.
@@ -948,11 +713,7 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
 #' @param interval Interval.
 #' @param two.sided Plot two-sided (TRUE) or one-sided (FALSE) visualization.
 #' @param label.start Label starting point.
-<<<<<<< HEAD
-#' @param Nlab Number of labels to plot.
-=======
 #' @param Nlab Number of labels to plot_
->>>>>>> master
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti <leo.lahti@@iki.fi>
@@ -961,16 +722,9 @@ plot_responses <- function (x, subnet.id, nc = 3, plot_names = TRUE,
 #' @export
 #' @examples #
 #'   #res <- detect.responses(D, netw, verbose = FALSE)
-<<<<<<< HEAD
-#'   #vis <- plot.responses(res, subnet.idx)
-#'   #plot.scale(vis$breaks, vis$palette)
-#' 
-plot.scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, 
-=======
 #'   #vis <- plot_responses(res, subnet.idx)
 #'   #plot_scale(vis$breaks, vis$palette)
 plot_scale <- function (x, y, m = NULL, cex.axis = 1.5, label.step = 2, 
->>>>>>> master
 	      interval = .1, two.sided = TRUE, label.start = NULL, 
 	      Nlab = 3, ...) {
 

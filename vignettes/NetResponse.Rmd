@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 ---
 title: "netresponse tutorial"
 author: Leo Lahti
@@ -20,7 +18,6 @@ output:
 opts_chunk$set(fig.path="fig/")
 ```
 
->>>>>>> master
 # netresponse - probabilistic tools for functional network analysis
 
 For bug reports and maintainer contact details, see the [README](../README.md) file
@@ -98,11 +95,7 @@ subnet.id <- names(get.subnets(res))[[1]]
 
 ```{r NetResponse2, fig.width=6, fig.height=6, warning=FALSE, message=FALSE, fig.show="hide"}
 library(ggplot2)
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "pca")
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "pca")
->>>>>>> master
 ```
 
 ```{r NetResponse2b, fig.width=6, fig.height=5, warning=FALSE, message=FALSE}
@@ -116,31 +109,19 @@ print(p) # Plot
 ### Network visualization
 
 ```{r NetResponse3, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "network")
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "network")
->>>>>>> master
 ```
 
 ### Heatmap visualization
 
 ```{r NetResponse4, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "heatmap")
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "heatmap")
->>>>>>> master
 ```
 
 ### Boxplot visualization
 
 ```{r NetResponse5, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "boxplot.data")
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "boxplot_data")
->>>>>>> master
 ```
 
 See also mode = "response.barplot" 
@@ -149,11 +130,7 @@ See also mode = "response.barplot"
 ### Color scale
 
 ```{r NetResponse7, fig.width=8, fig.height=8, warning=FALSE, message=FALSE}
-<<<<<<< HEAD
-plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
-=======
 plot_scale(vis$breaks, vis$palette, two.sided = TRUE)
->>>>>>> master
 ```
 
 

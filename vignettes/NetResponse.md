@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 ---
 title: "netresponse tutorial"
 author: Leo Lahti
@@ -17,7 +15,6 @@ output:
 
 
 
->>>>>>> master
 # netresponse - probabilistic tools for functional network analysis
 
 For bug reports and maintainer contact details, see the [README](../README.md) file
@@ -97,11 +94,7 @@ subnet.id <- names(get.subnets(res))[[1]]
 
 ```r
 library(ggplot2)
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "pca")
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "pca")
->>>>>>> master
 ```
 
 
@@ -112,60 +105,35 @@ p <- p + geom_point(size = 3) # Modify point size
 print(p) # Plot
 ```
 
-<<<<<<< HEAD
-![plot of chunk NetResponse2b](figure/NetResponse2b-1.png) 
-=======
 ![plot of chunk NetResponse2b](fig/NetResponse2b-1.png) 
->>>>>>> master
 
 
 ### Network visualization
 
 
 ```r
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "network")
-```
-
-![plot of chunk NetResponse3](figure/NetResponse3-1.png) 
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "network")
 ```
 
 ![plot of chunk NetResponse3](fig/NetResponse3-1.png) 
->>>>>>> master
 
 ### Heatmap visualization
 
 
 ```r
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "heatmap")
-```
-
-![plot of chunk NetResponse4](figure/NetResponse4-1.png) 
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "heatmap")
 ```
 
 ![plot of chunk NetResponse4](fig/NetResponse4-1.png) 
->>>>>>> master
 
 ### Boxplot visualization
 
 
 ```r
-<<<<<<< HEAD
-vis <- plot.responses(res, subnet.id, plot.mode = "boxplot.data")
-```
-
-![plot of chunk NetResponse5](figure/NetResponse5-1.png) 
-=======
 vis <- plot_responses(res, subnet.id, plot_mode = "boxplot_data")
 ```
 
 ![plot of chunk NetResponse5](fig/NetResponse5-1.png) 
->>>>>>> master
 
 See also mode = "response.barplot" 
 
@@ -174,17 +142,10 @@ See also mode = "response.barplot"
 
 
 ```r
-<<<<<<< HEAD
-plot.scale(vis$breaks, vis$palette, two.sided = TRUE)
-```
-
-![plot of chunk NetResponse7](figure/NetResponse7-1.png) 
-=======
 plot_scale(vis$breaks, vis$palette, two.sided = TRUE)
 ```
 
 ![plot of chunk NetResponse7](fig/NetResponse7-1.png) 
->>>>>>> master
 
 
 ### Cluster assignments
@@ -316,11 +277,7 @@ points(real.means, col = "blue", pch = 16, cex = 2)
 points(estimated.means, col = "blue", pch = 17, cex = 2)
 ```
 
-<<<<<<< HEAD
-![plot of chunk vdp](figure/vdp-1.png) 
-=======
 ![plot of chunk vdp](fig/vdp-1.png) 
->>>>>>> master
 
 ```r
 # Hard mixture component assignment for each sample
@@ -390,12 +347,8 @@ citation("netresponse")
 ## For ICMg functionality, please cite additionally the references
 ## listed in help(ICMg.combined.sampler). Thanks for Olli-Pekka
 ## Huovilainen and Antonio Gusmao for contributions to the R/C
-<<<<<<< HEAD
-## implementation of the netresponse algorithm.
-=======
 ## implementation of the netresponse algorithm and Juuso Parkkinen
 ## for ICMg.
->>>>>>> master
 ```
 
 ### Version information
@@ -408,14 +361,9 @@ sessionInfo()
 ```
 
 ```
-<<<<<<< HEAD
-## R version 3.1.2 (2014-10-31)
-## Platform: x86_64-pc-linux-gnu (64-bit)
-=======
 ## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 15.04
->>>>>>> master
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -430,22 +378,6 @@ sessionInfo()
 ## [8] base     
 ## 
 ## other attached packages:
-<<<<<<< HEAD
-## [1] ggplot2_1.0.0       netresponse_1.17.13 reshape_0.8.5      
-## [4] mclust_4.4          minet_3.20.2        infotheo_1.2.0     
-## [7] Rgraphviz_2.8.1     graph_1.42.0        knitr_1.7          
-## 
-## loaded via a namespace (and not attached):
-##  [1] BiocGenerics_0.10.0 colorspace_1.2-4    digest_0.6.4       
-##  [4] dmt_0.8.20          evaluate_0.5.5      formatR_1.0        
-##  [7] gtable_0.1.2        igraph_0.7.1        labeling_0.3       
-## [10] lattice_0.20-29     MASS_7.3-35         Matrix_1.1-4       
-## [13] munsell_0.4.2       mvtnorm_1.0-0       parallel_3.1.2     
-## [16] plyr_1.8.1          proto_0.3-10        qvalue_1.38.0      
-## [19] RColorBrewer_1.0-5  Rcpp_0.11.3         reshape2_1.4       
-## [22] scales_0.2.4        stats4_3.1.2        stringr_0.6.2      
-## [25] tcltk_3.1.2         tools_3.1.2
-=======
 ## [1] ggplot2_2.0.0.9001  netresponse_1.21.11 reshape2_1.4.1     
 ## [4] mclust_5.1          minet_3.26.0        Rgraphviz_2.12.0   
 ## [7] graph_1.46.0        knitr_1.11         
@@ -460,5 +392,4 @@ sessionInfo()
 ## [19] formatR_1.2.1       qvalue_2.0.0        evaluate_0.8       
 ## [22] labeling_0.3        stringi_1.0-1       scales_0.3.0       
 ## [25] stats4_3.2.2        mvtnorm_1.0-3
->>>>>>> master
 ```
