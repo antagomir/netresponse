@@ -11,9 +11,14 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+<<<<<<< HEAD
 #' Description: Investigate association of a continuous variable and the modes
 #' 
 #' Arguments: 
+=======
+#' @title Investigate association of a continuous variable and the modes
+#' @description Investigate association of a continuous variable and the modes.
+>>>>>>> master
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #' named by the samples
 #' @param groupings Sample mode information. Each element corresponds to one of the modes and lists the samples assignment matrix qofz. Alternatively, a vector of mode indices named by the samples can be given.
@@ -22,6 +27,7 @@
 #' @param verbose verbose 
 #' @param rounding rounding digits
 #' @param adjust.p Adjust p-values (this will add p.adj column and remove pvalue column in the output table)
+<<<<<<< HEAD
 #'
 #' Returns:
 #' @return Table listing all associations between the factor levels and
@@ -31,6 +37,14 @@
 #' @export
 #' @keywords utilities
 
+=======
+#' @return Table listing all associations between the factor levels and responses
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @importFrom qvalue qvalue
+#' @export
+#' @keywords utilities
+>>>>>>> master
 list.responses.continuous.single <- function (annotation.df, groupings, method = "t-test", pth = Inf, verbose = TRUE, rounding = NULL, adjust.p = TRUE) {
 
   # Collect the tables from all factors and levels here
@@ -106,6 +120,7 @@ list.responses.continuous.single <- function (annotation.df, groupings, method =
 
 }
 
+<<<<<<< HEAD
 
 #' Description: Investigate association of a continuous variable and the modes; given a list of groupings
 #' 
@@ -155,3 +170,5 @@ list.responses.continuous.multi <- function (annotation.df, groupings, method = 
   tab
 
 }
+=======
+>>>>>>> master

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
@@ -15,6 +16,10 @@
 #' annotation matrix
 #' 
 #' Arguments:  
+=======
+#' @title List factor responses (minimal)
+#' @description List significantly associated responses for all factors and levels in the given annotation matrix
+>>>>>>> master
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #'   named by the samples
 #' @param groupings List of groupings. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
@@ -24,19 +29,28 @@
 #' @param verbose verbose 
 #' @param data data (samples x features; or a vector in univariate case) 
 #' @param rounding rounding digits 
+<<<<<<< HEAD
 #'
 #' Returns:
 #' @return A list with two elements: Table listing all associations between the factor levels and
 #'   responses; multiple p-value adjustment method
+=======
+#' @return A list with two elements: Table listing all associations between the factor levels and responses; multiple p-value adjustment method
+>>>>>>> master
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation("netresponse")
 #' @export
 #' @keywords utilities
+<<<<<<< HEAD
 
 list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
   #annotation.df <- my.annot2; groupings <- groupings.listing2; method = "hypergeometric"; min.size = 2; pth = Inf; verbose = TRUE; data = NULL; rounding = NULL
 
+=======
+list.responses.factor.minimal <- function (annotation.df, groupings, method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
+
+>>>>>>> master
   # samples x features
   if(is.vector(data)) {
     data2 <- matrix(data)
@@ -95,7 +109,11 @@ list.responses.factor.minimal <- function (annotation.df, groupings, method = "h
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
+<<<<<<< HEAD
       collected.table$p.adj <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+=======
+      collected.table$p.adj <- qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+>>>>>>> master
       p.adj.method <- "qvalue"
     } else {
       collected.table$p.adj <- p.adjust(collected.table$pvalue, method = "BH")

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #' pick.model.parameters
 #' 
 #' @param m vdp.mixt output
@@ -24,6 +25,8 @@ pick.model.parameters <- function (m, nodes) {
 }
 
 
+=======
+>>>>>>> master
 get.subnet <- function (res, subnet.id) {
 
   if (is.numeric(subnet.id)) {

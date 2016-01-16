@@ -1,10 +1,15 @@
 # "The language of science is the language of probability, and not of
 #  p-values." -- Luis Pericchi
 
+<<<<<<< HEAD
 #' set.breaks
 #' 
 #' Set breakpoints for two-way color palette.
 #' 
+=======
+#' @title Set breaks
+#' @description Set breakpoints for two-way color palette.
+>>>>>>> master
 #' @usage set.breaks(mat, interval = 0.1)
 #' @param mat Matrix to visualize.
 #' @param interval Density of color breakpoints.
@@ -64,6 +69,7 @@ ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100) {
 
 
 
+<<<<<<< HEAD
 #' Add ellipse to an existing plot.
 #' 
 #' Calculates and plots ellipse corresponding to specified confidence interval
@@ -99,3 +105,5 @@ add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col
 
 
 
+=======
+>>>>>>> master

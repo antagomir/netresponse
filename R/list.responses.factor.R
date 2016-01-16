@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Copyright (C) 2010-2013 Leo Lahti
 # Contact: Leo Lahti <leo.lahti@iki.fi>
 #
@@ -17,6 +18,11 @@
 #' Arguments:  
 #' @param annotation.df annotation data.frame with discrete factor levels, rows
 #'   named by the samples
+=======
+#' @title List significant responses
+#' @description List significantly associated responses for all factors and levels in the given annotation matrix
+#' @param annotation.df annotation data.frame with discrete factor levels, rows named by the samples
+>>>>>>> master
 #' @param models List of models. Each model should have a sample-cluster assignment matrix qofz, or a vector of cluster indices named by the samples.
 #' @param method method for enrichment calculation
 #' @param min.size minimum sample size for a response
@@ -24,6 +30,7 @@
 #' @param verbose verbose 
 #' @param data data (samples x features; or a vector in univariate case) 
 #' @param rounding rounding digits 
+<<<<<<< HEAD
 #'
 #' Returns:
 #' @return Table listing all associations between the factor levels and
@@ -33,6 +40,14 @@
 #' @export
 #' @keywords utilities
 
+=======
+#' @return Table listing all associations between the factor levels and responses
+#' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
+#' @references See citation("netresponse")
+#' @importFrom qvalue qvalue
+#' @export
+#' @keywords utilities
+>>>>>>> master
 list.responses.factor <- function (annotation.df, models, method = "hypergeometric", min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {
 
   pth <- NULL
@@ -99,7 +114,11 @@ list.responses.factor <- function (annotation.df, models, method = "hypergeometr
   if (!is.null(collected.table)) {
   
     if (nrow(collected.table)>100) {
+<<<<<<< HEAD
       collected.table$qvalue <- qvalue::qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+=======
+      collected.table$qvalue <- qvalue(collected.table$pvalue, gui = FALSE, fdr.level = 0.25)$qvalue
+>>>>>>> master
     } else {
       collected.table$qvalue <- rep(NA, nrow(collected.table))
     }  

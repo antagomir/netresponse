@@ -10,7 +10,10 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 setMethod(f = "show", signature("NetResponseModel"),
   function( object ){cat("NetResponseModel object\n")}
 )
