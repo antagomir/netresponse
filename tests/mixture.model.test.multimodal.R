@@ -13,7 +13,11 @@ D3 <- rbind(matrix(rnorm(Ns*Nd, mean = 0), ncol = Nd),
       	    cbind(rnorm(Ns, mean = -3), rnorm(Ns, mean = 3))
 	    )
 
+<<<<<<< 9552aa1d1f13b8ee77adfc700a028ddf1ce8cf04
 #X11()
+=======
+X11()
+>>>>>>> netresponse for bioc devel
 par(mfrow = c(2,2))
 for (mm in c("vdp", "bic")) {
   for (pp in c(FALSE, TRUE)) {
