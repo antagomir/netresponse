@@ -1,6 +1,17 @@
 #' @import methods
 #' @import dmt
 #' @import graph
+#' @importFrom graphics axis
+#' @importFrom graphics barplot
+#' @importFrom graphics hist
+#' @importFrom graphics image
+#' @importFrom graphics legend
+#' @importFrom graphics par
+#' @importFrom graphics points
+#' @importFrom grDevices colorRampPalette
+#' @importFrom grDevices gray
+#' @importFrom grDevices palette
+#' @importFrom grDevices rainbow
 #' @import parallel
 #' @import RColorBrewer
 #' @import Rgraphviz
@@ -28,9 +39,20 @@
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 geom_boxplot
 #' @importFrom ggplot2 facet_wrap
-
-
-
+#' @importFrom stats cor
+#' @importFrom stats dnorm
+#' @importFrom stats na.omit
+#' @importFrom stats rgamma
+#' @importFrom stats rnorm
+#' @importFrom stats runif
+#' @importFrom stats p.adjust
+#' @importFrom stats phyper
+#' @importFrom stats princomp
+#' @importFrom stats prcomp
+#' @importFrom stats qchisq
+#' @importFrom stats sd
+#' @importFrom stats t.test
+#' @importFrom utils read.csv
 
 .onAttach <- function(lib, pkg)
 {

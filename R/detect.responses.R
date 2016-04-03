@@ -16,9 +16,9 @@
 
   ######################################################################
 
-#' detect.responses
+#' @title detect.responses
 #' 
-#' Main function of the NetResponse algorithm. 
+#' @description Main function of the NetResponse algorithm. 
 #' Detect condition-specific network responses, given
 #' network and a set of measurements of node activity in a set of
 #' conditions. Returns a set of subnetworks and their estimated
@@ -90,7 +90,7 @@
 #' netw <- toydata$netw   # Network
 #' 
 #' # Run NetReponse algorithm
-#' model <- detect.responses(D, netw, verbose = FALSE)
+#' \dontrun{model <- detect.responses(D, netw, verbose = FALSE)}
 detect.responses <- function(datamatrix,
          network = NULL,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
@@ -117,8 +117,6 @@ detect.responses <- function(datamatrix,
 )
 
 {
-
-#fs <- list.files("~/Rpackages/netresponse/netresponse/R/", full.names = TRUE); for (f in fs) {source(f)}; datamatrix <- D; network <- netw; initial.responses = 1; max.responses = 3; max.subnet.size = 10; verbose = TRUE; prior.alpha = 1; prior.alphaKsi = 0.01; prior.betaKsi  = 0.01;	update.hyperparams = 0; implicit.noise = 0; vdp.threshold = 1.0e-5; merging.threshold = 1; ite = Inf; information.criterion = "BIC"; speedup = TRUE; speedup.max.edges = 10; mc.cores = 1; mixture.method = "bic"; bic.threshold = 0; pca.basis = FALSE          
 
   # Check data matrix validity         
   datamatrix <- check.matrix(datamatrix)

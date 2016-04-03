@@ -17,8 +17,8 @@ A matrix containing the component memberships for each data point
 (node).
 }
 \description{
-Function for computing the component memberships for each data point from
-the MCMC samples.
+Function for computing the component memberships for
+each data point from the MCMC samples.
 }
 \author{
 Juuso Parkkinen

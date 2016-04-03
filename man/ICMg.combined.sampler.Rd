@@ -54,13 +54,15 @@ of node component sizes. } additionally all parameters of the run are
 included in the list.
 }
 \description{
-Main function of the ICMg algorithm. ICMg.combined.sampler computes samples
+Main function of the ICMg algorithm.
+ICMg.combined.sampler computes samples
 from the posterior of the assignments of datapoints (interactions and
 expression profiles) to latent components. From these we can then obtain
 component membership distributions and clusterings for genes.
 }
 \details{
-One run consists of two parts, during burnin the sampler is expected to mix,
+One run consists of two parts, during burnin the sampler is
+expected to mix,
 after which the samples are taken. Information about convergence (convN and
 convL are estimates of convergence for link and node sampling, respectively)
 and component sizes are printed after each burnin/sample round. For example:

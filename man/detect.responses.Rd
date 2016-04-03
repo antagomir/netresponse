@@ -106,7 +106,7 @@ D    <- toydata$emat   # Response matrix (for example, gene expression)
 netw <- toydata$netw   # Network
 
 # Run NetReponse algorithm
-model <- detect.responses(D, netw, verbose = FALSE)
+\dontrun{model <- detect.responses(D, netw, verbose = FALSE)}
 }
 \author{
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
