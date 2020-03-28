@@ -4,8 +4,14 @@
 \alias{plot_associations}
 \title{Association strength between category labels and responses.}
 \usage{
-plot_associations(x, subnet.id, labels, method = "hypergeometric",
-  mode = "group.by.classes", ...)
+plot_associations(
+  x,
+  subnet.id,
+  labels,
+  method = "hypergeometric",
+  mode = "group.by.classes",
+  ...
+)
 }
 \arguments{
 \item{x}{NetResponseModel object}
@@ -31,14 +37,13 @@ Plot association strength between user-defined category labels and responses in 
 \examples{
 #
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse").
 }
 \seealso{
 plot_responses
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

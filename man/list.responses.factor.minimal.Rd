@@ -4,9 +4,16 @@
 \alias{list.responses.factor.minimal}
 \title{List factor responses (minimal)}
 \usage{
-list.responses.factor.minimal(annotation.df, groupings,
-  method = "hypergeometric", min.size = 2, pth = Inf, verbose = TRUE,
-  data = NULL, rounding = NULL)
+list.responses.factor.minimal(
+  annotation.df,
+  groupings,
+  method = "hypergeometric",
+  min.size = 2,
+  pth = Inf,
+  verbose = TRUE,
+  data = NULL,
+  rounding = NULL
+)
 }
 \arguments{
 \item{annotation.df}{annotation data.frame with discrete factor levels, rows
@@ -32,11 +39,10 @@ A list with two elements: Table listing all associations between the factor leve
 \description{
 List significantly associated responses for all factors and levels in the given annotation matrix
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

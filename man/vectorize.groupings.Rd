@@ -22,11 +22,10 @@ group and lists samples in that group.
 \examples{
 #
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

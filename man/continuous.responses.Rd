@@ -4,8 +4,13 @@
 \alias{continuous.responses}
 \title{Continuous responses}
 \usage{
-continuous.responses(annotation.vector, model, method = "t-test",
-  min.size = 2, data = NULL)
+continuous.responses(
+  annotation.vector,
+  model,
+  method = "t-test",
+  min.size = 2,
+  data = NULL
+)
 }
 \arguments{
 \item{annotation.vector}{annotation vector with discrete factor levels, and named by the samples}
@@ -24,11 +29,10 @@ List with each element corresponding to one variable and listing the responses a
 \description{
 Quantify association between modes and continuous variable
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

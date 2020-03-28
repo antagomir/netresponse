@@ -29,13 +29,12 @@ Plot the given subnetwork.
 # res <- detect.responses(D, netw, verbose = FALSE)
 # net <- plot_subnet(res, subnet.idx = 1)
 }
-\author{
-Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 L. Lahti et al.: Global modeling of transcriptional responses in
 interaction networks. Submitted.
 }
+\author{
+Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

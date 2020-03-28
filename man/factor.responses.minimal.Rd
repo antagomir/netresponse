@@ -4,8 +4,13 @@
 \alias{factor.responses.minimal}
 \title{Factor responses (minimal)}
 \usage{
-factor.responses.minimal(annotation.vector, groupings,
-  method = "hypergeometric", min.size = 2, data = NULL)
+factor.responses.minimal(
+  annotation.vector,
+  groupings,
+  method = "hypergeometric",
+  min.size = 2,
+  data = NULL
+)
 }
 \arguments{
 \item{annotation.vector}{annotation vector with discrete factor levels, and named by the samples}
@@ -24,11 +29,10 @@ List with each element corresponding to one factor level and listing the respons
 \description{
 List responses for each level of the given factor
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

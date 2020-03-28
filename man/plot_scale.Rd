@@ -4,8 +4,18 @@
 \alias{plot_scale}
 \title{plot_scale}
 \usage{
-plot_scale(x, y, m = NULL, cex.axis = 1.5, label.step = 2,
-  interval = 0.1, two.sided = TRUE, label.start = NULL, Nlab = 3, ...)
+plot_scale(
+  x,
+  y,
+  m = NULL,
+  cex.axis = 1.5,
+  label.step = 2,
+  interval = 0.1,
+  two.sided = TRUE,
+  label.start = NULL,
+  Nlab = 3,
+  ...
+)
 }
 \arguments{
 \item{x}{Breakpoints for the plot_}
@@ -40,11 +50,10 @@ Plot the color scale used in visualization.
   #vis <- plot_responses(res, subnet.idx)
   #plot_scale(vis$breaks, vis$palette)
 }
-\author{
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

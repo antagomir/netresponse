@@ -4,9 +4,16 @@
 \alias{list.responses.factor}
 \title{List significant responses}
 \usage{
-list.responses.factor(annotation.df, models, method = "hypergeometric",
-  min.size = 2, qth = Inf, verbose = TRUE, data = NULL,
-  rounding = NULL)
+list.responses.factor(
+  annotation.df,
+  models,
+  method = "hypergeometric",
+  min.size = 2,
+  qth = Inf,
+  verbose = TRUE,
+  data = NULL,
+  rounding = NULL
+)
 }
 \arguments{
 \item{annotation.df}{annotation data.frame with discrete factor levels, rows named by the samples}
@@ -31,11 +38,10 @@ Table listing all associations between the factor levels and responses
 \description{
 List significantly associated responses for all factors and levels in the given annotation matrix
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

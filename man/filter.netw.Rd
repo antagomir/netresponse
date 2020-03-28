@@ -28,12 +28,11 @@ calculated based on the first principal components.
 \examples{
 #
 }
+\references{
+See citation("netresponse")
+}
 \author{
 Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
 Leo Lahti \email{leo.lahti@iki.fi}
 }
-\references{
-See citation("netresponse")
-}
 \keyword{internal}
-

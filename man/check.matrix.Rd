@@ -19,15 +19,14 @@ Mostly for internal purposes. Check input matrix format.
 \examples{
 # datamatrix <- check.matrix(datamatrix)
 }
-\author{
-Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 detect.responses
 }
+\author{
+Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
-

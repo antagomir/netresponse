@@ -4,8 +4,14 @@
 \alias{PlotMixture}
 \title{Plot mixtures}
 \usage{
-PlotMixture(x, qofz, binwidth = 0.05, xlab.text = NULL, ylab.text = NULL,
-  title.text = NULL)
+PlotMixture(
+  x,
+  qofz,
+  binwidth = 0.05,
+  xlab.text = NULL,
+  ylab.text = NULL,
+  title.text = NULL
+)
 }
 \arguments{
 \item{x}{data vector}
@@ -29,11 +35,10 @@ Plot mixtures.
 \examples{
 # PlotMixture(x, qofz)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

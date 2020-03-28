@@ -33,13 +33,12 @@ Probabilistic sample-response assignments for given subnet.
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
 #response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010).  See citation("netresponse")
 for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

@@ -30,11 +30,10 @@ labels.
 \examples{
 #plotPCA(x, subnet.id)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

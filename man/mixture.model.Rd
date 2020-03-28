@@ -4,11 +4,23 @@
 \alias{mixture.model}
 \title{Mixture model}
 \usage{
-mixture.model(x, mixture.method = "vdp", max.responses = 10,
-  implicit.noise = 0, prior.alpha = 1, prior.alphaKsi = 0.01,
-  prior.betaKsi = 0.01, vdp.threshold = 1e-05, initial.responses = 1,
-  ite = Inf, speedup = TRUE, bic.threshold = 0, pca.basis = FALSE,
-  min.responses = 1, ...)
+mixture.model(
+  x,
+  mixture.method = "vdp",
+  max.responses = 10,
+  implicit.noise = 0,
+  prior.alpha = 1,
+  prior.alphaKsi = 0.01,
+  prior.betaKsi = 0.01,
+  vdp.threshold = 1e-05,
+  initial.responses = 1,
+  ite = Inf,
+  speedup = TRUE,
+  bic.threshold = 0,
+  pca.basis = FALSE,
+  min.responses = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{data matrix (samples x features, for multivariate analysis) or a vector (for univariate analysis)}
@@ -53,11 +65,10 @@ List with two elements: model: fitted mixture model (parameters and free energy)
 \description{
 Fit Gaussian mixture model
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

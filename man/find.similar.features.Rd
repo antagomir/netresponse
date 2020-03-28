@@ -52,11 +52,10 @@ g <- find.similar.features(model, subnet.id)
 subset(g, delta < 0)
 
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for reference details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

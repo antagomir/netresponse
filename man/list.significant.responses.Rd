@@ -4,8 +4,7 @@
 \alias{list.significant.responses}
 \title{Listing significant responses}
 \usage{
-list.significant.responses(model, sample, qth = 1,
-  method = "hypergeometric")
+list.significant.responses(model, sample, qth = 1, method = "hypergeometric")
 }
 \arguments{
 \item{model}{NetResponseModel object.}
@@ -26,14 +25,13 @@ List responses with significant associations to a given sample group.
 \examples{
 # 
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 response.enrichment
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

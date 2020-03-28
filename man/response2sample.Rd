@@ -4,8 +4,13 @@
 \alias{response2sample}
 \title{response2sample}
 \usage{
-response2sample(model, subnet.id = NULL, component.list = TRUE,
-  verbose = FALSE, data = NULL)
+response2sample(
+  model,
+  subnet.id = NULL,
+  component.list = TRUE,
+  verbose = FALSE,
+  data = NULL
+)
 }
 \arguments{
 \item{model}{A NetResponseModel object or list.}
@@ -42,13 +47,12 @@ model <- toydata$model  # Pre-calculated model
 response2sample(model, subnet.id = 1)
 
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010).  See citation("netresponse")
 for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

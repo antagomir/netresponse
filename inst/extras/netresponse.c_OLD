@@ -839,3 +839,234 @@ vdpSumlogsumexp(SEXP matrix_M) {
  
 /************************************************************/
 
+/**** FUNCTIONS FOR ICMg methods ****/
+/**** ADDED BY JUUSO PARKKINEN 1.4.2011 ****/
+
+void ICMgRandominit() {
+
+  srand((unsigned)(time(0)));
+  
+}
+
+/* Basic ICM with interactions only */
+void ICMgLinksIteration(int *L, int *iter, int *Nlinks, int *Nnodes, int *Lindices, int *comps, int *z, int *q, int *n, double *alpha, double *beta, double *conv)
+{
+
+  /* Need to take the values from the pointer */
+  int Niter = iter[0];
+  int N = Nlinks[0];
+  int M = Nnodes[0];
+  int C = comps[0];
+  double a = alpha[0];
+  double b = beta[0];
+  
+  /* Auxiliary variables for computation*/ 
+  int s;
+  int li;
+  int l;
+  int i;
+  int j;
+  int p;
+  
+  /* Main iteration loop*/
+  for (s=0; s<Niter; s++) {
+    
+    /* Sample new component for each link */
+    for (li=0; li<N; li++) {
+      
+      l = Lindices[li]-1;
+      i = L[l] -1;
+      j = L[N + l] -1;
+      
+      /* Subtract the contribution of the link from the counts */
+      q[i*C+z[l]-1]--;
+      q[j*C+z[l]-1]--;
+      n[z[l]-1]--;
+      
+      double uzsum = 0;
+      double uz[C];
+
+      /* Loop for computing probabilities for the components to be sampled */
+      for (p=0; p<C; p++) {
+	uz[p] = (n[p] + a)*(q[i*C + p]+b)*(q[j*C + p]+b)/(2*n[p]+1+M*b)/(2*n[p]+M*b);
+	uzsum += uz[p];
+      }
+            
+      /* Draw a new component for the links and update the counts */
+      double cs = uz[0];    
+      int newz = -1;
+      double r = rand() / ((double)(RAND_MAX) + (double)(1));
+      for (p=0; p<C; p++) {
+	
+      	if (cs/uzsum >= r) {
+	  newz = p;
+	  conv[l] = uz[p]/uzsum;
+	  break;
+	}
+	else
+	  cs += uz[p+1];
+      }
+      
+      n[newz]++;
+      q[i*C+newz]++;
+      q[j*C+newz]++;
+      z[l] = newz+1;
+      
+    }
+  }
+}
+
+/* Extended ICMg2 with interaction and expression data */
+void ICMgCombinedIteration(int *L, double *X, int *iter, int *Nlinks, int *Nnodes, int *Lindices, int *Nindices, int *dim, int *comps, int *z, int *w, int *n, int *m, int *q, double *E, double *alpha, double *beta, double *p0, double *V0, double *V, double *convl, double *convn) {
+
+  /* Need to take the values from the pointer */
+  int Niter = iter[0];
+  int N = Nlinks[0];
+  int M = Nnodes[0];
+  int D = dim[0];
+  int C = comps[0];
+  double a = alpha[0];
+  double b = beta[0];
+  double pm0 = p0[0];
+  double v0 = V0[0];
+  double v = V[0];
+  double v0i = 1/v0;
+  double vi = 1/v;
+  
+  /* Auxiliary variables for computation*/ 
+  int s;
+  int li;
+  int l;
+  int i;
+  int j;
+  int p;
+  int ki;
+  int k;
+  int d;  
+  
+  /* Main iteration loop*/
+  for (s=0; s<Niter; s++) {
+    
+    /* Link loop */
+    for (li=0; li<N; li++) {
+      
+      l = Lindices[li]-1;
+      i = L[l] -1;
+      j = L[N + l] -1;
+      
+      /* Subtract the contribution of the link from the counts*/
+      q[i*C+z[l]-1]--;
+      q[j*C+z[l]-1]--;
+      n[z[l]-1]--;
+      
+      double uzsum = 0;
+      double uz[C];
+      /* Loop for calculating probabilities for the components to be sampled*/
+      for (p=0; p<C; p++) {
+	uz[p] = (n[p] + m[p] + a)*(q[i*C + p]+b)*(q[j*C + p]+b)/(2*n[p]+m[p]+1+M*b)/(2*n[p]+m[p]+M*b);
+	// Update cumulative sum of uz's as well
+	uzsum += uz[p];
+      }
+      
+      /* Draw a new component for the links and update the counts */
+      double cs = uz[0];
+      double r = rand() / ((double)(RAND_MAX) + (double)(1));
+      int newz = -1;
+      for (p=0; p<C; p++) {
+		      
+     	if (cs/uzsum >= r) {
+	  newz = p;
+	  convl[l] = uz[p]/uzsum;
+	  break;
+	}
+	else
+	  cs += uz[p+1];
+      }
+      
+      /* Update the counts */
+      n[newz]++;
+      q[i*C+newz]++;
+      q[j*C+newz]++;
+      z[l] = newz+1;
+    } // End of link loop
+    
+    /* Node loop */
+    for (ki=0; ki<M; ki++) {
+      k = Nindices[ki]-1;
+
+      /* Subtract the contribution of the link from the counts and datasum E*/
+      q[k*C+w[k]-1]--;
+      m[w[k]-1]--;
+      for (d=0;d<D;d++) {
+	E[d*C+w[k]-1] -= X[d*M+k];
+      }
+
+      double uwsum = 0;
+      double uw[C];
+      /* Loop for calculating probabilities for the components to be sampled */
+      for (p=0; p<C; p++) {
+
+	double AB;
+	double H1;
+	double S;
+	double Sd;
+	double A[D];
+	double Ad[D];
+	double CP = 0;
+	double CPd = 0;
+	/* Basic count term */
+	AB = (n[p] + m[p] + a)*(q[k*C + p]+b)/(2*n[p]+m[p]+(M-1)*b);
+
+	/* Posterior variances S and S' (scalar) */
+	S = 1/(v0i + (m[p]+1)*vi);
+	Sd = 1/(v0i + m[p]*vi);
+
+	/* Posterior means A and A' (D vector) */
+	for (d=0;d<D;d++) {
+	  A[d] = S *(v0i *pm0 + vi *E[d*C +p] + vi * X[d*M +k]);
+	  Ad[d] = Sd *(v0i *pm0 + vi *E[d*C +p]);
+	  
+	  /* Crossproducts of A and A' */
+	  CP += A[d] *A[d];
+	  CPd += Ad[d] *Ad[d];
+	}	
+
+	/* Divide crossproducts by posterior variances */
+	CP = CP / S;
+	CPd = CPd / Sd;
+	H1 = pow((S / Sd),((double)(D)/(double)(2)));
+	
+	/* Update final probabilities and cumsum */
+	/* MAY CAUSE OVERFLOW!!! */
+	uw[p] = AB * H1 * exp((CP -CPd)/2);
+	uwsum += uw[p];
+      }
+      
+      /* Draw a new component for the node */
+      double cs = uw[0];
+      double r = rand() / ((double)(RAND_MAX) + (double)(1));
+      int neww = -1;
+      //      printf("%lf ",r);
+      for (p=0; p<C; p++) {
+	
+      	if (cs/uwsum >= r) {
+	  neww = p;
+	  convn[k] = uw[p]/uwsum;
+	  break;
+	}
+	else
+	  cs += uw[p+1];
+      }
+
+      /* Update the counts and E */
+      m[neww]++;
+      q[k*C+neww]++;
+      for (d=0;d<D;d++)
+	E[d*C+neww] += X[d*M+k];
+      w[k] = neww+1;
+      
+    } // End of nodes loop
+  } // End of iteration loop
+}
+
+

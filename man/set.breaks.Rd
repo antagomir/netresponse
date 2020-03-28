@@ -20,13 +20,12 @@ Set breakpoints for two-way color palette.
 \examples{
  set.breaks(array(rnorm(100), dim = c(10, 10)), interval = .1) 
 }
-\author{
-Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 L. Lahti et al.: Global modeling of transcriptional responses in
 interaction networks. Submitted.
 }
+\author{
+Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

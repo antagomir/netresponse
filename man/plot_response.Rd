@@ -4,8 +4,16 @@
 \alias{plot_response}
 \title{plot_response}
 \usage{
-plot_response(x, mynet, mybreaks, mypalette, plot_names = TRUE,
-  colors = TRUE, plot_type = "twopi", ...)
+plot_response(
+  x,
+  mynet,
+  mybreaks,
+  mypalette,
+  plot_names = TRUE,
+  colors = TRUE,
+  plot_type = "twopi",
+  ...
+)
 }
 \arguments{
 \item{x}{A numerical vector, or NULL.}
@@ -35,13 +43,12 @@ TRUE, colors = TRUE, plot_type = "twopi", ...)
 #tmp <- plot_response(model, mynet, 
 #  	maintext = paste("Subnetwork", subnet.id))
 }
-\author{
-Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 L. Lahti et al.: Global modeling of transcriptional responses in
 interaction networks. Submitted.
 }
+\author{
+Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao. Maintainer:
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

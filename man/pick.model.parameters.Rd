@@ -20,11 +20,10 @@ Pick model parameters
 \examples{
 #
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
-

@@ -4,10 +4,21 @@
 \alias{plot_responses}
 \title{plot_responses}
 \usage{
-plot_responses(x, subnet.id, nc = 3, plot_names = TRUE,
-  plot_mode = "network", xaxis = TRUE, yaxis = TRUE,
-  plot_type = "twopi", mar = c(5, 4, 4, 2), horiz = TRUE,
-  datamatrix = NULL, scale = FALSE, ...)
+plot_responses(
+  x,
+  subnet.id,
+  nc = 3,
+  plot_names = TRUE,
+  plot_mode = "network",
+  xaxis = TRUE,
+  yaxis = TRUE,
+  plot_type = "twopi",
+  mar = c(5, 4, 4, 2),
+  horiz = TRUE,
+  datamatrix = NULL,
+  scale = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Result from NetResponse (detect.responses function).}
@@ -54,14 +65,13 @@ plot_mode = "network", xaxis = TRUE, yaxis = TRUE, plot_type = "twopi", mar
 #res <- detect.responses(D, netw)
 #vis <- plot_responses(res, subnet.id)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 \code{\link{plot_scale}}
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

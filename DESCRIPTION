@@ -25,9 +25,12 @@ Imports:
     plyr,
     qvalue,
     RColorBrewer
+Suggests:
+    knitr
 URL: https://github.com/antagomir/netresponse
 BugReports: https://github.com/antagomir/netresponse/issues
 biocViews: CellBiology, Clustering, GeneExpression, Genetics, Network,
     GraphAndNetwork, DifferentialExpression, Microarray,
     Transcription
-RoxygenNote: 5.0.1
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0

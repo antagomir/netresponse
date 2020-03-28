@@ -4,7 +4,8 @@
 \name{toydata}
 \alias{toydata}
 \title{toydata}
-\format{Toy data: a list with three elements:
+\format{
+Toy data: a list with three elements:
 
 emat: Data matrix (samples x features). This contains the same features that
 are provided in the network (toydata$netw). The matrix characterizes
@@ -16,7 +17,8 @@ nodes is denoted by 1.
 
 model: A pre-calculated model. Object of NetResponseModel class, resulting
 from applying the netresponse algorithm on the toydata with model <-
-detect.responses(D, netw).}
+detect.responses(D, netw).
+}
 \usage{
 data(toydata)
 }
@@ -35,4 +37,3 @@ Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010).
 }
 \keyword{misc}
-

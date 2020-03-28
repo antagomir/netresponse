@@ -26,14 +26,13 @@ detect.responses
 \examples{
 #
 }
-\author{
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 detect.responses
 }
+\author{
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
-

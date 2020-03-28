@@ -4,11 +4,13 @@
 \name{osmo}
 \alias{osmo}
 \title{Osmoshock data set (PPI and expression)}
-\format{List of following objects: \describe{ \item{ppi}{PPI data matrix}
+\format{
+List of following objects: \describe{ \item{ppi}{PPI data matrix}
 \item{exp}{gene expression profiles data matrix} \item{gids}{Vector of gene
 ids corresponding to indices used in data matrices} \item{obs}{Gene
 expression observation details} \item{combined.links}{pooled matrix of PPI
-and expression links} }}
+and expression links} }
+}
 \source{
 PPI data pooled from yeast data sets of [1] and [2]. Dna damage
 expression set of [3].
@@ -36,4 +38,3 @@ MAPK pathway components as revealed by whole-genome expression analysis.}
 Molecular Biology of the Cell 2004, 15:532-42.
 }
 \keyword{datasets}
-

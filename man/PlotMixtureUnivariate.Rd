@@ -4,10 +4,20 @@
 \alias{PlotMixtureUnivariate}
 \title{Plot univariate mixtures}
 \usage{
-PlotMixtureUnivariate(x, means = NULL, sds = NULL, ws = NULL,
-  title.text = NULL, xlab.text = NULL, ylab.text = NULL,
-  binwidth = 0.05, qofz = NULL, density.color = "darkgray",
-  cluster.assignments = NULL, ...)
+PlotMixtureUnivariate(
+  x,
+  means = NULL,
+  sds = NULL,
+  ws = NULL,
+  title.text = NULL,
+  xlab.text = NULL,
+  ylab.text = NULL,
+  binwidth = 0.05,
+  qofz = NULL,
+  density.color = "darkgray",
+  cluster.assignments = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{data vector}
@@ -43,11 +53,10 @@ Visualize data, centroids and stds for a given univariate Gaussian mixture model
 \examples{
 # plotMixtureUnivariate(dat, means, sds, ws)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

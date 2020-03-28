@@ -1,0 +1,21 @@
+([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
+context-specific behavior
+([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short))
+of interaction networks.  ICMg is used to identify community structure
+in interaction networks;
+
+## Interaction Component Model for Gene Modules
+
+Interaction Component Model ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) can be used to find functional gene
+modules from either protein interaction data or from combinations of
+protein interaction and gene expression data. Run ICMg and cluster the
+nodes:
+
+```{r ICMg, warning=FALSE, message=FALSE, results="hide"}
+library(netresponse)
+data(osmo)
+res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
+res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
+res$clustering <- apply(res$comp.memb, 2, which.max)
+```
+When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).

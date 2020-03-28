@@ -4,9 +4,17 @@
 \alias{order.responses}
 \title{order.responses}
 \usage{
-order.responses(models, sample, method = "hypergeometric", min.size = 2,
-  max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE,
-  data = NULL)
+order.responses(
+  models,
+  sample,
+  method = "hypergeometric",
+  min.size = 2,
+  max.size = Inf,
+  min.responses = 2,
+  subnet.ids = NULL,
+  verbose = FALSE,
+  data = NULL
+)
 }
 \arguments{
 \item{models}{List of models. Each model should have a sample-cluster assignment matrix qofz.}
@@ -51,11 +59,10 @@ Tools for analyzing end results of the model.
 #     (enrichment score); overrepresentation
 # order.responses(model, sample, method  = "hypergeometric") 
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

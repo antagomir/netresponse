@@ -1,9 +1,9 @@
+[![Build Status](https://api.travis-ci.org/antagomir/netresponse.png)](https://travis-ci.org/antagomir/netresponse)
+<!--[![Stories in Ready](https://badge.waffle.io/antagomir/netresponse.png?label=Ready)](http://waffle.io/antagomir/netresponse)-->
+<!--[![DOI](https://zenodo.org/badge/4203/rOpenGov/sorvi.png)](https://github.com/rOpenGov/sorvi)-->
+
 netresponse 
 ===========
-
-[![Build Status](https://api.travis-ci.org/antagomir/netresponse.png)](https://travis-ci.org/antagomir/netresponse)
-[![Stories in Ready](https://badge.waffle.io/antagomir/netresponse.png?label=Ready)](http://waffle.io/antagomir/netresponse)
-<!--[![DOI](https://zenodo.org/badge/4203/rOpenGov/sorvi.png)](https://github.com/rOpenGov/sorvi)-->
 
 Tools for functional network analysis (follow links for references):
 
@@ -18,6 +18,8 @@ Tools for functional network analysis (follow links for references):
 
 For installation and usage, check the [tutorial page](vignettes/NetResponse.md).
 
+<!--_Bioinformatics_ 2011. {[Abstract](http://bioinformatics.oxfordjournals.org/content/26/21/2713) | [Preprint pdf](http://www.roihu.info/publications/preprints/Lahti10bioinf-preprint.pdf)}-->
+
 
 ### Support
 
@@ -30,7 +32,7 @@ You are welcome to:
 
 ### Authors
 
-Maintainer: [Leo Lahti](http://antagomir.github.io/info/contact)
+Maintainer: [Leo Lahti](http://www.iki.fi/Leo.Lahti)
 
 Contributors: Olli-Pekka Huovilainen, Antonio Gusmao, Juuso Parkkinen  
 

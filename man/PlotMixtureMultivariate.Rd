@@ -4,8 +4,18 @@
 \alias{PlotMixtureMultivariate}
 \title{PlotMixtureMultivariate}
 \usage{
-PlotMixtureMultivariate(x, means, sds, ws, labels = NULL, title = NULL,
-  modes = NULL, pca = FALSE, qofz = NULL, ...)
+PlotMixtureMultivariate(
+  x,
+  means,
+  sds,
+  ws,
+  labels = NULL,
+  title = NULL,
+  modes = NULL,
+  pca = FALSE,
+  qofz = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{data matrix (samples x features)}
@@ -45,11 +55,10 @@ to annotations labels.
 \examples{
 #plotMixture(dat, means, sds, ws)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

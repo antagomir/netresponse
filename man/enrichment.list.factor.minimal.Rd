@@ -4,8 +4,13 @@
 \alias{enrichment.list.factor.minimal}
 \title{enrichment.list.factor}
 \usage{
-enrichment.list.factor.minimal(groupings, method, verbose = FALSE,
-  annotation.vector, level)
+enrichment.list.factor.minimal(
+  groupings,
+  method,
+  verbose = FALSE,
+  annotation.vector,
+  level
+)
 }
 \arguments{
 \item{groupings}{List of groupings. Each model should have a sample-cluster assignment matrix qofz.}
@@ -35,11 +40,10 @@ Orders the responses by association strength (enrichment score) to a given sampl
 \examples{
 #
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

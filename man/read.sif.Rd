@@ -40,4 +40,3 @@ format.
 Leo Lahti \email{leo.lahti@iki.fi}
 }
 \keyword{utilities}
-

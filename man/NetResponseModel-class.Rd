@@ -13,6 +13,7 @@ A NetResponse model.
  Returned by \code{\link{detect.responses}}
 function.
 }
+
 \examples{
 showClass("NetResponseModel")
 }
@@ -20,4 +21,3 @@ showClass("NetResponseModel")
 Leo Lahti \email{leo.lahti@iki.fi}
 }
 \keyword{classes}
-

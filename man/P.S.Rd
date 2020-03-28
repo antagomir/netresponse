@@ -17,12 +17,11 @@ Arguments:
 Returns:
   @return Probability density
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
 \keyword{utilities}
-

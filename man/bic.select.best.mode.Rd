@@ -22,11 +22,10 @@ Fitted latent class model (parameters and free energy)
 Select optimal number of mixture components by adding components until 
 the increase in objective function is below threshold.
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

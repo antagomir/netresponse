@@ -4,8 +4,12 @@
 \alias{response.enrichment}
 \title{Enrichment for a specified sample group in the given response.}
 \usage{
-response.enrichment(total.samples, response.samples, annotated.samples,
-  method = "hypergeometric")
+response.enrichment(
+  total.samples,
+  response.samples,
+  annotated.samples,
+  method = "hypergeometric"
+)
 }
 \arguments{
 \item{total.samples}{All samples in the data}
@@ -26,14 +30,13 @@ response.
 \examples{
 #enr <- response.enrichment(subnet.id, models, sample, response, method)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 order.responses
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

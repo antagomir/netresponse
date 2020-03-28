@@ -2,8 +2,8 @@
 % Please edit documentation in R/pkg-package.R
 \docType{package}
 \name{netresponse-package}
-\alias{netresponse}
 \alias{netresponse-package}
+\alias{netresponse}
 \title{NetResponse: Global modeling of transcriptional responses in interaction networks}
 \description{
 Global modeling of transcriptional responses in interaction networks.
@@ -39,14 +39,13 @@ subnet.id <- names(model@subnets)[[1]]
 m <- get.model.parameters(model, subnet.id) 
 print(m)
 }
-\author{
-Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso
-Parkkinen. Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010). See citation("netresponse")
 for details.
 }
+\author{
+Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso
+Parkkinen. Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{package}
-

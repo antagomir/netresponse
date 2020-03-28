@@ -27,11 +27,10 @@ Mainly for internal use. Calculate joint model for each node pair
 \examples{
 #
 }
-\author{
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
-

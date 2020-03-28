@@ -4,10 +4,25 @@
 \alias{plot_matrix}
 \title{Visualize a matrix with one or two-way color scale.}
 \usage{
-plot_matrix(mat, type = "twoway", midpoint = 0, palette = NULL,
-  colors = NULL, col.breaks = NULL, interval = 0.1, plot_axes = "both",
-  row.tick = 1, col.tick = 1, cex.xlab = 0.9, cex.ylab = 0.9,
-  xlab = NULL, ylab = NULL, limit.trunc = 0, mar = c(5, 4, 4, 2), ...)
+plot_matrix(
+  mat,
+  type = "twoway",
+  midpoint = 0,
+  palette = NULL,
+  colors = NULL,
+  col.breaks = NULL,
+  interval = 0.1,
+  plot_axes = "both",
+  row.tick = 1,
+  col.tick = 1,
+  cex.xlab = 0.9,
+  cex.ylab = 0.9,
+  xlab = NULL,
+  ylab = NULL,
+  limit.trunc = 0,
+  mar = c(5, 4, 4, 2),
+  ...
+)
 }
 \arguments{
 \item{mat}{matrix}
@@ -63,11 +78,10 @@ Fast investigation of matrix objects; standard visualization choices are made au
   mat <- rbind(c(1,2,3,4,5), c(1, 3, 1), c(4,2,2))
   plot_matrix(mat, 'twoway', midpoint = 3) 
 }
-\author{
-Leo Lahti \email{microbiome-admin@googlegroups.com}
-}
 \references{
 See citation('microbiome')
 }
+\author{
+Leo Lahti \email{microbiome-admin@googlegroups.com}
+}
 \keyword{utilities}
-

@@ -40,13 +40,12 @@ model <- toydata$model   # Pre-calculated model
 get.model.parameters(model, subnet.id = 1)
 
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010). See citation("netresponse")
 for details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

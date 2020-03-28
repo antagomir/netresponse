@@ -4,11 +4,13 @@
 \name{dna}
 \alias{dna}
 \title{Dna damage data set (PPI and expression)}
-\format{List of following objects: \describe{ \item{ppi}{PPI data matrix}
+\format{
+List of following objects: \describe{ \item{ppi}{PPI data matrix}
 \item{exp}{gene expression profiles data matrix} \item{gids}{Vector of gene
 ids corresponding to indices used in data matrices} \item{obs}{Gene
 expression observation details} \item{combined.links}{pooled matrix of PPI
-and expression links} }}
+and expression links} }
+}
 \source{
 PPI data pooled from yeast data sets of [1] and [2]. Dna damage
 expression set of [3].
@@ -37,4 +39,3 @@ role of the yeast ATR homolog Mex1p.} Molecular Biology of the Cell 2001,
 12:2987-3003.
 }
 \keyword{datasets}
-

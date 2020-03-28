@@ -26,14 +26,13 @@ selected subnetwork.
 \examples{
 #
 }
-\author{
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 See citation("netresponse")
 }
 \seealso{
 plot_responses
 }
+\author{
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

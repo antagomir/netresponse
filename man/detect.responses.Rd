@@ -4,14 +4,31 @@
 \alias{detect.responses}
 \title{detect.responses}
 \usage{
-detect.responses(datamatrix, network = NULL, initial.responses = 1,
-  max.responses = 10, max.subnet.size = 10, verbose = TRUE,
-  prior.alpha = 1, prior.alphaKsi = 0.01, prior.betaKsi = 0.01,
-  update.hyperparams = 0, implicit.noise = 0, vdp.threshold = 1e-05,
-  merging.threshold = 0, ite = Inf, information.criterion = "BIC",
-  speedup = TRUE, speedup.max.edges = 10, positive.edges = FALSE,
-  mc.cores = 1, mixture.method = "vdp", bic.threshold = 0,
-  pca.basis = FALSE, ...)
+detect.responses(
+  datamatrix,
+  network = NULL,
+  initial.responses = 1,
+  max.responses = 10,
+  max.subnet.size = 10,
+  verbose = TRUE,
+  prior.alpha = 1,
+  prior.alphaKsi = 0.01,
+  prior.betaKsi = 0.01,
+  update.hyperparams = 0,
+  implicit.noise = 0,
+  vdp.threshold = 1e-05,
+  merging.threshold = 0,
+  ite = Inf,
+  information.criterion = "BIC",
+  speedup = TRUE,
+  speedup.max.edges = 10,
+  positive.edges = FALSE,
+  mc.cores = 1,
+  mixture.method = "vdp",
+  bic.threshold = 0,
+  pca.basis = FALSE,
+  ...
+)
 }
 \arguments{
 \item{datamatrix}{Matrix of samples x features. For example, gene expression
@@ -108,12 +125,11 @@ netw <- toydata$netw   # Network
 # Run NetReponse algorithm
 \dontrun{model <- detect.responses(D, netw, verbose = FALSE)}
 }
-\author{
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse").
 }
+\author{
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{iteration}
 \keyword{methods}
-

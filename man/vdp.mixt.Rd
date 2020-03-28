@@ -4,10 +4,20 @@
 \alias{vdp.mixt}
 \title{vdp.mixt}
 \usage{
-vdp.mixt(dat, prior.alpha = 1, prior.alphaKsi = 0.01,
-  prior.betaKsi = 0.01, do.sort = TRUE, threshold = 1e-05,
-  initial.K = 1, ite = Inf, implicit.noise = 0, c.max = 10,
-  speedup = TRUE, min.size = 5)
+vdp.mixt(
+  dat,
+  prior.alpha = 1,
+  prior.alphaKsi = 0.01,
+  prior.betaKsi = 0.01,
+  do.sort = TRUE,
+  threshold = 1e-05,
+  initial.K = 1,
+  ite = Inf,
+  implicit.noise = 0,
+  c.max = 10,
+  speedup = TRUE,
+  min.size = 5
+)
 }
 \arguments{
 \item{dat}{Data matrix (samples x features).}
@@ -117,15 +127,14 @@ This implementation is based on the Variational Dirichlet Process
 
 
 }
-\author{
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 Kenichi Kurihara, Max Welling and Nikos Vlassis: Accelerated
   Variational Dirichlet Process Mixtures.  In B. Sch\"olkopf and J. Platt and
   T. Hoffman (eds.), Advances in Neural Information Processing Systems 19,
   761--768. MIT Press, Cambridge, MA 2007.
 }
+\author{
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{iteration}
 \keyword{methods}
-

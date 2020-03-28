@@ -35,4 +35,3 @@ Calculates and plots ellipse corresponding to specified confidence interval in 2
 Leo Lahti \email{leo.lahti@iki.fi}
 }
 \keyword{utilities}
-

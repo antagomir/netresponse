@@ -1,19 +1,25 @@
 ---
-title: "netresponse tutorial"
-author: Leo Lahti
+title: "Introduction to the netresponse R package"
+author: "Leo Lahti et al."
 date: "`r Sys.Date()`"
 output:
-  toc: true
-  html_document:
-    theme: flatly
+  BiocStyle::html_document:
+    toc: true
+    fig_caption: yes    
+  rmarkdown::md_document:
+    toc: true
+  rmarkdown::pdf_document:
+    toc: true    
+vignette: >
+  %\VignetteIndexEntry{microbiome R package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-<!--
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{eurostat Markdown Vignette}
-%\usepackage[utf8]{inputenc}
--->
+
 
 ```{r setup, include=FALSE}
+library(knitr)
+
 # Global options
 opts_chunk$set(fig.path="fig/")
 ```
@@ -41,19 +47,15 @@ network analysis
 The methods are based on nonparametric probabilistic modeling and
 variational learning, and provide general exploratory tools to
 investigate the structure
-([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
-context-specific behavior
-([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short))
-of interaction networks.  ICMg is used to identify community structure
-in interaction networks; NetResponse detects and characterizes
+
+NetResponse detects and characterizes
 subnetworks that exhibit context-specific activation patterns across
 versatile collections of functional measurements, such as gene
 expression data. The implementations are partially based on the
 agglomerative independent variable group analysis
 ([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
-and variational Dirichlet process Gaussian mixture models ([Kurihara
-et
-al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The
+and variational Dirichlet process Gaussian mixture models (Kurihara
+et al. 2007). The
 tools are particularly useful for global exploratory analysis of
 genome-wide interaction networks and versatile collections of gene
 expression data, and in general to discover subnetworks with
@@ -165,8 +167,8 @@ names(params)
 ## Nonparametric Gaussian mixture models
 
 Nonparametric Gaussian mixtures with variational Dirichlet processes
-based on implementations by [Kurihara et
-al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)
+based on implementations by Kurihara et
+al. (2007)
 and [Honkela et
 al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659).
 
@@ -203,26 +205,9 @@ estimated.sample2comp <- apply(mixt$posterior$qOFz, 1, which.max)
 head(table(estimated.sample2comp, real.sample2comp))
 ```     
 
-
-## Interaction Component Model for Gene Modules
-
-Interaction Component Model ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) can be used to find functional gene
-modules from either protein interaction data or from combinations of
-protein interaction and gene expression data. Run ICMg and cluster the
-nodes:
-
-```{r ICMg, warning=FALSE, message=FALSE, results="hide"}
-library(netresponse)
-data(osmo)
-res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
-res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
-res$clustering <- apply(res$comp.memb, 2, which.max)
-```
-
-
 ### Citing NetResponse
 
-Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
+Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. 
 
 ```{r cite, warning=FALSE, message=FALSE}
 citation("netresponse")

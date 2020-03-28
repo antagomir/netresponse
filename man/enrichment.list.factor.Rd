@@ -32,11 +32,10 @@ Orders the responses by association strength (enrichment score) to a given sampl
 \examples{
 #
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

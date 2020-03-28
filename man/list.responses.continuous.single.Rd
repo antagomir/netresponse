@@ -4,8 +4,15 @@
 \alias{list.responses.continuous.single}
 \title{Investigate association of a continuous variable and the modes}
 \usage{
-list.responses.continuous.single(annotation.df, groupings, method = "t-test",
-  pth = Inf, verbose = TRUE, rounding = NULL, adjust.p = TRUE)
+list.responses.continuous.single(
+  annotation.df,
+  groupings,
+  method = "t-test",
+  pth = Inf,
+  verbose = TRUE,
+  rounding = NULL,
+  adjust.p = TRUE
+)
 }
 \arguments{
 \item{annotation.df}{annotation data.frame with discrete factor levels, rows
@@ -29,11 +36,10 @@ Table listing all associations between the factor levels and responses
 \description{
 Investigate association of a continuous variable and the modes.
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

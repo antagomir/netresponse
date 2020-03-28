@@ -26,11 +26,10 @@ model. If the input (dat) is data matrix, a multivariate model is fitted. If
 the input is a vector or a 1-dimensional matrix, a univariate model is
 fitted.
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

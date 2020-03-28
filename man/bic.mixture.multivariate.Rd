@@ -4,8 +4,7 @@
 \alias{bic.mixture.multivariate}
 \title{Multivariate BIC mixture}
 \usage{
-bic.mixture.multivariate(x, max.modes, bic.threshold = 0, min.modes = 1,
-  ...)
+bic.mixture.multivariate(x, max.modes, bic.threshold = 0, min.modes = 1, ...)
 }
 \arguments{
 \item{x}{matrix (for multivariate analysis)}
@@ -24,11 +23,10 @@ Fitted latent class model (parameters and free energy)
 \description{
 Latent class analysis based on (infinite) Gaussian mixture model. If the input (dat) is data matrix, a multivariate model is fitted.
 }
-\author{
-Contact: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Contact: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

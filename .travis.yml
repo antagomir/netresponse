@@ -1,2 +1,12 @@
 language: r
 bioc_required: true
+env:
+  global:
+  - WARNINGS_ARE_ERRORS=1
+  - R_BUILD_ARGS="--no-manual"
+  - R_CHECK_ARGS="--no-manual --as-cran"
+  - secure: NJIbEHDDg465BSuSjYR52zbdyswh9Uk6Nu33ANhOmiR6/yUxRwyVnz7YpumiBdPIEWjNvCtwDSfFwpxIvNxl3fBGgaEHJi91OXGY5/i70maXOjTowG2D4zIEKZwmzMsLvzB8HnDY0uwOUucfjVuZBIpUu1L8FCQ7vOVOLXNhr0c=
+before_install:
+- chmod 755 ./.push_gh_pages.sh
+after_success:
+- "./.push_gh_pages.sh"

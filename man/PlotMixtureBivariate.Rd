@@ -4,8 +4,16 @@
 \alias{PlotMixtureBivariate}
 \title{PlotMixtureBivariate}
 \usage{
-PlotMixtureBivariate(x, means, sds, ws, labels = NULL, confidence = 0.95,
-  main = "", ...)
+PlotMixtureBivariate(
+  x,
+  means,
+  sds,
+  ws,
+  labels = NULL,
+  confidence = 0.95,
+  main = "",
+  ...
+)
 }
 \arguments{
 \item{x}{data matrix (samples x features)}
@@ -38,11 +46,10 @@ color the samples according to annotations labels.
 \examples{
 #plotMixture(dat, means, sds, ws)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

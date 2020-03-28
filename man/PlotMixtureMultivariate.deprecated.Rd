@@ -4,8 +4,15 @@
 \alias{PlotMixtureMultivariate.deprecated}
 \title{PlotMixtureMultivariate.deprecated}
 \usage{
-PlotMixtureMultivariate.deprecated(x, means, sds, ws, labels = NULL,
-  confidence = 0.95, ...)
+PlotMixtureMultivariate.deprecated(
+  x,
+  means,
+  sds,
+  ws,
+  labels = NULL,
+  confidence = 0.95,
+  ...
+)
 }
 \arguments{
 \item{x}{data matrix (samples x features)}
@@ -34,11 +41,10 @@ labels.
 \examples{
 #plotMixture(dat, means, sds, ws)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse") for citation details.
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-

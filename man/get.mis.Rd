@@ -29,11 +29,10 @@ the first principal components
 \examples{
 #
 }
-\author{
-Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse")
 }
+\author{
+Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{internal}
-

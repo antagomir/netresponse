@@ -56,5 +56,5 @@
 
 .onAttach <- function(lib, pkg)
 {
-   packageStartupMessage('\nnetresponse (C) 2008-2016 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse')
+   packageStartupMessage('\nnetresponse (C) 2008-2020 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse')
 }

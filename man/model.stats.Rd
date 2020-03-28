@@ -27,13 +27,12 @@ stat <- model.stats(toydata$model)
 
 
 }
-\author{
-Leo Lahti <leo.lahti@iki.fi>
-}
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
 in interaction networks. Bioinformatics (2010).  See citation("netresponse")
 for reference details.
 }
+\author{
+Leo Lahti <leo.lahti@iki.fi>
+}
 \keyword{utilities}
-

@@ -26,14 +26,13 @@ change.
 \examples{
 #plot_expression(x)
 }
-\author{
-Leo Lahti \email{leo.lahti@iki.fi}
-}
 \references{
 See citation("netresponse").
 }
 \seealso{
 \code{\link{plot_scale}}
 }
+\author{
+Leo Lahti \email{leo.lahti@iki.fi}
+}
 \keyword{utilities}
-
