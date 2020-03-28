@@ -1,8 +1,8 @@
 Package: netresponse
 Type: Package
 Title: Functional Network Analysis
-Version: 1.47.0
-Date: 2016-04-05
+Version: 1.47.2
+Date: 2020-03-28
 Author: Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso Parkkinen
 Maintainer: Leo Lahti <leo.lahti@iki.fi>
 Description: Algorithms for functional network analysis. Includes an
