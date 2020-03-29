@@ -54,7 +54,7 @@ Visualize data, centroids and stds for a given univariate Gaussian mixture model
 # plotMixtureUnivariate(dat, means, sds, ws)
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

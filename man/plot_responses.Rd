@@ -48,7 +48,7 @@ two-dimensional case the original coordinates are used.}
 
 \item{datamatrix}{datamatrix}
 
-\item{scale}{scale the phylotypes to unit length (only implemented for plot_mode = "matrix"}
+\item{scale}{scale the phylotypes to unit length (only implemented for plot_mode = 'matrix'}
 
 \item{...}{Further arguments for plot function.}
 }
@@ -57,7 +57,7 @@ Used for its side-effects.
 }
 \description{
 Plot the detected transcriptional responses for a given subnetwork.
-plot_mode = "network", xaxis = TRUE, yaxis = TRUE, plot_type = "twopi", mar
+plot_mode = 'network', xaxis = TRUE, yaxis = TRUE, plot_type = 'twopi', mar
 = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...)
 }
 \examples{
@@ -66,7 +66,7 @@ plot_mode = "network", xaxis = TRUE, yaxis = TRUE, plot_type = "twopi", mar
 #vis <- plot_responses(res, subnet.id)
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 \code{\link{plot_scale}}

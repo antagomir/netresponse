@@ -27,7 +27,7 @@ change.
 #plot_expression(x)
 }
 \references{
-See citation("netresponse").
+See citation('netresponse').
 }
 \seealso{
 \code{\link{plot_scale}}

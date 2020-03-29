@@ -27,7 +27,7 @@
 NULL
 
 
-#' @title Class "NetResponseModel"
+#' @title Class 'NetResponseModel'
 #' @description A NetResponse model.
 #' @name NetResponseModel-class
 #' @aliases NetResponseModel-class [[,NetResponseModel-method show,NetResponseModel-method 
@@ -36,7 +36,7 @@ NULL
 #' function.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords classes
-#' @examples showClass("NetResponseModel")
+#' @examples showClass('NetResponseModel')
 NULL
 
 
@@ -52,15 +52,15 @@ NULL
 #' @author Leo Lahti, Olli-Pekka Huovilainen, Antonio Gusmao and Juuso
 #' Parkkinen. Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references Leo Lahti et al.: Global modeling of transcriptional responses
-#' in interaction networks. Bioinformatics (2010). See citation("netresponse")
+#' in interaction networks. Bioinformatics (2010). See citation('netresponse')
 #' for details.
 #' @keywords package
 #' @examples
 #' # Define parameters for toy data
 #' Ns <- 200  # number of samples (conditions)
 #' Nf <- 10   # number of features (nodes)
-#' feature.names <- paste("feat", seq(Nf), sep="")
-#' sample.names  <- paste("sample", seq(Ns), sep="") 
+#' feature.names <- paste('feat', seq(Nf), sep='')
+#' sample.names  <- paste('sample', seq(Ns), sep='') 
 #' # random seed
 #' set.seed( 123 )
 #' # Random network
@@ -75,13 +75,6 @@ NULL
 #' model <- detect.responses(D, netw)
 #' # Subnets (each is a list of nodes)
 #' get.subnets( model )
-#' 
-#' # Retrieve model for one subnetwork
-#' # means, standard devations and weights for the components
-#' inds <- which(sapply(model@@last.grouping, length) > 2)
-#' subnet.id <- names(model@@subnets)[[1]]
-#' m <- get.model.parameters(model, subnet.id) 
-#' print(m)
 NULL
 
 #' @title Osmoshock data set (PPI and expression)

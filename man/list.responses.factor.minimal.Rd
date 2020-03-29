@@ -40,7 +40,7 @@ A list with two elements: Table listing all associations between the factor leve
 List significantly associated responses for all factors and levels in the given annotation matrix
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}

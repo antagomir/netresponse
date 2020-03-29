@@ -31,7 +31,7 @@ labels.
 #plotPCA(x, subnet.id)
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

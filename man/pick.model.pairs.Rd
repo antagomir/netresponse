@@ -28,7 +28,7 @@ Mainly for internal use. Calculate joint model for each node pair
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}

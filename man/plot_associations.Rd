@@ -38,7 +38,7 @@ Plot association strength between user-defined category labels and responses in 
 #
 }
 \references{
-See citation("netresponse").
+See citation('netresponse').
 }
 \seealso{
 plot_responses

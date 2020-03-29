@@ -1,7 +1,9 @@
 #' @title Add ellipse to an existing plot
-#' @description Calculates and plots ellipse corresponding to specified confidence interval in 2-dimensional plot
-#' @usage add.ellipse(centroid, covmat, confidence = 0.95, npoints = 100, col =
-#' "black", ...)
+#' @description Calculates and plots ellipse corresponding to specified
+#' confidence interval in 2-dimensional plot
+#' @examples
+#' # add.ellipse(centroid, covmat, confidence = 0.95, npoints = 100,
+#' # col = 'black', ...)
 #' @param centroid Vector with two elements defining the ellipse centroid.
 #' @param covmat Covariance matrix for the investigated data. Only diagonal
 #' covariances supported.
@@ -15,13 +17,13 @@
 #' @keywords utilities
 #' @export
 #' @examples #add.ellipse(centroid = c(0, 0), covmat = diag(c(1,2)))
-add.ellipse <- function (centroid, covmat, confidence = 0.95, npoints = 100, col = "black", ...) {
-
-  # add ellipse to a plot 
-  el <- ellipse(centroid, covmat, confidence, npoints)
-  points(el, type = "l", col = col, ...)
-
-  el
+add.ellipse <- function(centroid, covmat, confidence = 0.95, npoints = 100, col = "black", ...) {
+    
+    # add ellipse to a plot
+    el <- ellipse(centroid, covmat, confidence, npoints)
+    points(el, type = "l", col = col, ...)
+    
+    el
 }
 
 

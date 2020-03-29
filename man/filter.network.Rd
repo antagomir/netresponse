@@ -26,7 +26,7 @@ calculated based on the first principal components.
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

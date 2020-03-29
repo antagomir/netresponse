@@ -23,8 +23,8 @@ PlotMixtureMultivariate(
 \item{means}{mode centroids (modes x features)}
 
 \item{sds}{mode standard deviations, assuming diagonal covariance matrices 
- (modes x features, each row giving the sqrt of covariance diagonal 
-for the corresponding mode)}
+       (modes x features, each row giving the sqrt of covariance diagonal 
+\t  for the corresponding mode)}
 
 \item{ws}{weight for each mode}
 
@@ -33,14 +33,14 @@ for the corresponding mode)}
 \item{title}{title}
 
 \item{modes}{Optional: provide sample modes for visualization already in 
-the input}
+\t  the input}
 
 \item{pca}{The data is projected on PCA plane by default (pca = TRUE). 
-By setting this off (pca = FALSE) it is possible to visualize 
-two-dimensional data in the original domain.}
+\t  By setting this off (pca = FALSE) it is possible to visualize 
+\t  two-dimensional data in the original domain.}
 
 \item{qofz}{Sample-response probabilistic assignments matrix 
-(samples x responses)}
+\t  (samples x responses)}
 
 \item{...}{Further arguments for plot function.}
 }
@@ -56,7 +56,7 @@ to annotations labels.
 #plotMixture(dat, means, sds, ws)
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

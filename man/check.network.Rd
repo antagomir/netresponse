@@ -20,14 +20,13 @@ check.network(network, datamatrix, verbose = FALSE)
   \item{nodes }{Nodes corresponding to the 'formatted' network.}
 }
 \description{
-Mainly for internal use. Check input network and make formatting for
-detect.responses
+Internal use to check input network and format detect.responses.
 }
 \examples{
-#
+# check.network(network, datamatrix, verbose = FALSE)
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 detect.responses
@@ -35,4 +34,3 @@ detect.responses
 \author{
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
 }
-\keyword{internal}

@@ -36,7 +36,7 @@ Plot mixtures.
 # PlotMixture(x, qofz)
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

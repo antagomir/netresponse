@@ -4,8 +4,14 @@
 \alias{add.ellipse}
 \title{Add ellipse to an existing plot}
 \usage{
-add.ellipse(centroid, covmat, confidence = 0.95, npoints = 100, col =
-"black", ...)
+add.ellipse(
+  centroid,
+  covmat,
+  confidence = 0.95,
+  npoints = 100,
+  col = "black",
+  ...
+)
 }
 \arguments{
 \item{centroid}{Vector with two elements defining the ellipse centroid.}
@@ -26,9 +32,12 @@ the covariance matrix.}
 Used for plotting side effects.
 }
 \description{
-Calculates and plots ellipse corresponding to specified confidence interval in 2-dimensional plot
+Calculates and plots ellipse corresponding to specified
+confidence interval in 2-dimensional plot
 }
 \examples{
+# add.ellipse(centroid, covmat, confidence = 0.95, npoints = 100,
+# col = 'black', ...)
 #add.ellipse(centroid = c(0, 0), covmat = diag(c(1,2)))
 }
 \author{

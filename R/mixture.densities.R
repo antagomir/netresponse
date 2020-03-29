@@ -256,17 +256,13 @@ P.s.r <- function (dat, pars, log = TRUE) {
   # single response, here calculated for all responses. Speedup by
   # having this for given response only.
 
-  # subnetid <- "Subnet-2"
-  # dat <- t(model@datamatrix[subnets[[subnetid]], ]) # all samples, given subnet
-  # Psr(dat, pars)
-
   if ( is.vector(dat) ) { dat <- as.matrix(dat, nrow = length(dat)) }
 
   # responses x samples matrix P(s|r)
   psr <- matrix(NA, nrow = length(pars$w), ncol = ncol(dat)) 
   if (!is.null(colnames(dat))) { colnames(psr) <- colnames(dat) }
 
-  for ( response in 1:length( pars$w ) ) {
+  for ( response in seq_len(length( pars$w ))) {
     # Given the diagonal covariances, the density is product (log-sum)
     # over the densities for individual features (on each data point)
     psr[response, ] <- colSums(dnorm(dat, mean = as.numeric(pars$mu[response, ]), sd = as.numeric(pars$sd[response, ]), log = TRUE))		  

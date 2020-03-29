@@ -33,6 +33,7 @@
 #' @importFrom ggplot2 ggtitle
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 labs
 #' @importFrom ggplot2 geom_histogram
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 geom_errorbar
@@ -54,7 +55,6 @@
 #' @importFrom stats t.test
 #' @importFrom utils read.csv
 
-.onAttach <- function(lib, pkg)
-{
-   packageStartupMessage('\nnetresponse (C) 2008-2020 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse')
+.onAttach <- function(lib, pkg) {
+    packageStartupMessage("\nnetresponse (C) 2008-2020 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse")
 }

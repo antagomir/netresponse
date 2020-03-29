@@ -34,8 +34,7 @@ contains a list of samples that are associated with the response (samples
 for which this response has the highest probability P(response | sample)).
 }
 \description{
-List the most strongly associated response of a given subnetwork for each
-sample.
+List the most strongly associated response of a given subnetwork for each sample.
 }
 \examples{
 # Load example data
@@ -49,7 +48,7 @@ response2sample(model, subnet.id = 1)
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
-in interaction networks. Bioinformatics (2010).  See citation("netresponse")
+in interaction networks. Bioinformatics (2010).  See citation('netresponse')
 for citation details.
 }
 \author{

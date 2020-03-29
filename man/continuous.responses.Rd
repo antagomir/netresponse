@@ -30,7 +30,7 @@ List with each element corresponding to one variable and listing the responses a
 Quantify association between modes and continuous variable
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}

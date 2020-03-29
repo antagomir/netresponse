@@ -26,7 +26,7 @@ List responses with significant associations to a given sample group.
 # 
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 response.enrichment

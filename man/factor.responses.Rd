@@ -30,7 +30,7 @@ List with each element corresponding to one factor level and listing the respons
 List responses for each level of the given factor
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}

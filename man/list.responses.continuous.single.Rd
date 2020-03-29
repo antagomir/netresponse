@@ -37,7 +37,7 @@ Table listing all associations between the factor levels and responses
 Investigate association of a continuous variable and the modes.
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}

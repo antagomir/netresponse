@@ -1,18 +1,13 @@
-# Fixme: finish this later
-#order.samples <- function (subnet.id, model, phenodata, which.factor, response, method = "hypergeometric") {
-#    
-#  # - for given response, order factor levels by association strength (enrichment score)
-#  #   P(s|r) = P(s,r)/P(r) total sample density and/or average sample density (both for individuals and groups s/S)
-#  #   P(s|r)/P(s) = P(s,r)/P(r)P(s) 
-#
-#  #   P(s|r)/P(s) -> OK: method = "dependency"
-#  #   P(s|r) = P(s,r)/P(r)  -> OK, normalized version P(s|r)/P(S|r) available: method = "precision"
-#
-#  enr <- response.enrichments(subnet.id, model, phenodata, which.factor, response, method)
-# 
-#  # For the given response, return levels of the given factor (decreasing ordering by enrichement score)
-#  sort(enr, decreasing = TRUE)
-#}
+# Fixme: finish this later order.samples <- function (subnet.id, model,
+# phenodata, which.factor, response, method = 'hypergeometric') { # - for given
+# response, order factor levels by association strength (enrichment score) #
+# P(s|r) = P(s,r)/P(r) total sample density and/or average sample density (both
+# for individuals and groups s/S) # P(s|r)/P(s) = P(s,r)/P(r)P(s) # P(s|r)/P(s)
+# -> OK: method = 'dependency' # P(s|r) = P(s,r)/P(r) -> OK, normalized version
+# P(s|r)/P(S|r) available: method = 'precision' enr <-
+# response.enrichments(subnet.id, model, phenodata, which.factor, response,
+# method) # For the given response, return levels of the given factor (decreasing
+# ordering by enrichement score) sort(enr, decreasing = TRUE) }
 
 
 #' @title order.responses
@@ -39,7 +34,7 @@
 #'   The info field lists additional information on enrichment statistics.
 #' @note Tools for analyzing end results of the model.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse") for citation details.
+#' @references See citation('netresponse') for citation details.
 #' @keywords utilities
 #' @importFrom qvalue qvalue
 #' @export
@@ -47,36 +42,34 @@
 #' # - for given sample/s (factor level), 
 #' #     order responses (across all subnets) by association strength 
 #' #     (enrichment score); overrepresentation
-#' # order.responses(model, sample, method  = "hypergeometric") 
-order.responses <- function (models, sample, method = "hypergeometric", 
-		   	     min.size = 2, max.size = Inf, 
-			     min.responses = 2, 
-			     subnet.ids = NULL, 
-			     verbose = FALSE, data = NULL) {
-
-    # Given sample (for instance set of samples associated with a given factor 
-    # level) order the responses across all subnetworks based on their 
-    # association strength
-
+#' # order.responses(model, sample, method  = 'hypergeometric') 
+order.responses <- function(models, sample, method = "hypergeometric", min.size = 2, 
+    max.size = Inf, min.responses = 2, subnet.ids = NULL, verbose = FALSE, data = NULL) {
+    
+    # Given sample (for instance set of samples associated with a given factor level)
+    # order the responses across all subnetworks based on their association strength
+    
     # For a given sample, calculate enrichment values in each response
     subnets <- responses <- scores <- pvals <- c()
     enrichment.info <- list()
     cnt <- 0
-
+    
     # Get model statistics
     stat <- model.stats(models)
-
+    
     # Filter the results
     sn <- get.subnets(models, get.names = TRUE, min.size, max.size, min.responses)
-    stat <- stat[names(sn),]
-    if (is.null(subnet.ids)) { subnet.ids <- rownames(stat) }
-
+    stat <- stat[names(sn), ]
+    if (is.null(subnet.ids)) {
+        subnet.ids <- rownames(stat)
+    }
+    
     enr <- enrichment.list.factor(models, sample, method)
-
-  enr
-
+    
+    enr
+    
 }
-			    
+
 #' @title Listing significant responses
 #' @description List responses with significant associations to a given sample group.
 #' @param model NetResponseModel object.
@@ -87,17 +80,16 @@ order.responses <- function (models, sample, method = "hypergeometric",
 #' @return Statistics of the significantly associated responses.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @seealso response.enrichment
-#' @references See citation("netresponse")
+#' @references See citation('netresponse')
 #' @keywords utilities
 #' @export
 #' @examples # 
-list.significant.responses <- function (model, sample, qth = 1, 
-			                method = "hypergeometric") {
-
-  # Order responses according to their association with the given sample group
-  o <- order.responses(model, sample = sample, method = "hypergeometric")$ordered.responses
-  o[which(o$qvalue < qth),]
-
+list.significant.responses <- function(model, sample, qth = 1, method = "hypergeometric") {
+    
+    # Order responses according to their association with the given sample group
+    o <- order.responses(model, sample = sample, method = "hypergeometric")$ordered.responses
+    o[which(o$qvalue < qth), ]
+    
 }
 
 

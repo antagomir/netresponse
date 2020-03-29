@@ -51,7 +51,7 @@ Plot the color scale used in visualization.
   #plot_scale(vis$breaks, vis$palette)
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti <leo.lahti@iki.fi>

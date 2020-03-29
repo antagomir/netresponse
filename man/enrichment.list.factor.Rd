@@ -33,7 +33,7 @@ Orders the responses by association strength (enrichment score) to a given sampl
 #
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

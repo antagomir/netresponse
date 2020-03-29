@@ -39,7 +39,7 @@ update delta accordingly.
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti, Olli-Pekka Huovilainen and Antonio Gusmao.  Maintainer:

@@ -27,7 +27,7 @@ the input is a vector or a 1-dimensional matrix, a univariate model is
 fitted.
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}

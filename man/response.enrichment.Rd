@@ -31,7 +31,7 @@ response.
 #enr <- response.enrichment(subnet.id, models, sample, response, method)
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 order.responses

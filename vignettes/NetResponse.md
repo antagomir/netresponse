@@ -1,17 +1,21 @@
 ---
-title: "netresponse tutorial"
-author: Leo Lahti
-date: "2016-01-09"
+title: "Introduction to the netresponse R package"
+author: "Leo Lahti et al."
+date: "2020-03-29"
 output:
-  toc: true
-  html_document:
-    theme: flatly
+  BiocStyle::html_document:
+    toc: true
+    fig_caption: yes    
+  rmarkdown::md_document:
+    toc: true
+  rmarkdown::pdf_document:
+    toc: true    
+vignette: >
+  %\VignetteIndexEntry{microbiome R package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-<!--
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{eurostat Markdown Vignette}
-%\usepackage[utf8]{inputenc}
--->
+
 
 
 
@@ -38,19 +42,15 @@ network analysis
 The methods are based on nonparametric probabilistic modeling and
 variational learning, and provide general exploratory tools to
 investigate the structure
-([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) and
-context-specific behavior
-([NetResponse](http://bioinformatics.oxfordjournals.org/content/26/21/2713.short))
-of interaction networks.  ICMg is used to identify community structure
-in interaction networks; NetResponse detects and characterizes
+
+NetResponse detects and characterizes
 subnetworks that exhibit context-specific activation patterns across
 versatile collections of functional measurements, such as gene
 expression data. The implementations are partially based on the
 agglomerative independent variable group analysis
 ([AIVGA](http://www.sciencedirect.com/science/article/pii/S0925231208000659))
-and variational Dirichlet process Gaussian mixture models ([Kurihara
-et
-al. 2007](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)). The
+and variational Dirichlet process Gaussian mixture models (Kurihara
+et al. 2007). The
 tools are particularly useful for global exploratory analysis of
 genome-wide interaction networks and versatile collections of gene
 expression data, and in general to discover subnetworks with
@@ -105,7 +105,7 @@ p <- p + geom_point(size = 3) # Modify point size
 print(p) # Plot
 ```
 
-![plot of chunk NetResponse2b](fig/NetResponse2b-1.png) 
+![plot of chunk NetResponse2b](fig/NetResponse2b-1.png)
 
 
 ### Network visualization
@@ -115,7 +115,7 @@ print(p) # Plot
 vis <- plot_responses(res, subnet.id, plot_mode = "network")
 ```
 
-![plot of chunk NetResponse3](fig/NetResponse3-1.png) 
+![plot of chunk NetResponse3](fig/NetResponse3-1.png)
 
 ### Heatmap visualization
 
@@ -124,7 +124,7 @@ vis <- plot_responses(res, subnet.id, plot_mode = "network")
 vis <- plot_responses(res, subnet.id, plot_mode = "heatmap")
 ```
 
-![plot of chunk NetResponse4](fig/NetResponse4-1.png) 
+![plot of chunk NetResponse4](fig/NetResponse4-1.png)
 
 ### Boxplot visualization
 
@@ -133,7 +133,7 @@ vis <- plot_responses(res, subnet.id, plot_mode = "heatmap")
 vis <- plot_responses(res, subnet.id, plot_mode = "boxplot_data")
 ```
 
-![plot of chunk NetResponse5](fig/NetResponse5-1.png) 
+![plot of chunk NetResponse5](fig/NetResponse5-1.png)
 
 See also mode = "response.barplot" 
 
@@ -145,7 +145,7 @@ See also mode = "response.barplot"
 plot_scale(vis$breaks, vis$palette, two.sided = TRUE)
 ```
 
-![plot of chunk NetResponse7](fig/NetResponse7-1.png) 
+![plot of chunk NetResponse7](fig/NetResponse7-1.png)
 
 
 ### Cluster assignments
@@ -165,13 +165,13 @@ tail(round(response.probs, 6))
 ```
 
 ```
-##              Mode-1   Mode-2 Mode-3
-## Sample-195 0.990832 0.009118  5e-05
-## Sample-196 1.000000 0.000000  0e+00
-## Sample-197 1.000000 0.000000  0e+00
-## Sample-198 1.000000 0.000000  0e+00
-## Sample-199 1.000000 0.000000  0e+00
-## Sample-200 0.999991 0.000000  9e-06
+##            Mode-1 Mode-2
+## Sample-195      1      0
+## Sample-196      1      0
+## Sample-197      1      0
+## Sample-198      1      0
+## Sample-199      1      0
+## Sample-200      1      0
 ```
 
 ```r
@@ -182,51 +182,48 @@ print(hard.clusters)
 
 ```
 ## $`Mode-1`
-##  [1] "Sample-1"   "Sample-2"   "Sample-3"   "Sample-4"   "Sample-5"  
-##  [6] "Sample-7"   "Sample-8"   "Sample-12"  "Sample-13"  "Sample-18" 
-## [11] "Sample-19"  "Sample-20"  "Sample-21"  "Sample-22"  "Sample-24" 
-## [16] "Sample-25"  "Sample-27"  "Sample-30"  "Sample-33"  "Sample-34" 
-## [21] "Sample-36"  "Sample-37"  "Sample-39"  "Sample-42"  "Sample-44" 
-## [26] "Sample-46"  "Sample-47"  "Sample-51"  "Sample-55"  "Sample-56" 
-## [31] "Sample-58"  "Sample-59"  "Sample-61"  "Sample-64"  "Sample-65" 
-## [36] "Sample-70"  "Sample-71"  "Sample-73"  "Sample-78"  "Sample-80" 
-## [41] "Sample-82"  "Sample-83"  "Sample-88"  "Sample-92"  "Sample-96" 
-## [46] "Sample-99"  "Sample-100" "Sample-102" "Sample-103" "Sample-106"
-## [51] "Sample-107" "Sample-108" "Sample-110" "Sample-112" "Sample-113"
-## [56] "Sample-115" "Sample-121" "Sample-123" "Sample-124" "Sample-131"
-## [61] "Sample-134" "Sample-138" "Sample-139" "Sample-144" "Sample-145"
-## [66] "Sample-147" "Sample-148" "Sample-150" "Sample-151" "Sample-153"
-## [71] "Sample-154" "Sample-156" "Sample-160" "Sample-161" "Sample-164"
-## [76] "Sample-165" "Sample-170" "Sample-173" "Sample-176" "Sample-179"
-## [81] "Sample-185" "Sample-188" "Sample-190" "Sample-192" "Sample-197"
-## [86] "Sample-199" "Sample-200"
+##   [1] "Sample-1"   "Sample-2"   "Sample-6"   "Sample-7"   "Sample-9"  
+##   [6] "Sample-10"  "Sample-11"  "Sample-16"  "Sample-17"  "Sample-19" 
+##  [11] "Sample-20"  "Sample-21"  "Sample-23"  "Sample-24"  "Sample-25" 
+##  [16] "Sample-26"  "Sample-27"  "Sample-29"  "Sample-30"  "Sample-34" 
+##  [21] "Sample-35"  "Sample-36"  "Sample-37"  "Sample-39"  "Sample-42" 
+##  [26] "Sample-43"  "Sample-46"  "Sample-47"  "Sample-48"  "Sample-49" 
+##  [31] "Sample-50"  "Sample-51"  "Sample-53"  "Sample-54"  "Sample-55" 
+##  [36] "Sample-56"  "Sample-57"  "Sample-58"  "Sample-59"  "Sample-60" 
+##  [41] "Sample-61"  "Sample-62"  "Sample-63"  "Sample-64"  "Sample-65" 
+##  [46] "Sample-66"  "Sample-67"  "Sample-68"  "Sample-70"  "Sample-71" 
+##  [51] "Sample-72"  "Sample-73"  "Sample-75"  "Sample-77"  "Sample-81" 
+##  [56] "Sample-82"  "Sample-84"  "Sample-86"  "Sample-87"  "Sample-89" 
+##  [61] "Sample-91"  "Sample-92"  "Sample-93"  "Sample-95"  "Sample-97" 
+##  [66] "Sample-100" "Sample-101" "Sample-102" "Sample-103" "Sample-104"
+##  [71] "Sample-105" "Sample-106" "Sample-107" "Sample-109" "Sample-110"
+##  [76] "Sample-111" "Sample-112" "Sample-113" "Sample-116" "Sample-119"
+##  [81] "Sample-122" "Sample-123" "Sample-125" "Sample-126" "Sample-127"
+##  [86] "Sample-128" "Sample-131" "Sample-132" "Sample-133" "Sample-134"
+##  [91] "Sample-135" "Sample-136" "Sample-138" "Sample-139" "Sample-140"
+##  [96] "Sample-142" "Sample-145" "Sample-146" "Sample-147" "Sample-148"
+## [101] "Sample-149" "Sample-152" "Sample-153" "Sample-154" "Sample-156"
+## [106] "Sample-157" "Sample-158" "Sample-159" "Sample-160" "Sample-161"
+## [111] "Sample-162" "Sample-164" "Sample-165" "Sample-166" "Sample-167"
+## [116] "Sample-169" "Sample-170" "Sample-172" "Sample-173" "Sample-174"
+## [121] "Sample-177" "Sample-178" "Sample-179" "Sample-180" "Sample-181"
+## [126] "Sample-183" "Sample-184" "Sample-187" "Sample-188" "Sample-189"
+## [131] "Sample-190" "Sample-192" "Sample-196" "Sample-197" "Sample-199"
 ## 
 ## $`Mode-2`
-##  [1] "Sample-6"   "Sample-9"   "Sample-11"  "Sample-15"  "Sample-17" 
-##  [6] "Sample-23"  "Sample-28"  "Sample-29"  "Sample-31"  "Sample-32" 
-## [11] "Sample-35"  "Sample-38"  "Sample-43"  "Sample-45"  "Sample-48" 
-## [16] "Sample-49"  "Sample-53"  "Sample-54"  "Sample-57"  "Sample-60" 
-## [21] "Sample-66"  "Sample-68"  "Sample-69"  "Sample-74"  "Sample-75" 
-## [26] "Sample-76"  "Sample-77"  "Sample-79"  "Sample-85"  "Sample-89" 
-## [31] "Sample-93"  "Sample-95"  "Sample-98"  "Sample-109" "Sample-114"
-## [36] "Sample-122" "Sample-125" "Sample-130" "Sample-133" "Sample-135"
-## [41] "Sample-136" "Sample-137" "Sample-140" "Sample-142" "Sample-143"
-## [46] "Sample-149" "Sample-158" "Sample-159" "Sample-163" "Sample-166"
-## [51] "Sample-167" "Sample-168" "Sample-171" "Sample-172" "Sample-174"
-## [56] "Sample-175" "Sample-180" "Sample-181" "Sample-182" "Sample-183"
-## [61] "Sample-187" "Sample-189" "Sample-191" "Sample-196" "Sample-198"
-## 
-## $`Mode-3`
-##  [1] "Sample-10"  "Sample-14"  "Sample-16"  "Sample-26"  "Sample-40" 
-##  [6] "Sample-41"  "Sample-50"  "Sample-52"  "Sample-62"  "Sample-63" 
-## [11] "Sample-67"  "Sample-72"  "Sample-81"  "Sample-84"  "Sample-86" 
-## [16] "Sample-87"  "Sample-90"  "Sample-91"  "Sample-94"  "Sample-97" 
-## [21] "Sample-101" "Sample-104" "Sample-105" "Sample-111" "Sample-116"
-## [26] "Sample-117" "Sample-118" "Sample-119" "Sample-120" "Sample-126"
-## [31] "Sample-127" "Sample-128" "Sample-129" "Sample-132" "Sample-141"
-## [36] "Sample-146" "Sample-152" "Sample-155" "Sample-157" "Sample-162"
-## [41] "Sample-169" "Sample-177" "Sample-178" "Sample-184" "Sample-186"
-## [46] "Sample-193" "Sample-194" "Sample-195"
+##  [1] "Sample-3"   "Sample-4"   "Sample-5"   "Sample-8"   "Sample-12" 
+##  [6] "Sample-13"  "Sample-14"  "Sample-15"  "Sample-18"  "Sample-22" 
+## [11] "Sample-28"  "Sample-31"  "Sample-32"  "Sample-33"  "Sample-38" 
+## [16] "Sample-40"  "Sample-41"  "Sample-44"  "Sample-45"  "Sample-52" 
+## [21] "Sample-69"  "Sample-74"  "Sample-76"  "Sample-78"  "Sample-79" 
+## [26] "Sample-80"  "Sample-83"  "Sample-85"  "Sample-88"  "Sample-90" 
+## [31] "Sample-94"  "Sample-96"  "Sample-98"  "Sample-99"  "Sample-108"
+## [36] "Sample-114" "Sample-115" "Sample-117" "Sample-118" "Sample-120"
+## [41] "Sample-121" "Sample-124" "Sample-129" "Sample-130" "Sample-137"
+## [46] "Sample-141" "Sample-143" "Sample-144" "Sample-150" "Sample-151"
+## [51] "Sample-155" "Sample-163" "Sample-168" "Sample-171" "Sample-175"
+## [56] "Sample-176" "Sample-182" "Sample-185" "Sample-186" "Sample-191"
+## [61] "Sample-193" "Sample-194" "Sample-195" "Sample-198" "Sample-200"
 ```
 
 Retrieve model parameters for a given subnetwork (Gaussian mixture
@@ -247,8 +244,8 @@ names(params)
 ## Nonparametric Gaussian mixture models
 
 Nonparametric Gaussian mixtures with variational Dirichlet processes
-based on implementations by [Kurihara et
-al.](http://machinelearning.wustl.edu/mlpapers/paper_files/NIPS2006_248.pdf)
+based on implementations by Kurihara et
+al. (2007)
 and [Honkela et
 al.](http://www.sciencedirect.com/science/article/pii/S0925231208000659).
 
@@ -277,7 +274,7 @@ points(real.means, col = "blue", pch = 16, cex = 2)
 points(estimated.means, col = "blue", pch = 17, cex = 2)
 ```
 
-![plot of chunk vdp](fig/vdp-1.png) 
+![plot of chunk vdp](fig/vdp-1.png)
 
 ```r
 # Hard mixture component assignment for each sample
@@ -293,32 +290,14 @@ head(table(estimated.sample2comp, real.sample2comp))
 ```
 ##                      real.sample2comp
 ## estimated.sample2comp  1  2  3
-##                     1 74  0  1
-##                     2  0 67  8
-##                     3  0  1 49
+##                     1  0 71  9
+##                     2 65  0  2
+##                     3  0  0 53
 ```
-
-
-## Interaction Component Model for Gene Modules
-
-Interaction Component Model ([ICMg](http://www.biomedcentral.com/1752-0509/4/4)) can be used to find functional gene
-modules from either protein interaction data or from combinations of
-protein interaction and gene expression data. Run ICMg and cluster the
-nodes:
-
-
-```r
-library(netresponse)
-data(osmo)
-res <- ICMg.combined.sampler(osmo$ppi, osmo$exp, C=10)
-res$comp.memb <- ICMg.get.comp.memberships(osmo$ppi, res)
-res$clustering <- apply(res$comp.memb, 2, which.max)
-```
-
 
 ### Citing NetResponse
 
-Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. When using the ICMg algorithms, additionally cite [Parkkinen et al. (2010)](http://www.biomedcentral.com/1752-0509/4/4).
+Please cite [Lahti et al. (2010)](http://bioinformatics.oxfordjournals.org/content/26/21/2713) with the package. 
 
 
 ```r
@@ -344,11 +323,10 @@ citation("netresponse")
 ##     pages = {2713--20},
 ##   }
 ## 
-## For ICMg functionality, please cite additionally the references
-## listed in help(ICMg.combined.sampler). Thanks for Olli-Pekka
-## Huovilainen and Antonio Gusmao for contributions to the R/C
-## implementation of the netresponse algorithm and Juuso Parkkinen
-## for ICMg.
+## For ICMg functionality, please cite additionally the references listed
+## in help(ICMg.combined.sampler). Thanks for Olli-Pekka Huovilainen and
+## Antonio Gusmao for contributions to the R/C implementation of the
+## netresponse algorithm and Juuso Parkkinen for ICMg.
 ```
 
 ### Version information
@@ -361,9 +339,13 @@ sessionInfo()
 ```
 
 ```
-## R version 3.2.2 (2015-08-14)
+## R version 3.6.3 Patched (2020-03-11 r78037)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 15.04
+## Running under: Ubuntu 19.10
+## 
+## Matrix products: default
+## BLAS:   /home/lei/bin/R-patched/lib/libRblas.so
+## LAPACK: /home/lei/bin/R-patched/lib/libRlapack.so
 ## 
 ## locale:
 ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -374,22 +356,29 @@ sessionInfo()
 ## [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
-## [1] grid      stats     graphics  grDevices utils     datasets  methods  
-## [8] base     
+## [1] grid      parallel  stats     graphics  grDevices utils     datasets 
+## [8] methods   base     
 ## 
 ## other attached packages:
-## [1] ggplot2_2.0.0.9001  netresponse_1.21.11 reshape2_1.4.1     
-## [4] mclust_5.1          minet_3.26.0        Rgraphviz_2.12.0   
-## [7] graph_1.46.0        knitr_1.11         
+##  [1] ggplot2_3.3.0       knitr_1.28          netresponse_1.47.2 
+##  [4] reshape2_1.4.3      mclust_5.4.5        minet_3.44.1       
+##  [7] Rgraphviz_2.30.0    graph_1.64.0        BiocGenerics_0.32.0
+## [10] devtools_2.2.2      usethis_1.5.1      
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] igraph_1.0.1        Rcpp_0.12.2         magrittr_1.5       
-##  [4] splines_3.2.2       BiocGenerics_0.14.0 MASS_7.3-44        
-##  [7] munsell_0.4.2       colorspace_1.2-6    lattice_0.20-33    
-## [10] stringr_1.0.0       plyr_1.8.3          tools_3.2.2        
-## [13] parallel_3.2.2      gtable_0.1.2        digest_0.6.9       
-## [16] dmt_0.8.20          Matrix_1.2-2        RColorBrewer_1.1-2 
-## [19] formatR_1.2.1       qvalue_2.0.0        evaluate_0.8       
-## [22] labeling_0.3        stringi_1.0-1       scales_0.3.0       
-## [25] stats4_3.2.2        mvtnorm_1.0-3
+##  [1] Rcpp_1.0.4         mvtnorm_1.1-0      lattice_0.20-40    prettyunits_1.1.1 
+##  [5] ps_1.3.2           assertthat_0.2.1   rprojroot_1.3-2    digest_0.6.25     
+##  [9] R6_2.4.1           plyr_1.8.6         backports_1.1.5    stats4_3.6.3      
+## [13] evaluate_0.14      highr_0.8          pillar_1.4.3       rlang_0.4.5.9000  
+## [17] rstudioapi_0.11    callr_3.4.2        Matrix_1.2-18      qvalue_2.18.0     
+## [21] labeling_0.3       desc_1.2.0         splines_3.6.3      stringr_1.4.0     
+## [25] igraph_1.2.5       munsell_0.5.0      xfun_0.12          compiler_3.6.3    
+## [29] pkgconfig_2.0.3    pkgbuild_1.0.6     tidyselect_1.0.0   tibble_2.1.3      
+## [33] fansi_0.4.1        crayon_1.3.4       dplyr_0.8.99.9002  withr_2.1.2       
+## [37] MASS_7.3-51.5      gtable_0.3.0       lifecycle_0.2.0    magrittr_1.5      
+## [41] scales_1.1.0       cli_2.0.2          stringi_1.4.6      farver_2.0.3      
+## [45] fs_1.3.2           remotes_2.1.1      testthat_2.3.2     ellipsis_0.3.0    
+## [49] vctrs_0.2.99.9010  RColorBrewer_1.1-2 tools_3.6.3        dmt_0.8.20        
+## [53] glue_1.3.2         purrr_0.3.3        processx_3.4.2     pkgload_1.0.2     
+## [57] colorspace_1.4-1   sessioninfo_1.1.1  memoise_1.1.0
 ```

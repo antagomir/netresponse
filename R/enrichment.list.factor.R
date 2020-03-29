@@ -14,84 +14,94 @@
 #'   samples et for which the enrichments were calculated. The info field lists
 #'   additional information on enrichment statistics.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse") for citation details.
+#' @references See citation('netresponse') for citation details.
 #' @keywords utilities
 #' @importFrom qvalue qvalue
 #' @export
 #' @examples #
-enrichment.list.factor <- function (models, level.samples, method, verbose = FALSE) {
-
-  # models; level.samples <- level.samples; method = method		       		       
-  if (is.null(names(models))) { names(models) <- 1:length(models) }
-
-  # Get model statistics
-  stat <- model.stats(models)
-	       
-  # Check enrichment in the selected responses  
-  enrichment.info <- list()
-  for (subnet.id in names(models)) {
-
-    if ( verbose ) { message(subnet.id) }
+enrichment.list.factor <- function(models, level.samples, method, verbose = FALSE) {
     
-    qofz <- models[[subnet.id]]$qofz
-
-    for (response in 1:ncol(qofz)) {
-
-      enr <- response.enrichment(qofz, level.samples, response, method)
-
-      # add further info about enrichments
-      cnt <- cnt + 1
-
-      enrichment.info[[cnt]] <- c(model = subnet.id, mode = response, enrichment.score = enr$score, enr$info) 
-
+    # models; level.samples <- level.samples; method = method
+    if (is.null(names(models))) {
+        names(models) <- seq_len(length(models))
     }
-  }
     
-  if (verbose) { message("Models checked.") }
-
-  if (length(enrichment.info) > 0) {
-
-    enrichment.info <- enrichment.info[sapply(enrichment.info, function (ei) {length(ei) > 2})]
-
-    enr <- as.data.frame(t(sapply(enrichment.info, identity)))
-
-    if ("pvalue" %in% colnames(enr)) {
+    # Get model statistics
+    stat <- model.stats(models)
+    
+    # Check enrichment in the selected responses
+    enrichment.info <- list()
+    for (subnet.id in names(models)) {
         
-      if (length(enr$pvalue) > 100) {
-        # calculate q-values
-        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
-      } else if (length(enr$pvalue) > 10) {
-        enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
-      } else {
-
-        warning("Not enough p-values for q-value estimation")
-        enr$qvalue <- rep(NA, length(enr$pvalue))
-
-      }
+        if (verbose) {
+            message(subnet.id)
+        }
+        
+        qofz <- models[[subnet.id]]$qofz
+        
+        for (response in seq_len(ncol(qofz))) {
+            
+            enr <- response.enrichment(qofz, level.samples, response, method)
+            
+            # add further info about enrichments
+            cnt <- cnt + 1
+            
+            enrichment.info[[cnt]] <- c(model = subnet.id, mode = response, enrichment.score = enr$score, 
+                enr$info)
+            
+        }
     }
-
-    enr[,3:ncol(enr)] <- apply(enr[,3:ncol(enr)], 2, as.numeric)
-
-    if ("enrichment.score" %in% names(enr)) {
-
-      enr <- enr[order(enr$enrichment.score, decreasing = TRUE),]
-
-      enr[["model"]] <- as.character(enr[["model"]])
-
-      # Add subnet info in the result table
-      enr <- cbind(enr, stat[enr$model,])
-
-      tmp <- list(ordered.responses = enr, method = method, sample = level.samples)
-
-      return(tmp)
-
+    
+    if (verbose) {
+        message("Models checked.")
+    }
+    
+    if (length(enrichment.info) > 0) {
+        
+        enrichment.info <- enrichment.info[sapply(enrichment.info, function(ei) {
+            length(ei) > 2
+        })]
+        
+        enr <- as.data.frame(t(sapply(enrichment.info, identity)))
+        
+        if ("pvalue" %in% colnames(enr)) {
+            
+            if (length(enr$pvalue) > 100) {
+                # calculate q-values
+                enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
+            } else if (length(enr$pvalue) > 10) {
+                enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", 
+                  fdr.level = 0.25)$qvalues
+            } else {
+                
+                warning("Not enough p-values for q-value estimation")
+                enr$qvalue <- rep(NA, length(enr$pvalue))
+                
+            }
+        }
+        
+        enr[, 3:ncol(enr)] <- apply(enr[, 3:ncol(enr)], 2, as.numeric)
+        
+        if ("enrichment.score" %in% names(enr)) {
+            
+            enr <- enr[order(enr$enrichment.score, decreasing = TRUE), ]
+            
+            enr[["model"]] <- as.character(enr[["model"]])
+            
+            # Add subnet info in the result table
+            enr <- cbind(enr, stat[enr$model, ])
+            
+            tmp <- list(ordered.responses = enr, method = method, sample = level.samples)
+            
+            return(tmp)
+            
+        } else {
+            return(NULL)
+        }
+        
     } else {
-      return(NULL)
+        return(NULL)
     }
-
-  } else {
-    return(NULL)
-  }	
-
+    
 }
 

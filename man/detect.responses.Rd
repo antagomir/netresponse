@@ -123,7 +123,7 @@ D    <- toydata$emat   # Response matrix (for example, gene expression)
 netw <- toydata$netw   # Network
 
 # Run NetReponse algorithm
-\dontrun{model <- detect.responses(D, netw, verbose = FALSE)}
+# model <- detect.responses(D, netw, verbose = FALSE)
 }
 \references{
 See citation("netresponse").

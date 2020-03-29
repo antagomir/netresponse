@@ -15,8 +15,7 @@ A 'subnetworks x properties' data frame containing the following elements.
 }{ Vector giving the number of responses in each subnetwork. }
 }
 \description{
-Subnetwork statistics: size and number of distinct responses for each
-subnet.
+Subnetwork statistics: size and number of distinct responses for each subnet.
 }
 \examples{
 # Load a pre-calculated netresponse model obtained with 
@@ -29,7 +28,7 @@ stat <- model.stats(toydata$model)
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
-in interaction networks. Bioinformatics (2010).  See citation("netresponse")
+in interaction networks. Bioinformatics (2010).  See citation('netresponse')
 for reference details.
 }
 \author{

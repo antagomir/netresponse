@@ -22,7 +22,7 @@ Mainly for internal use. Provide independent models for each node.
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

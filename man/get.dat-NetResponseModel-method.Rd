@@ -27,7 +27,7 @@ Get subnetwork data
 # data( toydata ); get.dat(toydata$model) 
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

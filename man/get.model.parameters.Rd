@@ -42,7 +42,7 @@ get.model.parameters(model, subnet.id = 1)
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
-in interaction networks. Bioinformatics (2010). See citation("netresponse")
+in interaction networks. Bioinformatics (2010). See citation('netresponse')
 for details.
 }
 \author{

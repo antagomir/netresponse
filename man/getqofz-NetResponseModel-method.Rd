@@ -30,7 +30,7 @@ the estimated Gaussian mixture model.
 
 }
 \references{
-See citation("netresponse").
+See citation('netresponse').
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

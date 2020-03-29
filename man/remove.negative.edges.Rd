@@ -23,7 +23,7 @@ Remove edges where the connected nodes correlate negatively
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

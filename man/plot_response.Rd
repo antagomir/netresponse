@@ -37,11 +37,11 @@ Used for its side-effects.
 }
 \description{
 Plot a specific transcriptional response for a given subnetwork.
-TRUE, colors = TRUE, plot_type = "twopi", ...)
+TRUE, colors = TRUE, plot_type = 'twopi', ...)
 }
 \examples{
 #tmp <- plot_response(model, mynet, 
-#  	maintext = paste("Subnetwork", subnet.id))
+#  \tmaintext = paste('Subnetwork', subnet.id))
 }
 \references{
 L. Lahti et al.: Global modeling of transcriptional responses in

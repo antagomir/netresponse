@@ -7,29 +7,35 @@
 #'
 #' @return Group list
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse")
+#' @references See citation('netresponse')
 #' @keywords utilities
 #' @export
 #' @examples #
 
-listify.groupings <- function (groupings, verbose = FALSE) {
-
-  if (is.matrix(groupings[[1]])) {
-    if (verbose) {message("Convert mode matrix to list")}
-    groupings.list <- list()
-    for (sn in names(groupings)) {
-      # samples in each mode (hard assignment)
-      groupings[[sn]] <- response2sample(groupings[[sn]])
-    } 
-  } else if (is.vector(groupings) && !is.list(groupings)) {
-    if (verbose) {message("Convert mode vector to list")}
-    groupings.list <- split(names(groupings), groupings)
-  } else if (is.list(groupings)) {
-    if (verbose) {message("Mode list ok")}
-    groupings.list <- groupings
-  }
-
-  groupings.list
+listify.groupings <- function(groupings, verbose = FALSE) {
+    
+    if (is.matrix(groupings[[1]])) {
+        if (verbose) {
+            message("Convert mode matrix to list")
+        }
+        groupings.list <- list()
+        for (sn in names(groupings)) {
+            # samples in each mode (hard assignment)
+            groupings[[sn]] <- response2sample(groupings[[sn]])
+        }
+    } else if (is.vector(groupings) && !is.list(groupings)) {
+        if (verbose) {
+            message("Convert mode vector to list")
+        }
+        groupings.list <- split(names(groupings), groupings)
+    } else if (is.list(groupings)) {
+        if (verbose) {
+            message("Mode list ok")
+        }
+        groupings.list <- groupings
+    }
+    
+    groupings.list
 }
 
 
@@ -41,23 +47,29 @@ listify.groupings <- function (groupings, verbose = FALSE) {
 #'
 #' @return Indicator vector
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
-#' @references See citation("netresponse")
+#' @references See citation('netresponse')
 #' @keywords utilities
 #' @export
 #' @examples #
 
-vectorize.groupings <- function (groupings, verbose = FALSE) {
-
-  if (is.matrix(groupings[[1]])) {
-    if (verbose) {message("Convert mode matrix to vector")}
-    gv <- colnames(groupings)[apply(groupings, 1, which.max)]
-  } else if (is.vector(groupings) && !is.list(groupings)) {
-    if (verbose) {message("Convert mode vector to list")}
-    gv <- groupings
-  } else if (is.list(groupings)) {
-    gv <- unlist(sapply(1:length(groupings), function (i) {rep(names(groupings)[[i]], length(groupings[[i]]))}))
-    names(gv) <- unlist(groupings)
-  }
-
-  gv
+vectorize.groupings <- function(groupings, verbose = FALSE) {
+    
+    if (is.matrix(groupings[[1]])) {
+        if (verbose) {
+            message("Convert mode matrix to vector")
+        }
+        gv <- colnames(groupings)[apply(groupings, 1, which.max)]
+    } else if (is.vector(groupings) && !is.list(groupings)) {
+        if (verbose) {
+            message("Convert mode vector to list")
+        }
+        gv <- groupings
+    } else if (is.list(groupings)) {
+        gv <- unlist(sapply(seq_len(length(groupings)), function(i) {
+            rep(names(groupings)[[i]], length(groupings[[i]]))
+        }))
+        names(gv) <- unlist(groupings)
+    }
+    
+    gv
 }

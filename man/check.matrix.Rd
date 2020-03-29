@@ -20,7 +20,7 @@ Mostly for internal purposes. Check input matrix format.
 # datamatrix <- check.matrix(datamatrix)
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 detect.responses

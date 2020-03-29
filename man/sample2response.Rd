@@ -4,7 +4,7 @@
 \alias{sample2response}
 \title{sample2response}
 \usage{
-sample2response(model, subnet.id, mode = "soft")
+sample2response(model, subnet.id, mode = 'soft')
 }
 \arguments{
 \item{model}{Result from NetResponse (detect.responses function).}
@@ -31,11 +31,11 @@ Probabilistic sample-response assignments for given subnet.
 #model <- detect.responses(D, netw, verbose = FALSE)
 
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
-#response.probabilities <- sample2response(model, subnet.id = "Subnet-1")
+#response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
-in interaction networks. Bioinformatics (2010).  See citation("netresponse")
+in interaction networks. Bioinformatics (2010).  See citation('netresponse')
 for citation details.
 }
 \author{

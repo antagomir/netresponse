@@ -90,7 +90,7 @@
 #' netw <- toydata$netw   # Network
 #' 
 #' # Run NetReponse algorithm
-#' \dontrun{model <- detect.responses(D, netw, verbose = FALSE)}
+#' # model <- detect.responses(D, netw, verbose = FALSE)
 detect.responses <- function(datamatrix,
          network = NULL,
          initial.responses = 1,   # initial number of components. FIXME: is this used?
@@ -128,7 +128,8 @@ detect.responses <- function(datamatrix,
   delta <- tmp$delta
   network.nodes <- tmp$nodes
   rm(tmp)
-  
+
+
   ### INITIALIZE ###  
   if (verbose) message("matching the features between network and datamatrix")  
   samples <- rownames(datamatrix)
@@ -163,7 +164,7 @@ detect.responses <- function(datamatrix,
 		 )
 
   # Place each node in a singleton subnet
-  G <- lapply(1:ncol( datamatrix ), function( x ){ x }) 
+  G <- lapply(seq_len(ncol( datamatrix )), function( x ){ x }) 
 
   # Filter network
   tmp <- filter.netw(network, delta, datamatrix, params)
@@ -171,8 +172,6 @@ detect.responses <- function(datamatrix,
   delta <- tmp$delta
   # FIXME: for more efficient memory usage, remove from the datamatrix those nodes which are
   # not in the network. But check that the indices are not confused.
-
-  gc()
 
   ########################################################################
 
@@ -271,7 +270,7 @@ detect.responses <- function(datamatrix,
 	      # Remove edges that would exceed max.size
 	      new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
 	      keep <- (new.sizes <= params$max.subnet.size)
-	      merge.edges <- merge.edges[keep][1:speedup.max.edges]
+	      merge.edges <- merge.edges[keep][seq_len(speedup.max.edges)]
 	    
 	      # Needs Inf: NAs would be confused with other merges later since
 	      # models to be calculated are taken from is.na(delta) at each step
@@ -314,22 +313,22 @@ detect.responses <- function(datamatrix,
   subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) 
 
   # name the subnetworks
-  names(node.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", 1:length(G), sep = "")  
+  names(node.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", seq_len(length(G)), sep = "")  
   gc()
 
   # Convert original network to graphNEL (not before, to save more memory for computation stage)
-  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(1:length(network.nodes), network.nodes))))
+  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(seq_len(length(network.nodes)), network.nodes))))
   nodes(network.orig) <- network.nodes
 
   # For one-dimensional subnets, 
   # order the modes by magnitude to simplify interpretation
-  for (mi in 1:length(node.models)) {
+  for (mi in seq_len(length(node.models))) {
     if (ncol(node.models[[mi]]$mu) == 1 && length(node.models[[mi]]$w) > 1) {
       o <- order(node.models[[mi]]$mu[,1])
       node.models[[mi]]$mu <- matrix(node.models[[mi]]$mu[o,], nrow = length(o))
       node.models[[mi]]$sd <- matrix(node.models[[mi]]$sd[o,], nrow = length(o))
       node.models[[mi]]$w <- node.models[[mi]]$w[o]
-      rownames(node.models[[mi]]$mu) <- rownames(node.models[[mi]]$sd) <- names(node.models[[mi]]$w) <- paste("Mode-", 1:length(node.models[[mi]]$w), sep = "")
+      rownames(node.models[[mi]]$mu) <- rownames(node.models[[mi]]$sd) <- names(node.models[[mi]]$w) <- paste("Mode-", seq_len(length(node.models[[mi]]$w)), sep = "")
     }
   }
 

@@ -5,7 +5,7 @@
 \alias{NetResponseModel-class}
 \alias{[[,NetResponseModel-method}
 \alias{show,NetResponseModel-method}
-\title{Class "NetResponseModel"}
+\title{Class 'NetResponseModel'}
 \description{
 A NetResponse model.
 }
@@ -15,7 +15,7 @@ function.
 }
 
 \examples{
-showClass("NetResponseModel")
+showClass('NetResponseModel')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

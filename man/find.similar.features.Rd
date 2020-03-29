@@ -45,7 +45,7 @@ having coordinated response.
 
 data(toydata)
 model <- toydata$model
-subnet.id <- "Subnet-1" 
+subnet.id <- 'Subnet-1' 
 g <- find.similar.features(model, subnet.id)
 # List features that are similar to this subnetwork (delta < 0)
 # (ordered by decreasing similarity)
@@ -53,7 +53,7 @@ subset(g, delta < 0)
 
 }
 \references{
-See citation("netresponse") for reference details.
+See citation('netresponse') for reference details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

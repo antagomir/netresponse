@@ -27,7 +27,7 @@ selected subnetwork.
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \seealso{
 plot_responses

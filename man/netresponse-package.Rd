@@ -15,8 +15,8 @@ License: \tab GNU GPL >=2\cr LazyLoad: \tab yes\cr }
 # Define parameters for toy data
 Ns <- 200  # number of samples (conditions)
 Nf <- 10   # number of features (nodes)
-feature.names <- paste("feat", seq(Nf), sep="")
-sample.names  <- paste("sample", seq(Ns), sep="") 
+feature.names <- paste('feat', seq(Nf), sep='')
+sample.names  <- paste('sample', seq(Ns), sep='') 
 # random seed
 set.seed( 123 )
 # Random network
@@ -31,17 +31,10 @@ D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
 model <- detect.responses(D, netw)
 # Subnets (each is a list of nodes)
 get.subnets( model )
-
-# Retrieve model for one subnetwork
-# means, standard devations and weights for the components
-inds <- which(sapply(model@last.grouping, length) > 2)
-subnet.id <- names(model@subnets)[[1]]
-m <- get.model.parameters(model, subnet.id) 
-print(m)
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
-in interaction networks. Bioinformatics (2010). See citation("netresponse")
+in interaction networks. Bioinformatics (2010). See citation('netresponse')
 for details.
 }
 \author{

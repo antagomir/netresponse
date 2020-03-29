@@ -4,8 +4,8 @@
 \alias{read.sif}
 \title{Reading network files}
 \usage{
-read.sif(sif.file, format = "graphNEL", directed = FALSE, header =
-TRUE, sep = "\t", ...)
+read.sif(sif.file, format = 'graphNEL', directed = FALSE, header =
+TRUE, sep = '\t', ...)
 }
 \arguments{
 \item{sif.file}{Name of network file in SIF format.}
@@ -33,7 +33,7 @@ format.
 }
 \examples{
 
-#net <- read.sif("network.sif")
+#net <- read.sif('network.sif')
 
 }
 \author{

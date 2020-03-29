@@ -23,13 +23,13 @@ D <- generate.toydata()
 Simulated data matrix (samples x features)
 }
 \description{
-generate.toydata
+Generate toy data.
 }
 \examples{
 # D <- generate.toydata()
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

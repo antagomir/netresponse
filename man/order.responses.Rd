@@ -57,10 +57,10 @@ Tools for analyzing end results of the model.
 # - for given sample/s (factor level), 
 #     order responses (across all subnets) by association strength 
 #     (enrichment score); overrepresentation
-# order.responses(model, sample, method  = "hypergeometric") 
+# order.responses(model, sample, method  = 'hypergeometric') 
 }
 \references{
-See citation("netresponse") for citation details.
+See citation('netresponse') for citation details.
 }
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}

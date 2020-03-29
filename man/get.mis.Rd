@@ -30,7 +30,7 @@ the first principal components
 #
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}

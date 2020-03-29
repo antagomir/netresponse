@@ -23,7 +23,7 @@ Select optimal number of mixture components by adding components until
 the increase in objective function is below threshold.
 }
 \references{
-See citation("netresponse")
+See citation('netresponse')
 }
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}
