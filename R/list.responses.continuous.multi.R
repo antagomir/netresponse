@@ -13,9 +13,12 @@
 #' @export
 #' @importFrom qvalue qvalue
 #' @keywords utilities
+#' @examples res <- list.responses.continuous.multi(annotation.df = NULL, groupings = NULL)
 list.responses.continuous.multi <- function(annotation.df, groupings, method = "t-test", 
     pth = Inf, verbose = TRUE, rounding = NULL) {
-    
+
+    if (is.null(groupings)) {return(NULL)}
+
     # annotation.df <- annot[, continuous.vars]; groupings <- groupings.listing; pth
     # = pth; method <- 't-test'; verbose = TRUE; rounding = NULL
     

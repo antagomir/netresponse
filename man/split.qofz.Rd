@@ -2,10 +2,39 @@
 % Please edit documentation in R/internals.R
 \name{split.qofz}
 \alias{split.qofz}
-\title{Component must have at least min.size samples to be splitted.'}
+\title{split.qofz}
 \usage{
 \method{split}{qofz}(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4)
 }
-\description{
+\arguments{
+\item{qOFz}{qOFz}
+
+\item{c}{c}
+
+\item{new.c}{new.c}
+
+\item{dat}{dat}
+
+\item{speedup}{speedup}
+
+\item{min.size}{min.size}
+}
+\value{
+object
 Component must have at least min.size samples to be splitted.'
+}
+\description{
+Split q of z.
+
+Main function of the NetResponse algorithm. 
+Detect condition-specific network responses, given
+network and a set of measurements of node activity in a set of
+conditions. Returns a set of subnetworks and their estimated
+context-specific responses.
+}
+\details{
+INPUT: data, qOFz, hp_posterior, hp_prior, opts OUTPUT: list(new.qOFz, new.c);
+* new.qOFz: posterior over labels including the split clusters.  * new.c: index
+ of the newly created cluster.  DESCRIPTION: Implements the VDP algorithm step
+ 3a.
 }

@@ -53,7 +53,7 @@ Orders the responses by association strength (enrichment score) to a given sampl
 Tools for analyzing end results of the model.
 }
 \examples{
-#
+res <- order.responses(models = NULL, sample = NULL)
 # - for given sample/s (factor level), 
 #     order responses (across all subnets) by association strength 
 #     (enrichment score); overrepresentation

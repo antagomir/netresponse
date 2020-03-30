@@ -29,6 +29,9 @@ List with each element corresponding to one variable and listing the responses a
 \description{
 Quantify association between modes and continuous variable
 }
+\examples{
+res <- continuous.responses(annotation.vector = NULL, model = NULL)
+}
 \references{
 See citation('netresponse')
 }

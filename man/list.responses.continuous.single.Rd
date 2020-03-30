@@ -36,6 +36,9 @@ Table listing all associations between the factor levels and responses
 \description{
 Investigate association of a continuous variable and the modes.
 }
+\examples{
+res <- list.responses.continuous.single(annotation.df = NULL, groupings = NULL)
+}
 \references{
 See citation('netresponse')
 }

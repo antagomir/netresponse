@@ -15,6 +15,7 @@
 #' @keywords utilities
 bic.mixture.univariate <- function(x, max.modes, bic.threshold = 0, min.modes = 1, 
     ...) {
+
     
     # x <- datamatrix[, node]; max.modes = params$max.responses; bic.threshold =
     # params$bic.threshold

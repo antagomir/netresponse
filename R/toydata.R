@@ -14,9 +14,8 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @keywords internal
-#' @examples # D <- generate.toydata()
+#' @examples D <- generate.toydata()
 #' @export
-
 generate.toydata <- function(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 2, 
     rgam.scale = 2) {
     

@@ -4,14 +4,14 @@
 #' @param x  dat vector (for univariate analysis) or a matrix (for multivariate analysis)
 #' @param max.modes Maximum number of modes to be checked for mixture model selection
 #' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
-#' @param min.modes Optiomal. Minimum number of modes.
+#' @param min.modes Optional. Minimum number of modes.
 #' @return Fitted latent class model (parameters and free energy)
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @export
-#' @keywords utilities
-bic.select.best.mode <- function(x, max.modes, bic.threshold, min.modes = 1) {
-    
+bic.select.best.mode <- function(x, max.modes = 1, bic.threshold = 1, min.modes = 1) {
+
+
     # Cost for single mode BIC : smaller is better mclustBIC returns the value for
     # -BIC, to be exact
     nc <- min.modes

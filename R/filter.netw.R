@@ -1,8 +1,8 @@
 #' @title filter.netw
 #' 
-#' Mostly for internal use. Prefilter edges if speedups required.
+#' @description Mostly for internal use. Prefilter edges if speedups required.
 #' 
-#' Include only edges with the highest mutual information,
+#' @details Include only edges with the highest mutual information,
 #' calculated based on the first principal components.
 #' 
 #' @usage filter.netw(network, delta, datamatrix, params)
@@ -15,7 +15,6 @@
 #' Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @keywords internal
-#' @examples #
 filter.netw <- function(network, delta, datamatrix, params) {
     
     if (params$max.subnet.size > 1) {
@@ -140,6 +139,9 @@ filter.network <- function(network, delta, datamatrix, params) {
         }
         
         # Edges to remove
+
+        mis <- as.data.frame(lapply(mis, unlist))
+
         remove.edges <- eds[na.omit(order(mis, decreasing = TRUE)[-seq(params$speedup.max.edges)])]
         keep.edges <- setdiff(seq_len(ncol(network)), remove.edges)
         

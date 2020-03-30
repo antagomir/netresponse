@@ -38,7 +38,7 @@
 #' @keywords utilities
 #' @importFrom qvalue qvalue
 #' @export
-#' @examples #
+#' @examples res <- order.responses(models = NULL, sample = NULL)
 #' # - for given sample/s (factor level), 
 #' #     order responses (across all subnets) by association strength 
 #' #     (enrichment score); overrepresentation
@@ -48,7 +48,9 @@ order.responses <- function(models, sample, method = "hypergeometric", min.size 
     
     # Given sample (for instance set of samples associated with a given factor level)
     # order the responses across all subnetworks based on their association strength
-    
+
+    if (is.null(models)) {return(NULL)}
+
     # For a given sample, calculate enrichment values in each response
     subnets <- responses <- scores <- pvals <- c()
     enrichment.info <- list()

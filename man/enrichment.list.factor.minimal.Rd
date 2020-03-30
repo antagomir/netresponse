@@ -38,7 +38,7 @@ A data frame which gives a data
 Orders the responses by association strength (enrichment score) to a given sample set. For instance, if the samples correspond to a particular experimental factor, this function can be used to prioritize the responses according to their association strength to this factor.
 }
 \examples{
-#
+res <- enrichment.list.factor.minimal(groupings = NULL, method = NULL, annotation.vector = NULL, level = NULL)
 }
 \references{
 See citation('netresponse') for citation details.

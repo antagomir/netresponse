@@ -35,11 +35,6 @@ Used for plotting side effects.
 Calculates and plots ellipse corresponding to specified
 confidence interval in 2-dimensional plot
 }
-\examples{
-# add.ellipse(centroid, covmat, confidence = 0.95, npoints = 100,
-# col = 'black', ...)
-#add.ellipse(centroid = c(0, 0), covmat = diag(c(1,2)))
-}
 \author{
 Leo Lahti \email{leo.lahti@iki.fi}
 }

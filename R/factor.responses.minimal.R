@@ -18,9 +18,12 @@
 #' @references See citation('netresponse')
 #' @export
 #' @keywords utilities
+#' @examples res <- factor.responses.minimal(annotation.vector = NULL, groupings = NULL)
 factor.responses.minimal <- function(annotation.vector, groupings, method = "hypergeometric", 
     min.size = 2, data = NULL) {
-    
+
+    if (is.null(groupings)) {return(NULL)}
+
     responses <- list()
     annotation.vector <- factor(annotation.vector)
     levels <- as.character(na.omit(unique(droplevels(annotation.vector))))

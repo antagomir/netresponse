@@ -7,9 +7,11 @@
 #' @references See citation('netresponse')
 #' @keywords internal
 #' @export
-#' @examples #
+#' @examples pick.model.parameters(m = NULL, nodes = NULL) 
 pick.model.parameters <- function(m, nodes) {
-    
+
+    if (is.null(m)) {return(m)}
+
     # Pick parameters
     w <- m$posterior$weights  # component weights
     mu <- m$posterior$centroids  # component centroids

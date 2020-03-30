@@ -796,13 +796,25 @@ colVariances <- function(dat, Mean) {
 
 # colVariances.c <- cmpfun(colVariances)
 
-############################################################################ 
 
-# INPUT: data, qOFz, hp_posterior, hp_prior, opts OUTPUT: list(new.qOFz, new.c);
-# * new.qOFz: posterior over labels including the split clusters.  * new.c: index
-# of the newly created cluster.  DESCRIPTION: Implements the VDP algorithm step
-# 3a.
-
+#' @title split.qofz
+#' @description Split q of z.
+#' @details INPUT: data, qOFz, hp_posterior, hp_prior, opts OUTPUT: list(new.qOFz, new.c);
+#' * new.qOFz: posterior over labels including the split clusters.  * new.c: index
+#'  of the newly created cluster.  DESCRIPTION: Implements the VDP algorithm step
+#'  3a.
+#' @description Main function of the NetResponse algorithm. 
+#' Detect condition-specific network responses, given
+#' network and a set of measurements of node activity in a set of
+#' conditions. Returns a set of subnetworks and their estimated
+#' context-specific responses.
+#' @param qOFz qOFz
+#' @param c c
+#' @param new.c new.c
+#' @param dat dat
+#' @param speedup speedup
+#' @param min.size min.size
+#' @return object
 split.qofz <- function(qOFz, c, new.c, dat, speedup = TRUE, min.size = 4) {
     
     # compute the first principal component of the candidate cluster, not the whole

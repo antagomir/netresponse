@@ -10,10 +10,11 @@
 #' @references See citation('netresponse')
 #' @keywords utilities
 #' @export
-#' @examples #
-
+#' @examples res <- listify.groupings(groupings = NULL)
 listify.groupings <- function(groupings, verbose = FALSE) {
-    
+
+    if (is.null(groupings)) {return(NULL)}
+
     if (is.matrix(groupings[[1]])) {
         if (verbose) {
             message("Convert mode matrix to list")

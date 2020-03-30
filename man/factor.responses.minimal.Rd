@@ -29,6 +29,9 @@ List with each element corresponding to one factor level and listing the respons
 \description{
 List responses for each level of the given factor
 }
+\examples{
+res <- factor.responses.minimal(annotation.vector = NULL, groupings = NULL)
+}
 \references{
 See citation('netresponse')
 }

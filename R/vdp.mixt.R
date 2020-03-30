@@ -1,7 +1,6 @@
 # system('~/local/R/R-2.13.0/bin/R CMD SHLIB ../src/netresponse.c');
 # dyn.load('../src/netresponse.so')
 
-
 #' vdp.mixt
 #' 
 #' Accelerated variational Dirichlet process Gaussian mixture.
@@ -61,16 +60,16 @@
 #' @return \item{ prior }{Prior parameters of the vdp-gm model (qofz: priors on observation lables; Mu: centroids; S2: variance).} 
 #'         \item{ posterior }{Posterior estimates for the model parameters and statistics.} 
 #'         \item{ weights }{Mixture proportions, or weights, for the Gaussian mixture components.}
-#' \t   \item{ centroids }{Centroids of the mixture components.} 
-#' \t   \item{ sds }{ Standard deviations for the mixture model components (posterior modes of the covariance diagonals square root). Calculated as sqrt(invgam.scale/(invgam.shape + 1)). } 
-#' \t   \item{ qOFz }{ Sample-to-cluster assigments (soft probabilistic associations).} 
-#'\t   \item{ Nc }{Component sizes}
-#' \t   \item{ invgam.shape }{ Shape parameter (alpha) of the inverse Gamma distribution } 
-#' \t   \item{ invgam.scale }{ Scale parameter (beta) of the inverse Gamma distribution } 
-#' \t   \item{ Nparams }{ Number of model parameters }
-#'\t   \item{ K }{ Number of components in the mixture model } 
-#' \t   \item{ opts }{Model parameters that were used.} 
-#' \t   \item{ free.energy }{Free energy of the model.}
+#'  \item{ centroids }{Centroids of the mixture components.} 
+#'  \item{ sds }{ Standard deviations for the mixture model components (posterior modes of the covariance diagonals square root). Calculated as sqrt(invgam.scale/(invgam.shape + 1)). } 
+#'  \item{ qOFz }{ Sample-to-cluster assigments (soft probabilistic associations).} 
+#' \item{ Nc }{Component sizes}
+#'  \item{ invgam.shape }{ Shape parameter (alpha) of the inverse Gamma distribution } 
+#'  \item{ invgam.scale }{ Scale parameter (beta) of the inverse Gamma distribution } 
+#'  \item{ Nparams }{ Number of model parameters }
+#' \item{ K }{ Number of components in the mixture model } 
+#'  \item{ opts }{Model parameters that were used.} 
+#'  \item{ free.energy }{Free energy of the model.}
 #'
 #' @note This implementation is based on the Variational Dirichlet Process
 #'   Gaussian Mixture Model implementation, Copyright (C) 2007 Kenichi Kurihara

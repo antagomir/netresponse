@@ -20,7 +20,7 @@ Convert grouping info into a list; each element corresponds to a
 group and lists samples in that group.
 }
 \examples{
-#
+res <- listify.groupings(groupings = NULL)
 }
 \references{
 See citation('netresponse')

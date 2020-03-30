@@ -19,7 +19,7 @@ independent.models(datamatrix, params)
 Mainly for internal use. Provide independent models for each node.
 }
 \examples{
-#
+res <- independent.models(datamatrix = NULL, params = NULL)
 }
 \references{
 See citation('netresponse')

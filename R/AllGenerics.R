@@ -1,4 +1,5 @@
-setGeneric("get.subnets", function(model, get.names = TRUE, min.size = 2, max.size = Inf, 
+setGeneric("get.subnets", function(model, get.names = TRUE,
+    min.size = 2, max.size = Inf, 
     min.responses = 2) {
     standardGeneric("get.subnets")
 })
@@ -26,7 +27,8 @@ setGeneric("get.P.rs.joint.individual", function(sample, model, subnet.id, log =
 setGeneric("get.P.s.individual", function(sample, model, subnet.id, log = TRUE) {
     standardGeneric("get.P.s.individual")
 })
-setGeneric("sample.densities", function(sample, model, subnet.id, log = TRUE, summarize = FALSE) {
+setGeneric("sample.densities", function(sample, model, subnet.id,
+    log = TRUE, summarize = FALSE) {
     standardGeneric("sample.densities")
 })
 setGeneric("get.P.s", function(sample, model, subnet.id, log = TRUE) {

@@ -18,7 +18,7 @@ Model parameters
 Pick model parameters
 }
 \examples{
-#
+pick.model.parameters(m = NULL, nodes = NULL) 
 }
 \references{
 See citation('netresponse')

@@ -1,5 +1,6 @@
 #' @title Multivariate BIC mixture
-#' @description Latent class analysis based on (infinite) Gaussian mixture model. If the input (dat) is data matrix, a multivariate model is fitted. 
+#' @description Latent class analysis based on (infinite) Gaussian mixture model.
+#' If the input (dat) is data matrix, a multivariate model is fitted. 
 #' @param x matrix (for multivariate analysis)
 #' @param max.modes Maximum number of modes to be checked for mixture model selection
 #' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
@@ -12,7 +13,7 @@
 #' @keywords utilities
 bic.mixture.multivariate <- function(x, max.modes, bic.threshold = 0, min.modes = 1, 
     ...) {
-    
+
     # x <- mat; max.modes = params$max.responses; bic.threshold =
     # params$bic.threshold
     
@@ -43,7 +44,7 @@ bic.mixture.multivariate <- function(x, max.modes, bic.threshold = 0, min.modes 
     rownames(qofz) <- rownames(x)
     colnames(qofz) <- paste("Mode", seq_len(ncol(qofz)), sep = "-")
     
-    rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", 1:length(ws), 
+    rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", seq_len(length(ws)), 
         sep = "-")
     colnames(means) <- colnames(sds) <- colnames(x)
     

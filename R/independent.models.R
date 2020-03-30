@@ -23,10 +23,12 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @export
-#' @examples #
+#' @examples res <- independent.models(datamatrix = NULL, params = NULL)
 #' @keywords internal
 independent.models <- function(datamatrix, params) {
-    
+
+    if (is.null(datamatrix)) {return(NULL)}
+
     # Storage list for calculated models
     model.nodes <- vector(length = ncol(datamatrix), mode = "list")  # individual nodes
     

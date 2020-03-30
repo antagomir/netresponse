@@ -212,17 +212,17 @@ PlotMixtureBivariate <- function(x, means, sds, ws, labels = NULL, confidence = 
 #' @param means mode centroids (modes x features)
 #' @param sds mode standard deviations, assuming diagonal covariance matrices 
 #'        (modes x features, each row giving the sqrt of covariance diagonal 
-#' \t  for the corresponding mode)
+#'   for the corresponding mode)
 #' @param ws weight for each mode
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param title title
 #' @param modes Optional: provide sample modes for visualization already in 
-#' \t  the input
+#'   the input
 #' @param pca The data is projected on PCA plane by default (pca = TRUE). 
-#' \t  By setting this off (pca = FALSE) it is possible to visualize 
-#' \t  two-dimensional data in the original domain.
+#'   By setting this off (pca = FALSE) it is possible to visualize 
+#'   two-dimensional data in the original domain.
 #' @param qofz Sample-response probabilistic assignments matrix 
-#' \t  (samples x responses)
+#'   (samples x responses)
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}

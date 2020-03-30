@@ -21,7 +21,8 @@ bic.mixture.multivariate(x, max.modes, bic.threshold = 0, min.modes = 1, ...)
 Fitted latent class model (parameters and free energy)
 }
 \description{
-Latent class analysis based on (infinite) Gaussian mixture model. If the input (dat) is data matrix, a multivariate model is fitted.
+Latent class analysis based on (infinite) Gaussian mixture model.
+If the input (dat) is data matrix, a multivariate model is fitted.
 }
 \references{
 See citation('netresponse')

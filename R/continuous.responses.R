@@ -21,8 +21,11 @@
 #' @references See citation('netresponse')
 #' @export
 #' @keywords utilities
-continuous.responses <- function(annotation.vector, model, method = "t-test", min.size = 2, 
+#' @examples res <- continuous.responses(annotation.vector = NULL, model = NULL)
+continuous.responses <- function(annotation.vector, model, method = "t-test", min.size = 2,
     data = NULL) {
+
+    if (is.null(model)) {return(NULL)}
     
     # method = 't-test'; min.size = 2; data = t(dat[, gpt])
     

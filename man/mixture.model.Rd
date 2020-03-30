@@ -65,6 +65,9 @@ List with two elements: model: fitted mixture model (parameters and free energy)
 \description{
 Fit Gaussian mixture model
 }
+\examples{
+res <- mixture.model(NULL)
+}
 \references{
 See citation("netresponse")
 }

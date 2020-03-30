@@ -13,17 +13,17 @@
 #' @references See citation('netresponse')
 #' @examples # check.network(network, datamatrix, verbose = FALSE)
 check.network <- function(network, datamatrix, verbose = FALSE) {
-
+    
     
     # If no network is given, assume fully connected net
     if (is.null(network)) {
         if (verbose) {
-            warning("No network provided in function call: assuming fully connected nodes.")
+            message("No network provided in function call: assuming fully connected nodes.")
         }
         network <- matrix(1, ncol(datamatrix), ncol(datamatrix))
         rownames(network) <- colnames(network) <- colnames(datamatrix)
     }
-
+    
     # FIXME: later add other forms of sparse matrices from Matrix package
     accepted.formats.net <- c("matrix", "Matrix", "dgCMatrix", "dgeMatrix", "graphNEL", 
         "igraph", "graphAM")
@@ -31,21 +31,21 @@ check.network <- function(network, datamatrix, verbose = FALSE) {
         stop(paste("network needs to be in one of the following formats:", paste(accepted.formats.net, 
             collapse = "; ")))
     }
-
+    
     # Convert matrix into graphNEL if it is not already
     if (length(is(network)) > 1 || !("graphNEL" %in% is(network))) {
-
+    
         if (any(is(network) %in% c("dgeMatrix", "dfCMatrix", "Matrix", "data.frame"))) {
             # Sparse matrix or data.frame needs to be converted first into matrix
             network <- as.matrix(network)
         }
-
+        
         if (is.matrix(network)) {
             
             if (!nrow(network) == ncol(network)) {
                 stop("Error: network nrow = ncol required.\n")
             }
-
+            
             # Ensuring symmetric network
             if (any(!network == t(network))) {
                 warning("Network is not symmetric. Removing link directions to force symmetric network.")
@@ -59,17 +59,17 @@ check.network <- function(network, datamatrix, verbose = FALSE) {
             # check that node names given in the data and correspond
             if (is.null(rownames(network)) || is.null(colnames(datamatrix))) {
                 if (!nrow(network) == ncol(datamatrix)) {
-                  stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
+                    stop("Error: Equal number of features required for the network and data matrix when feature names not given.\n")
                 } else {
-                  warning("Warning: network and/or data features are not named; matched by order.\n")
-                  if (is.null(rownames(network)) && is.null(colnames(datamatrix))) {
-                    rownames(network) <- colnames(network) <- as.character(seq_len(nrow(network)))
-                    colnames(datamatrix) <- rownames(network)
-                  } else if (is.null(rownames(network)) && !is.null(colnames(datamatrix))) {
-                    rownames(network) <- colnames(network) <- colnames(datamatrix)
-                  } else if (!is.null(rownames(network)) && is.null(colnames(datamatrix))) {
-                    colnames(datamatrix) <- rownames(network)
-                  }
+                    warning("Warning: network and/or data features are not named; matched by order.\n")
+                    if (is.null(rownames(network)) && is.null(colnames(datamatrix))) {
+                        rownames(network) <- colnames(network) <- as.character(seq_len(nrow(network)))
+                        colnames(datamatrix) <- rownames(network)
+                    } else if (is.null(rownames(network)) && !is.null(colnames(datamatrix))) {
+                        rownames(network) <- colnames(network) <- colnames(datamatrix)
+                    } else if (!is.null(rownames(network)) && is.null(colnames(datamatrix))) {
+                        colnames(datamatrix) <- rownames(network)
+                    }
                 }
             }
             network <- as(new("graphAM", adjMat = network), "graphNEL")

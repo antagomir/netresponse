@@ -19,9 +19,11 @@
 #' @keywords utilities
 #' @importFrom qvalue qvalue
 #' @export
-#' @examples #
+#' @examples res <- enrichment.list.factor.minimal(groupings = NULL, method = NULL, annotation.vector = NULL, level = NULL)
 enrichment.list.factor.minimal <- function(groupings, method, verbose = FALSE, annotation.vector, 
     level) {
+
+    if (is.null(method)) {return(NULL)}
     
     # groupings, level.samples, method = method
     level.samples <- names(annotation.vector)[annotation.vector %in% level]

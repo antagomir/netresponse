@@ -1,8 +1,5 @@
-#' sample2response
-#' 
-#' Probabilistic sample-response assignments for given subnet.
-#' 
-#' 
+#' @title sample2response
+#' @description Probabilistic sample-response assignments for given subnet.
 #' @usage sample2response(model, subnet.id, mode = 'soft')
 #' @param model Result from NetResponse (detect.responses function).
 #' @param subnet.id Subnet identifier. A natural number which specifies one of
@@ -18,15 +15,15 @@
 #' @keywords utilities
 #' @export
 #' @examples
-#' #data( toydata )        # Load toy data set
-#' #D    <- toydata$emat   # Response matrix (for example, gene expression)
-#' #netw <- toydata$netw   # Network
+#' data( toydata )        # Load toy data set
+#' D    <- toydata$emat   # Response matrix (for example, gene expression)
+#' netw <- toydata$netw   # Network
 #' 
 #' # Detect network responses
-#' #model <- detect.responses(D, netw, verbose = FALSE)
+#' model <- detect.responses(D, netw, verbose = FALSE)
 #' 
 #' # Assign samples to responses (soft, probabilistic assignments sum to 1)
-#' #response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
+#' response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
 sample2response <- function(model, subnet.id, mode = "soft") {
     
     if (is.numeric(subnet.id)) {

@@ -22,9 +22,12 @@
 #' @importFrom qvalue qvalue
 #' @export
 #' @keywords utilities
+#' @examples res <- list.responses.continuous.single(annotation.df = NULL, groupings = NULL)
 list.responses.continuous.single <- function(annotation.df, groupings, method = "t-test", 
     pth = Inf, verbose = TRUE, rounding = NULL, adjust.p = TRUE) {
-    
+
+    if (is.null(groupings)) {return(NULL)}
+
     # Collect the tables from all factors and levels here
     collected.table <- NULL
     

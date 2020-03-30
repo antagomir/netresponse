@@ -2,12 +2,7 @@
 % Please edit documentation in R/filter.netw.R
 \name{filter.netw}
 \alias{filter.netw}
-\title{filter.netw
-
-Mostly for internal use. Prefilter edges if speedups required.
-
-Include only edges with the highest mutual information,
-calculated based on the first principal components.}
+\title{filter.netw}
 \usage{
 filter.netw(network, delta, datamatrix, params)
 }
@@ -24,15 +19,11 @@ filter.netw(network, delta, datamatrix, params)
 Filtered network
 }
 \description{
-filter.netw
-
 Mostly for internal use. Prefilter edges if speedups required.
-
+}
+\details{
 Include only edges with the highest mutual information,
 calculated based on the first principal components.
-}
-\examples{
-#
 }
 \references{
 See citation('netresponse')

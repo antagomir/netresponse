@@ -4,7 +4,7 @@
 \alias{bic.select.best.mode}
 \title{Select best mode with BIC}
 \usage{
-bic.select.best.mode(x, max.modes, bic.threshold, min.modes = 1)
+bic.select.best.mode(x, max.modes = 1, bic.threshold = 1, min.modes = 1)
 }
 \arguments{
 \item{x}{dat vector (for univariate analysis) or a matrix (for multivariate analysis)}
@@ -13,7 +13,7 @@ bic.select.best.mode(x, max.modes, bic.threshold, min.modes = 1)
 
 \item{bic.threshold}{BIC threshold which needs to be exceeded before a new mode is added to the mixture.}
 
-\item{min.modes}{Optiomal. Minimum number of modes.}
+\item{min.modes}{Optional. Minimum number of modes.}
 }
 \value{
 Fitted latent class model (parameters and free energy)
@@ -28,4 +28,3 @@ See citation('netresponse')
 \author{
 Contact: Leo Lahti \email{leo.lahti@iki.fi}
 }
-\keyword{utilities}

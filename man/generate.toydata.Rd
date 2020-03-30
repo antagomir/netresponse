@@ -26,7 +26,7 @@ Simulated data matrix (samples x features)
 Generate toy data.
 }
 \examples{
-# D <- generate.toydata()
+D <- generate.toydata()
 }
 \references{
 See citation('netresponse')

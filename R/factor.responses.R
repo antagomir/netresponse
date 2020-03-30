@@ -18,9 +18,12 @@
 #' @references See citation('netresponse')
 #' @export
 #' @keywords utilities
+#' @examples res <- factor.responses(annotation.vector = NULL, groupings = NULL)
 factor.responses <- function(annotation.vector, groupings, method = "hypergeometric", 
     min.size = 2, data = NULL) {
-    
+
+    if (is.null(groupings)) {return(NULL)}
+
     responses <- list()
     
     annotation.vector <- factor(annotation.vector)
