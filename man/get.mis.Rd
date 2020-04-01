@@ -23,11 +23,8 @@ get.mis(datamatrix, network, delta, network.nodes, G, params)
 mutual information matrix
 }
 \description{
-Mainly for internal use. Estimate mutual information for node pairs based on
-the first principal components
-}
-\examples{
-#
+Estimate mutual information for node pairs based on
+the first principal components.
 }
 \references{
 See citation('netresponse')
@@ -35,4 +32,3 @@ See citation('netresponse')
 \author{
 Maintainer: Leo Lahti \email{leo.lahti@iki.fi}
 }
-\keyword{internal}

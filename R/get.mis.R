@@ -1,9 +1,6 @@
-#' get.mis
-#' 
-#' Mainly for internal use. Estimate mutual information for node pairs based on
-#' the first principal components
-#' 
-#' 
+#' @title get.mis
+#' @description Estimate mutual information for node pairs based on
+#' the first principal components.
 #' @usage get.mis(datamatrix, network, delta, network.nodes, G, params)
 #' @param datamatrix datamatrix
 #' @param network network
@@ -14,8 +11,6 @@
 #' @return mutual information matrix
 #' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @keywords internal
-#' @examples #
 get.mis <- function(datamatrix, network, delta, network.nodes, G, params) {
     
     mis <- c()

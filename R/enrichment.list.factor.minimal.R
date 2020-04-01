@@ -19,7 +19,11 @@
 #' @keywords utilities
 #' @importFrom qvalue qvalue
 #' @export
-#' @examples res <- enrichment.list.factor.minimal(groupings = NULL, method = NULL, annotation.vector = NULL, level = NULL)
+#' @examples res <- enrichment.list.factor.minimal(groupings = NULL,
+#'     method = NULL,
+#'     annotation.vector = NULL,
+#'     level = NULL)
+#'
 enrichment.list.factor.minimal <- function(groupings, method, verbose = FALSE, annotation.vector, 
     level) {
 
