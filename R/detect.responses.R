@@ -1,20 +1,20 @@
-  ######################################################################
+######################################################################
 
-  # Before I put a sketch on paper, the whole idea is worked out
-  # mentally. In my mind I change the construction, make improvements,
-  # and even operate the device. Without ever having drawn a sketch I
-  # can give the measurements of all parts to workmen, and when
-  # completed all these parts will fit, just as certainly as though I
-  # had made the actual drawings. It is immaterial to me whether I run
-  # my machine in my mind or test it in my shop. The inventions I have
-  # conceived in this way have always worked. In thirty years there
-  # has not been a single exception. My first electric motor, the
-  # vacuum wireless light, my turbine engine and many other devices
-  # have all been developed in exactly this way.
-  #
-  #                                                    - Nicola Tesla
+# Before I put a sketch on paper, the whole idea is worked out
+# mentally. In my mind I change the construction, make improvements,
+# and even operate the device. Without ever having drawn a sketch I
+# can give the measurements of all parts to workmen, and when
+# completed all these parts will fit, just as certainly as though I
+# had made the actual drawings. It is immaterial to me whether I run
+# my machine in my mind or test it in my shop. The inventions I have
+# conceived in this way have always worked. In thirty years there
+# has not been a single exception. My first electric motor, the
+# vacuum wireless light, my turbine engine and many other devices
+# have all been developed in exactly this way.
+#
+#                                                    - Nicola Tesla
 
-  ######################################################################
+######################################################################
 
 #' @title detect.responses
 #' 
@@ -265,7 +265,8 @@ detect.responses <- function(datamatrix,
               # candidates. This way we can avoid calculating
               # exhaustive many models on large network hubs at each
               # update.
-              merge.edges <- which(is.na(delta))[order(get.mis(datamatrix, network, delta, network.nodes, G, params), decreasing = TRUE)]
+	      gmis <- get.mis(datamatrix, network, delta, network.nodes, G, params)
+              merge.edges <- which(is.na(delta))[order(gmis, decreasing = TRUE)]
         
           # Remove edges that would exceed max.size
           new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
@@ -325,20 +326,22 @@ detect.responses <- function(datamatrix,
     }
   }
 
-  # FIXME: if all nodes will be combined (merging.threshold = -Inf), there will be an error. Fix.
-  #  costs: cost function values at each state
-  #  moves: indices of groups joined at each state in its columns
-  #  groupings: groupings at each level of the hierarchy
-  #  models: compressed representations of the models from each step
+    # FIXME: if all nodes will be combined (merging.threshold = -Inf),
+    # there will be an error. Fix.
+    #  costs: cost function values at each state
+    #  moves: indices of groups joined at each state in its columns
+    #  groupings: groupings at each level of the hierarchy
+    #  models: compressed representations of the models from each step
 
-  model <- new("NetResponseModel",
-      moves = matrix(move.cost.hist, 3),
-      last.grouping = G,     # network nodes given in indices
-      subnets = subnet.list, # network nodes given in feature names; FIXME: remove available from models and G
-      params = params,
-      datamatrix = datamatrix,
-      network = network.orig,
-      models = node.models
-      )
+    model <- new("NetResponseModel",
+        moves = matrix(move.cost.hist, 3),
+        last.grouping = G,        # network nodes in indices
+        subnets = subnet.list,    # network nodes in feature names;
+                              # FIXME: remove available from models and G
+        params = params,
+        datamatrix = datamatrix,
+        network = network.orig,
+        models = node.models
+    )
 }
 

@@ -30,7 +30,8 @@ get.mis <- function(datamatrix, network, delta, network.nodes, G, params) {
         
     }
     
-    mis
+    as.vector(unlist(mis))
+    
 }
 
 

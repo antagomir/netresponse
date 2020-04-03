@@ -88,17 +88,21 @@ continuous.responses.single <- function(model, annotation.vector, method = "t.te
             
             pvals[[mo]] <- pval
             
-            fold.change[[mo]] <- mean(annotation.data[s]) - mean(annotation.data[sc])
+            fold.change[[mo]] <- mean(annotation.data[s]) -
+	        mean(annotation.data[sc])
         } else {
             
-            warning(paste("Not enough annotated observations to calculate p-values", 
-                mo))
+            warning(paste("Not enough annotated observations 
+                to calculate p-values", mo))
+		
             pvals[[mo]] <- NA
+	    
             fold.change[[mo]] <- NA
         }
     }
     
-    associations <- data.frame(list(mode = 1:length(r2s), pvalue = pvals, fold.change = fold.change))
+    associations <- data.frame(list(mode = seq_len(length(r2s)),
+        pvalue = pvals, fold.change = fold.change))
     
     associations
     
