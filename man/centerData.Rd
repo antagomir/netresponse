@@ -23,6 +23,9 @@ Center data matrix to 0 for each variable by removing the means.
 Note that the model assumes samples x features matrix, and centers
 each feature.
 }
+\examples{
+centerData(matrix(rnorm(100), 10, 10))
+}
 \references{
 See citation('netresponse')
 }

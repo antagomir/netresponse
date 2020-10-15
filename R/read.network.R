@@ -18,7 +18,6 @@
 #' @return R graph object in igraph or graphNEL format.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
-#' @export
 #' @examples
 #' 
 #' #net <- read.sif('network.sif')

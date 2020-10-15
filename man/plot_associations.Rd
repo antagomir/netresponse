@@ -32,7 +32,11 @@ grouping type.}
 Used for side effect (plotting).
 }
 \description{
-Plot association strength between user-defined category labels and responses in a selected subnetwork. Associations are showm in terms -log10(p) enrichment values for the annotation categories for the responses within the specified subnetwork. No correction for multiple testing.
+Plot association strength between user-defined category
+labels and responses in a selected subnetwork. Associations are showm
+in terms -log10(p) enrichment values for the annotation categories for the
+responses within the specified subnetwork. No correction for multiple
+testing.
 }
 \examples{
 #

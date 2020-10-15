@@ -12,7 +12,6 @@
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @importFrom qvalue qvalue
-#' @export
 #' @keywords utilities
 list.responses.factor <- function(annotation.df, models, method = "hypergeometric", 
     min.size = 2, qth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {

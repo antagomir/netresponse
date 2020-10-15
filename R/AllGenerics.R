@@ -21,10 +21,12 @@ setGeneric("get.P.rs.joint", function(sample, model, subnet.id, log = TRUE) {
 setGeneric("get.P.rS", function(model, subnet.id, log = TRUE) {
     standardGeneric("get.P.rS")
 })
-setGeneric("get.P.rs.joint.individual", function(sample, model, subnet.id, log = TRUE) {
+setGeneric("get.P.rs.joint.individual", function(sample, model,
+    subnet.id, log = TRUE) {
     standardGeneric("get.P.rs.joint.individual")
 })
-setGeneric("get.P.s.individual", function(sample, model, subnet.id, log = TRUE) {
+setGeneric("get.P.s.individual", function(sample, model,
+    subnet.id, log = TRUE) {
     standardGeneric("get.P.s.individual")
 })
 setGeneric("sample.densities", function(sample, model, subnet.id,

@@ -1,12 +1,3 @@
-# Copyright (C) 2010-2016 Leo Lahti Contact: Leo Lahti <leo.lahti@iki.fi> This
-# program is free software; you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free Software
-# Foundation; either version 2, or (at your option) any later version.  This
-# program is distributed in the hope that it will be useful, but WITHOUT ANY
-# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-# PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-
 # 'To invent, you need a good imagination and a pile of junk.'  -- Thomas Edison
 
 #' @title Continuous responses
@@ -89,14 +80,14 @@ continuous.responses.single <- function(model, annotation.vector, method = "t.te
             pvals[[mo]] <- pval
             
             fold.change[[mo]] <- mean(annotation.data[s]) -
-	        mean(annotation.data[sc])
+            mean(annotation.data[sc])
         } else {
             
             warning(paste("Not enough annotated observations 
                 to calculate p-values", mo))
-		
+        
             pvals[[mo]] <- NA
-	    
+        
             fold.change[[mo]] <- NA
         }
     }

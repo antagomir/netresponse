@@ -9,6 +9,7 @@
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @keywords utilities maths
+#' @examples centerData(matrix(rnorm(100), 10, 10))
 #' @export
 centerData <- function(X, rm.na = TRUE, meanvalue = NULL) {
     

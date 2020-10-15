@@ -92,100 +92,100 @@
 #' # Run NetReponse algorithm
 #' # model <- detect.responses(D, netw, verbose = FALSE)
 detect.responses <- function(datamatrix,
-         network = NULL,
-         initial.responses = 1,   # initial number of components. FIXME: is this used?
-         max.responses = 10,      
-         max.subnet.size = 10,    # max. subnetwork size
-         verbose = TRUE,          # print intermediate messages
-         prior.alpha    = 1,      # Prior parameters
-         prior.alphaKsi = 0.01,   # for VDP mixture
-         prior.betaKsi  = 0.01,   # scale parameter for inverse Gamma
-         update.hyperparams = 0,  # update hyperparameters. FIXME: check if this is applicable.
-         implicit.noise = 0,      # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
-         vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
-         merging.threshold = 0,   # min. cost improvement for merging
-         ite = Inf,               # max. iterations in updatePosterior
-         information.criterion = "BIC", # information criterion for node merging
-         speedup = TRUE,          # speed up calculations by approximations
-         speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
-     positive.edges = FALSE, # If TRUE, consider positive edges only     
-     mc.cores = 1, # number of cores for parallelization
-         mixture.method = "vdp", # Which approach to use for sample mixture estimation within given subnet. Options: bic/vdp
-     bic.threshold = 0,
-     pca.basis = FALSE,
-     ... # Further arguments
+        network = NULL,
+        initial.responses = 1,   # initial number of components. FIXME: is this used?
+        max.responses = 10,      
+        max.subnet.size = 10,    # max. subnetwork size
+        verbose = TRUE,          # print intermediate messages
+        prior.alpha    = 1,      # Prior parameters
+        prior.alphaKsi = 0.01,   # for VDP mixture
+        prior.betaKsi  = 0.01,   # scale parameter for inverse Gamma
+        update.hyperparams = 0,  # update hyperparameters. FIXME: check if this is applicable.
+        implicit.noise = 0,      # Add implicit noise in vdp.mk.log.lambda.so and vdp.mk.hp.posterior.so 
+        vdp.threshold = 1.0e-5,  # min. free energy improvement that stops VDP
+        merging.threshold = 0,   # min. cost improvement for merging
+        ite = Inf,               # max. iterations in updatePosterior
+        information.criterion = "BIC", # information criterion for node merging
+        speedup = TRUE,          # speed up calculations by approximations
+        speedup.max.edges = 10,  # max. new joint models to be calculated; MI-based prefiltering applied
+        positive.edges = FALSE, # If TRUE, consider positive edges only     
+        mc.cores = 1, # number of cores for parallelization
+        mixture.method = "vdp", # Which approach to use for sample mixture estimation within given subnet. Options: bic/vdp
+        bic.threshold = 0,
+        pca.basis = FALSE,
+        ... # Further arguments
 )
 
-{
+    {
 
-  # Check data matrix validity         
-  datamatrix <- check.matrix(datamatrix)
+        # Check data matrix validity         
+        datamatrix <- check.matrix(datamatrix)
 
-  # Check network validity and polish
-  tmp <- check.network(network, datamatrix, verbose = verbose)
-  network <- tmp$formatted
-  network.orig <- tmp$original
-  delta <- tmp$delta
-  network.nodes <- tmp$nodes
-  rm(tmp)
+        # Check network validity and polish
+        tmp <- check.network(network, datamatrix, verbose = verbose)
+        network <- tmp$formatted
+        network.orig <- tmp$original
+        delta <- tmp$delta
+        network.nodes <- tmp$nodes
+        rm(tmp)
 
+        ### INITIALIZE ###  
+        if (verbose) message("matching the features between network and datamatrix")  
+        samples <- rownames(datamatrix)
+        datamatrix   <- matrix(datamatrix[, network.nodes], nrow(datamatrix))
+        colnames(datamatrix) <- network.nodes
+        rownames(datamatrix) <- samples
+        rm(samples)
+                 
+        # Store here all params used in the model (defined in function call)
+        params <- list(initial.responses = initial.responses, 
+        max.responses = max.responses,
+        max.subnet.size = max.subnet.size,
+        verbose = verbose, 
+        prior.alpha = prior.alpha, 
+        prior.alphaKsi = prior.alphaKsi,
+            prior.betaKsi = prior.betaKsi, 
+        update.hyperparams = update.hyperparams, 
+        implicit.noise = implicit.noise,
+            vdp.threshold = vdp.threshold,
+            merging.threshold = merging.threshold,
+        ite = ite, 
+        information.criterion = information.criterion,
+        speedup = speedup,
+        speedup.max.edges = speedup.max.edges,
+        Nlog = log( nrow( datamatrix ) ),
+        nbins = floor(sqrt(nrow(datamatrix))),
+        mc.cores = mc.cores,
+        mixture.method = mixture.method,
+        bic.threshold = bic.threshold,
+        positive.edges = positive.edges, 
+        pca.basis = pca.basis         
+        )
 
-  ### INITIALIZE ###  
-  if (verbose) message("matching the features between network and datamatrix")  
-  samples <- rownames(datamatrix)
-  datamatrix   <- matrix(datamatrix[, network.nodes], nrow(datamatrix))
-  colnames(datamatrix) <- network.nodes
-  rownames(datamatrix) <- samples
-  rm(samples)
+    # Place each node in a singleton subnet
+    G <- lapply(seq_len(ncol( datamatrix )), function( x ){ x }) 
 
-  # Store here all params used in the model (defined in function call)
-  params <- list(initial.responses = initial.responses, 
-               max.responses = max.responses,
-         max.subnet.size = max.subnet.size,
-                 verbose = verbose, 
-         prior.alpha = prior.alpha, 
-         prior.alphaKsi = prior.alphaKsi,
-                 prior.betaKsi = prior.betaKsi, 
-         update.hyperparams = update.hyperparams, 
-         implicit.noise = implicit.noise,
-                 vdp.threshold = vdp.threshold,
-                 merging.threshold = merging.threshold,
-         ite = ite, 
-         information.criterion = information.criterion,
-         speedup = speedup,
-         speedup.max.edges = speedup.max.edges,
-         Nlog = log( nrow( datamatrix ) ),
-         nbins = floor(sqrt(nrow(datamatrix))),
-         mc.cores = mc.cores,
-         mixture.method = mixture.method,
-         bic.threshold = bic.threshold,
-         positive.edges = positive.edges, 
-         pca.basis = pca.basis         
-         )
+    # Filter network
+    tmp <- filter.netw(network, delta, datamatrix, params)
+    network <- tmp$network      
+    delta <- tmp$delta
+    # FIXME: for more efficient memory usage, remove from the
+    # datamatrix those nodes which are
+    # not in the network. But check that the indices are not confused.
 
-  # Place each node in a singleton subnet
-  G <- lapply(seq_len(ncol( datamatrix )), function( x ){ x }) 
+    ########################################################################
 
-  # Filter network
-  tmp <- filter.netw(network, delta, datamatrix, params)
-  network <- tmp$network      
-  delta <- tmp$delta
-  # FIXME: for more efficient memory usage, remove from the datamatrix those nodes which are
-  # not in the network. But check that the indices are not confused.
+    ### INDEPENDENT MODEL FOR EACH VARIABLE ###
+    tmp <- independent.models(datamatrix, params)
+    node.models <- tmp$nodes # model parameters
+    C <- sum(tmp$C)
 
-  ########################################################################
+    ### MERGE VARIABLES ###
 
-  ### INDEPENDENT MODEL FOR EACH VARIABLE ###
-  tmp <- independent.models(datamatrix, params)
-  node.models <- tmp$nodes # model parameters
-  C <- sum(tmp$C)
+    # Store agglomeration steps
+    move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
 
-  ### MERGE VARIABLES ###
-
-  # Store agglomeration steps
-  move.cost.hist  <- matrix(c(0, 0, C), nrow = 3)
-
-  if (params$max.subnet.size > 1) {
+    if (params$max.subnet.size > 1) {
 
     ### compute costs for combined (singleton) variable pairs  ###
     tmp <- pick.model.pairs(network, network.nodes, node.models, datamatrix, params)
@@ -198,28 +198,28 @@ detect.responses <- function(datamatrix,
     # note that diag(network) has been set to 0
     while ( !is.null(network) && any( na.omit(-delta) > merging.threshold )){
 
-      if ( verbose ) { message(paste('Combining groups, ', sum(!is.na(G)), ' group(s) left...\n'))} else{}
+        if ( verbose ) { message(paste('Combining groups, ', sum(!is.na(G)), ' group(s) left...\n'))} else{}
     
-      # Identify the best neighbor pair in the network (also check that
-      # the new merged pair would not exceed the max allowed subnetwork
-      # size)
+        # Identify the best neighbor pair in the network (also check that
+        # the new merged pair would not exceed the max allowed subnetwork
+        # size)
 
-      tmp <- find.best.neighbor(G, params$max.subnet.size, network, delta)
-      delta <- tmp$delta
-      best.edge <- tmp$best.edge
+        tmp <- find.best.neighbor(G, params$max.subnet.size, network, delta)
+        delta <- tmp$delta
+        best.edge <- tmp$best.edge
 
-      # If merging is still possible
-      if (-tmp$mindelta > merging.threshold) {
+        # If merging is still possible
+        if (-tmp$mindelta > merging.threshold) {
 
-        a <- tmp$a 
-        b <- tmp$b
+            a <- tmp$a 
+            b <- tmp$b
         C <- C + tmp$mindelta
         move.cost.hist <- cbind(move.cost.hist, matrix(c(a, b, C), 3))      
 
         # put the new group to a's place only for those variables for
         # which this is needed.  For others, put Inf on the a neighborgs,
         # combine a and b in the network, remove self-link a-a, 
-    # remove b (row and col)
+        # remove b (row and col)
         tmp.join <- join.subnets(network, delta, best.edge)
         network <- tmp.join$network
         delta <- tmp.join$delta
@@ -238,93 +238,94 @@ detect.responses <- function(datamatrix,
 
         # Skip the first b-1 elements as we only apply lower triangle here
         if ( ncol(network) <= 1 ) {
-          if ( verbose ) { message("All nodes have been merged.\n") }
-          delta <- Inf # indicates no merging can be be done any more
+            if ( verbose ) { message("All nodes have been merged.\n") }
+            delta <- Inf # indicates no merging can be be done any more
         } else {
-          # Compute new joint models for the new merged subnet and its neighborghs
-          merge.edges <- which(is.na(delta))
-       
-      # Remove edges that would exceed max.size
-      # FIXME: include as part of cost function?
+            # Compute new joint models for the new
+	    # merged subnet and its neighborghs
+            merge.edges <- which(is.na(delta))
+                           
+            # Remove edges that would exceed max.size
+            # FIXME: include as part of cost function?
 
-      if (length(merge.edges) > 0) {
+        if (length(merge.edges) > 0) {
 
-          new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
-        merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
+            new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+            merge.edges <- merge.edges[new.sizes <= params$max.subnet.size]
 
             if (speedup && length(merge.edges) > speedup.max.edges) {
 
-              # To speed up computation, pre-filter the edge set for which
-              # new models are calculated.  Calculate empirical associations
-              # between the first principal components of each
-              # subnetwork pair. If number of new subnetwork pairs exceeds
-              # the threshold, then calculate new model only for the
-              # subnetwork pairs that have the highest associations.
-              # It is expected that the subnetwork pair that will benefit
-              # most from joint modeling will also be among the top 
-              # candidates. This way we can avoid calculating
-              # exhaustive many models on large network hubs at each
-              # update.
-	      gmis <- get.mis(datamatrix, network, delta, network.nodes, G, params)
-              merge.edges <- which(is.na(delta))[order(gmis, decreasing = TRUE)]
+                # To speed up computation, pre-filter the edge set for which
+                # new models are calculated.  Calculate empirical associations
+                # between the first principal components of each
+                # subnetwork pair. If number of new subnetwork pairs exceeds
+                # the threshold, then calculate new model only for the
+                # subnetwork pairs that have the highest associations.
+                # It is expected that the subnetwork pair that will benefit
+                # most from joint modeling will also be among the top 
+                # candidates. This way we can avoid calculating
+                # exhaustive many models on large network hubs at each
+                # update.
+                gmis <- get.mis(datamatrix, network, delta, network.nodes, G, params)
+            merge.edges <- which(is.na(delta))[order(gmis, decreasing = TRUE)]
         
-          # Remove edges that would exceed max.size
-          new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
-          keep <- (new.sizes <= params$max.subnet.size)
-          merge.edges <- merge.edges[keep][seq_len(speedup.max.edges)]
+            # Remove edges that would exceed max.size
+            new.sizes <- apply(matrix(network[, merge.edges], 2), 2, function (x) {length(c(G[[x[[1]]]], G[[x[[2]]]]))})
+            keep <- (new.sizes <= params$max.subnet.size)
+            merge.edges <- merge.edges[keep][seq_len(speedup.max.edges)]
         
-          # Needs Inf: NAs would be confused with other merges later since
-          # models to be calculated are taken from is.na(delta) at each step
-              delta[setdiff(which(is.na(delta)), merge.edges)] <- Inf 
+            # Needs Inf: NAs would be confused with other merges later since
+            # models to be calculated are taken from is.na(delta) at each step
+                delta[setdiff(which(is.na(delta)), merge.edges)] <- Inf 
 
             } 
 
-          }
-      
-          # TODO: parallelize to speed up
-          for (edge in merge.edges) {
-        tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
-        model.pairs <- tmp$model.pairs
-        delta <- tmp$delta
-      }
+        }
+                      
+        # TODO: parallelize to speed up
+        for (edge in merge.edges) {
+            tmp <- update.model.pair(datamatrix, delta, network, edge, network.nodes, G, params, node.models, model.pairs)
+            model.pairs <- tmp$model.pairs
+            delta <- tmp$delta
+        }
 
-       }
+        }
 
-      } else {
+    } else {
         if ( verbose ) { message(paste('Merging completed: no groups having links any more, or cost function improvement does not exceed the threshold.')) }
         break
-      }
-    } 
-  }
-  
-  # Remove left-out nodes (from the merges)
-  nainds <- is.na(node.models)
-  node.models <- node.models[!nainds]
-  G <- G[!nainds]
-
-  # Form a list of subnetworks (no filters)
-  # mclapply was slower here  
-  subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) 
-
-  # name the subnetworks
-  names(node.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", seq_len(length(G)), sep = "")  
-  gc()
-
-  # Convert original network to graphNEL (not before, to save more memory for computation stage)
-  network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(seq_len(length(network.nodes)), network.nodes))))
-  nodes(network.orig) <- network.nodes
-
-  # For one-dimensional subnets, 
-  # order the modes by magnitude to simplify interpretation
-  for (mi in seq_len(length(node.models))) {
-    if (ncol(node.models[[mi]]$mu) == 1 && length(node.models[[mi]]$w) > 1) {
-      o <- order(node.models[[mi]]$mu[,1])
-      node.models[[mi]]$mu <- matrix(node.models[[mi]]$mu[o,], nrow = length(o))
-      node.models[[mi]]$sd <- matrix(node.models[[mi]]$sd[o,], nrow = length(o))
-      node.models[[mi]]$w <- node.models[[mi]]$w[o]
-      rownames(node.models[[mi]]$mu) <- rownames(node.models[[mi]]$sd) <- names(node.models[[mi]]$w) <- paste("Mode-", seq_len(length(node.models[[mi]]$w)), sep = "")
     }
-  }
+    } 
+    }
+    
+    # Remove left-out nodes (from the merges)
+    nainds <- is.na(node.models)
+    node.models <- node.models[!nainds]
+    G <- G[!nainds]
+
+    # Form a list of subnetworks (no filters)
+    # mclapply was slower here  
+    subnet.list <- lapply(G, function(x) { network.nodes[unlist(x)] }) 
+
+    # name the subnetworks
+    names(node.models) <- names(subnet.list) <- names(G) <- paste("Subnet-", seq_len(length(G)), sep = "")  
+    #gc()
+
+    # Convert original network to graphNEL (not before, to save more memory for computation stage)
+    network.orig <- igraph.to.graphNEL(graph.data.frame(as.data.frame(t(network.orig)), directed = FALSE, vertices = data.frame(cbind(seq_len(length(network.nodes)), network.nodes))))
+    nodes(network.orig) <- network.nodes
+
+    # For one-dimensional subnets, 
+    # order the modes by magnitude to simplify interpretation
+    for (mi in seq_len(length(node.models))) {
+    if (ncol(node.models[[mi]]$mu) == 1 && length(node.models[[mi]]$w) > 1) {
+        o <- order(node.models[[mi]]$mu[,1])
+        node.models[[mi]]$mu <- matrix(node.models[[mi]]$mu[o,], nrow = length(o))
+        node.models[[mi]]$sd <- matrix(node.models[[mi]]$sd[o,], nrow = length(o))
+        node.models[[mi]]$w <- node.models[[mi]]$w[o]
+        rownames(node.models[[mi]]$mu) <- rownames(node.models[[mi]]$sd) <- names(node.models[[mi]]$w) <- paste("Mode-", seq_len(length(node.models[[mi]]$w)), sep = "")
+    }
+    } 
 
     # FIXME: if all nodes will be combined (merging.threshold = -Inf),
     # there will be an error. Fix.
@@ -337,7 +338,7 @@ detect.responses <- function(datamatrix,
         moves = matrix(move.cost.hist, 3),
         last.grouping = G,        # network nodes in indices
         subnets = subnet.list,    # network nodes in feature names;
-                              # FIXME: remove available from models and G
+        # FIXME: remove available from models and G
         params = params,
         datamatrix = datamatrix,
         network = network.orig,

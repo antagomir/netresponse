@@ -65,14 +65,17 @@ x-axis ('x'), y-axis ('y'), or both ('both').}
 
 \item{mar}{image margins}
 
-\item{...}{optional parameters to be passed to function 'image', see help(image) for further details}
+\item{...}{optional parameters to be passed to function 'image', see
+help(image) for further details}
 }
 \value{
 A list with the color palette (colors), 
        color breakpoints (breaks), and palette function (palette.function)
 }
 \description{
-Fast investigation of matrix objects; standard visualization choices are made automatically; fast and easy-to-use but does not necessarily provide optimal visualization.
+Fast investigation of matrix objects; standard visualization
+choices are made automatically; fast and easy-to-use but does not
+necessarily provide optimal visualization.
 }
 \examples{
   mat <- rbind(c(1,2,3,4,5), c(1, 3, 1), c(4,2,2))

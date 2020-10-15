@@ -39,7 +39,8 @@ covariances of each response. If NULL, no plotting.}
 Used for its side-effects.
 }
 \description{
-Visualize data, centroids and response confidence intervals for a given
+Visualize data, centroids and response confidence intervals
+for a given
 Gaussian mixture model in two-dimensional (bivariate) case. Optionally, 
 color the samples according to annotations labels.
 }

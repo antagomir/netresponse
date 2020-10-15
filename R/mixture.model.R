@@ -28,7 +28,7 @@
 #'        (updatePosterior). Increasing this can potentially lead to more accurate results, but computation may take longer.
 #' @param speedup Takes advantage of approximations to PCA, mutual information
 #'         etc in various places to speed up calculations. Particularly useful with
-#' 	   large and densely connected networks and/or large sample size.
+#'        large and densely connected networks and/or large sample size.
 #' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture with mixture.method = "bic"
 #' @param pca.basis pca.basis
 #' @param min.responses minimum number of responses
@@ -43,37 +43,41 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
 
     if (is.null(x)) {return(NULL)}
 
-  # Present data in PCA space to cope with diagonality of the covariances
-  if (pca.basis) {    
-    if (nrow(x) > ncol(x)) {
-      x <- princomp(x)$scores
-    } else {
-      # FIXME: implement sparse PCA here to gain more generality?
-      warning("Less samples than features, not applying PCA basis")
-      x <- x
+    # Present data in PCA space to cope with diagonality of the covariances
+    if (pca.basis) {    
+        if (nrow(x) > ncol(x)) {
+          x <- princomp(x)$scores
+        } else {
+          # FIXME: implement sparse PCA here to gain more generality?
+          warning("Less samples than features, not applying PCA basis")
+          x <- x
+        }
     }
-  }
 
-  if ( is.vector(x) ) { xm <- matrix(x, nrow = length(x)); rownames(xm) <- names(x); x <- xm }
+    if ( is.vector(x) ) {
+        xm <- matrix(x, nrow = length(x)); rownames(xm) <- names(x); x <- xm
+    }
 
-  if (mixture.method == "vdp") {
+    if (mixture.method == "vdp") {
 
-    model <- vdp.mixt(x,
-                      implicit.noise = implicit.noise,
-		      prior.alpha = prior.alpha,
-                      prior.alphaKsi = prior.alphaKsi,
-		      prior.betaKsi = prior.betaKsi,
-                      threshold = vdp.threshold,
-		      initial.K = initial.responses, # FIXME: move initial.K into initial.responses for clarity
-		      ite = ite,
-		      c.max = max.responses,
-		      speedup = speedup)
+        model <- vdp.mixt(x,
+                    implicit.noise = implicit.noise,
+                prior.alpha = prior.alpha,
+                    prior.alphaKsi = prior.alphaKsi,
+                prior.betaKsi = prior.betaKsi,
+                    threshold = vdp.threshold,
+                # FIXME: move initial.K into initial.responses for clarity
+            initial.K = initial.responses, 
+            ite = ite,
+            c.max = max.responses,
+            speedup = speedup)
 
     model.params <- pick.model.parameters(model, colnames(x))      
 
-  } else if (mixture.method == "bic") { 	
+  } else if (mixture.method == "bic") {     
 
-    model <- bic.mixture(x, max.modes = max.responses, bic.threshold = bic.threshold, min.modes = min.responses)  
+    model <- bic.mixture(x, max.modes = max.responses,
+    bic.threshold = bic.threshold, min.modes = min.responses)  
 
     mu <- matrix(model$means, nrow = length(model$ws))
     sd <- matrix(model$sds, nrow = length(model$ws))
@@ -87,20 +91,21 @@ mixture.model <- function (x, mixture.method = "vdp", max.responses = 10, implic
     colnames(mu) <- colnames(sd) <- colnames(x)        
    
     model.params <- list(mu = mu,
-    		         sd = sd,
-			 w = ws, 
-			 qofz = qofz,
-			 free.energy = model$free.energy, 
-			 Nparams = model$Nparams, 
-			 bic = bic)
+                    sd = sd,
+                    w = ws, 
+                    qofz = qofz,
+                    free.energy = model$free.energy, 
+                    Nparams = model$Nparams, 
+                    bic = bic)
 
-  } else {
-    stop("Provide proper mixture.method argument.")
-  }    
+    } else {
+        stop("Provide proper mixture.method argument.")
+    }    
 
-  # FIXME: perhaps the 'model' is not needed any more when model.params is given? Check and remove to save space.
-  # How about pca.basis = TRUE case?
-  model.params
+    # FIXME: perhaps the 'model' is not needed any
+    # more when model.params is given? Check and remove to save space.
+    # How about pca.basis = TRUE case?
+    model.params
 
 }
 

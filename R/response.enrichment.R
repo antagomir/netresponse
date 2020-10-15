@@ -21,7 +21,6 @@
 #' @seealso order.responses
 #' @references See citation('netresponse')
 #' @keywords utilities
-#' @export
 #' @examples #enr <- response.enrichment(subnet.id, models, sample, response, method)
 
 response.enrichment <- function(total.samples, response.samples, annotated.samples, 

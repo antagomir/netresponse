@@ -7,7 +7,6 @@
 #' @param ylab.text ylab.text
 #' @param title.text title.text
 #' @return Used for its side-effects
-#' @export
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse') for citation details.
 #' @keywords utilities

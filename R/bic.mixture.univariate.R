@@ -11,7 +11,6 @@
 #' @return Fitted latent class model (parameters and free energy)
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @export
 #' @keywords utilities
 bic.mixture.univariate <- function(x, max.modes, bic.threshold = 0, min.modes = 1, 
     ...) {

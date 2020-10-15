@@ -48,7 +48,8 @@ two-dimensional case the original coordinates are used.}
 
 \item{datamatrix}{datamatrix}
 
-\item{scale}{scale the phylotypes to unit length (only implemented for plot_mode = 'matrix'}
+\item{scale}{scale the phylotypes to unit length (only implemented for
+plot_mode = 'matrix'}
 
 \item{...}{Further arguments for plot function.}
 }
@@ -56,7 +57,8 @@ two-dimensional case the original coordinates are used.}
 Used for its side-effects.
 }
 \description{
-Plot the detected transcriptional responses for a given subnetwork.
+Plot the detected transcriptional responses for a given
+subnetwork.
 plot_mode = 'network', xaxis = TRUE, yaxis = TRUE, plot_type = 'twopi', mar
 = c(5, 4, 4, 2), horiz = TRUE, datamatrix = NULL, scale = FALSE, ...)
 }

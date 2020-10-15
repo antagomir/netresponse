@@ -17,7 +17,8 @@ plot_expression(x, maintext, ...)
 Used for its side effects.
 }
 \description{
-Plot expression matrix in color scale. For one-channel data; plot expression
+Plot expression matrix in color scale. For one-channel data;
+plot expression
 of each gene relative to its mean expression level over all samples. Blue
 indicates decreased expression and red indicates increased expression.
 Brightness of the color indicates magnitude of the change. Black denotes no

@@ -50,7 +50,6 @@ listify.groupings <- function(groupings, verbose = FALSE) {
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @keywords utilities
-#' @export
 #' @examples #
 
 vectorize.groupings <- function(groupings, verbose = FALSE) {

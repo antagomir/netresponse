@@ -1,16 +1,3 @@
-# Copyright (C) 2008-2012 Leo Lahti
-# Contact: Leo Lahti <leo.lahti@iki.fi>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
 ###################################################################
 
  #  "An article about computational science in a scientific publication
@@ -33,7 +20,6 @@
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -85,7 +71,6 @@ P.rS <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -122,7 +107,6 @@ P.r.s <- function (dat, pars, log = TRUE, scaling = 0) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -161,7 +145,6 @@ P.rs.joint.individual <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -206,7 +189,6 @@ P.rs.joint <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -238,7 +220,6 @@ P.Sr <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -265,7 +246,7 @@ P.s.r <- function (dat, pars, log = TRUE) {
   for ( response in seq_len(length( pars$w ))) {
     # Given the diagonal covariances, the density is product (log-sum)
     # over the densities for individual features (on each data point)
-    psr[response, ] <- colSums(dnorm(dat, mean = as.numeric(pars$mu[response, ]), sd = as.numeric(pars$sd[response, ]), log = TRUE))		  
+    psr[response, ] <- colSums(dnorm(dat, mean = as.numeric(pars$mu[response, ]), sd = as.numeric(pars$sd[response, ]), log = TRUE))          
   }
 
   logp <- psr # responses x samples
@@ -294,7 +275,6 @@ P.s.r <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities
@@ -338,7 +318,6 @@ P.S <- function (dat, pars, log = TRUE) {
 #' Returns:
 #'   @return Probability density
 #'            
-#' @export
 #' @references See citation("netresponse") 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords internal utilities

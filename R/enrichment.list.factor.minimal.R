@@ -78,8 +78,8 @@ enrichment.list.factor.minimal <- function(groupings, method, verbose = FALSE, a
                 # calculate q-values
                 enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)))$qvalues
             } else if (length(enr$pvalue) > 10) {
-                enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)), pi0.method = "bootstrap", 
-                  fdr.level = 0.25)$qvalues
+                enr$qvalue <- qvalue(as.numeric(as.character(enr$pvalue)),
+                pi0.method = "bootstrap", fdr.level = 0.25)$qvalues
             } else {
                 
                 warning("Not enough p-values for q-value estimation")

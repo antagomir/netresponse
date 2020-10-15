@@ -12,7 +12,6 @@
 #' @return A list with two elements: Table listing all associations between the factor levels and responses; multiple p-value adjustment method
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @export
 #' @keywords utilities
 list.responses.factor.minimal <- function(annotation.df, groupings, method = "hypergeometric", 
     min.size = 2, pth = Inf, verbose = TRUE, data = NULL, rounding = NULL) {

@@ -223,7 +223,6 @@ setMethod("getqofz", "NetResponseModel", function(model, subnet.id, log = FALSE)
 #' @return Subnet data matrix
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @export
 #' @keywords utilities
 #' @examples
 #' ## Load a pre-calculated netresponse model obtained with 

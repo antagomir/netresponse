@@ -13,7 +13,6 @@
 #' @param cluster.assignments Vector of cluster indices, indicating cluster for each data point
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects
-#' @export
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse') for citation details.
 #' @keywords utilities

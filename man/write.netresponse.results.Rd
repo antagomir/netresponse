@@ -17,13 +17,7 @@ write.netresponse.results(x, subnet.ids = NULL, filename)
 Used for side effects.
 }
 \description{
-Write NetResponse results summary into a file.
-}
-\details{
 Experimental version.
-}
-\examples{
-#
 }
 \references{
 See citation('netresponse')

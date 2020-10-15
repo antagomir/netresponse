@@ -8,7 +8,6 @@
 #' @return Fitted latent class model (parameters and free energy)
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @export
 bic.select.best.mode <- function(x, max.modes = 1, bic.threshold = 1, min.modes = 1) {
 
 

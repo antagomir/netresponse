@@ -1,7 +1,5 @@
 #' Write NetResponse results summary into a file.
 #' 
-#' Write NetResponse results summary into a file.
-#' 
 #' Experimental version.
 #' 
 #' @usage write.netresponse.results(x, subnet.ids = NULL, filename)
@@ -11,12 +9,9 @@
 #' @return Used for side effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
-#' @export
-#' @examples #
 #' @keywords utilities
 write.netresponse.results <- function(x, subnet.ids = NULL, filename) {
     
-    # f <- file(description = filename, open = 'rw')
     write("NetResponse - subnetworks", file = filename, append = FALSE)
     write("==========================\n", file = filename, append = TRUE)
     

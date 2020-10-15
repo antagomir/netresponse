@@ -23,7 +23,6 @@
 #' @author Maintainer: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse')
 #' @keywords internal
-#' @export
 #' @examples #
 pick.model.pairs <- function(network, network.nodes, node.models, datamatrix, params) {
     

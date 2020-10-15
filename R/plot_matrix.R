@@ -1,5 +1,7 @@
 #' @title Visualize a matrix with one or two-way color scale. 
-#' @description Fast investigation of matrix objects; standard visualization choices are made automatically; fast and easy-to-use but does not necessarily provide optimal visualization.
+#' @description Fast investigation of matrix objects; standard visualization
+#' choices are made automatically; fast and easy-to-use but does not
+#' necessarily provide optimal visualization.
 #' @param mat matrix
 #' @param type String. Specifies visualization type. Options: 'oneway' 
 #'                       (color scale ranges from white to dark red; 
@@ -24,7 +26,8 @@
 #' @param ylab optional y axis labels
 #' @param limit.trunc color scale limit breakpoint
 #' @param mar image margins
-#' @param ... optional parameters to be passed to function 'image', see help(image) for further details
+#' @param ... optional parameters to be passed to function 'image', see
+#' help(image) for further details
 #' @return A list with the color palette (colors), 
 #'        color breakpoints (breaks), and palette function (palette.function)
 #' @export

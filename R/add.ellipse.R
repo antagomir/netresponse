@@ -12,7 +12,6 @@
 #' @return Used for plotting side effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
-#' @export
 add.ellipse <- function(centroid, covmat, confidence = 0.95, npoints = 100, col = "black", ...) {
 
     # add ellipse to a plot

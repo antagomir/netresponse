@@ -23,7 +23,8 @@ covariances of each response. If NULL, no plotting.}
 Used for its side-effects.
 }
 \description{
-Visualize data, centroids and response confidence intervals for a given
+Visualize data, centroids and response confidence intervals
+for a given
 subnetwork with PCA. Optionally, color the samples according to annotations
 labels.
 }

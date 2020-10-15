@@ -1,13 +1,16 @@
 #' @title Multivariate BIC mixture
-#' @description Latent class analysis based on (infinite) Gaussian mixture model.
+#' @description Latent class analysis based on (infinite) Gaussian mixture
+#' model.
 #' If the input (dat) is data matrix, a multivariate model is fitted. 
 #' @param x matrix (for multivariate analysis)
-#' @param max.modes Maximum number of modes to be checked for mixture model selection
-#' @param bic.threshold BIC threshold which needs to be exceeded before a new mode is added to the mixture.
-#' @param min.modes Minimum number of modes to be checked for mixture model selection
+#' @param max.modes Maximum number of modes to be checked for mixture
+#' model selection
+#' @param bic.threshold BIC threshold which needs to be exceeded before a
+#' new mode is added to the mixture.
+#' @param min.modes Minimum number of modes to be checked for mixture
+#' model selection
 #' @param ... Further optional arguments to be passed
 #' @return Fitted latent class model (parameters and free energy)
-#' @export
 #' @references See citation('netresponse') 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities
@@ -44,11 +47,13 @@ bic.mixture.multivariate <- function(x, max.modes, bic.threshold = 0, min.modes 
     rownames(qofz) <- rownames(x)
     colnames(qofz) <- paste("Mode", seq_len(ncol(qofz)), sep = "-")
     
-    rownames(means) <- rownames(sds) <- names(ws) <- paste("Mode", seq_len(length(ws)), 
+    rownames(means) <- rownames(sds) <- names(ws) <-
+        paste("Mode", seq_len(length(ws)), 
         sep = "-")
     colnames(means) <- colnames(sds) <- colnames(x)
     
-    list(means = means, sds = sds, ws = ws, Nparams = Nparams, free.energy = -mcl$loglik, 
+    list(means = means, sds = sds, ws = ws, Nparams = Nparams,
+        free.energy = -mcl$loglik, 
         qofz = qofz, bic = bic)
     
 }

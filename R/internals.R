@@ -377,9 +377,9 @@ free.energy.improved <- function(free.energy, new.free.energy, warn.when.increas
         if (diff > 0) {
             if (warn.when.increasing) {
                 if (v > 0.001) {
-                  stop(c("the free energy increased. The diff is ", toString(diff)))
+                    stop(c("the free energy increased. The diff is ", toString(diff)))
                 } else {
-                  warning(c("the free energy increased. The diff is ", toString(diff)))
+                    warning(c("the free energy increased. The diff is ", toString(diff)))
                 }
             }
             bool <- 0
@@ -485,7 +485,7 @@ updatePosterior <- function(data, hp.posterior, hp.prior, opts, ite = Inf, do.so
             if (is.infinite(new.free.energy)) {
                 warning("Free energy not finite: adding implicit noise.")
                 opts.internal$implicitnoisevar <- opts.internal$implicitnoisevar + 
-                  0.1
+                0.1
             }
             cnt <- cnt + 1
         }

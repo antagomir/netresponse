@@ -7,7 +7,6 @@
 #' @param min.modes minimum number of modes
 #' @param ... Further optional arguments to be passed
 #' @return Fitted latent class model (parameters and free energy)
-#' @export
 #' @references See citation('netresponse') 
 #' @author Contact: Leo Lahti \email{leo.lahti@@iki.fi}
 #' @keywords utilities

@@ -84,7 +84,6 @@ order.responses <- function(models, sample, method = "hypergeometric", min.size 
 #' @seealso response.enrichment
 #' @references See citation('netresponse')
 #' @keywords utilities
-#' @export
 #' @examples # 
 list.significant.responses <- function(model, sample, qth = 1, method = "hypergeometric") {
     
