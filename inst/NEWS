@@ -1,4 +1,4 @@
-CHANGES IN VERSION 1.50.1 (2021-07-28)
+CHANGES IN VERSION 1.53.2 (2021-07-28)
 
   o rmarkdown added as a dependency to fix Bioc build
 
