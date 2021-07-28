@@ -4,7 +4,7 @@
 \alias{plotPCA}
 \title{plotPCA}
 \usage{
-plotPCA(x, subnet.id, labels = NULL, confidence = 0.95, ...)
+plotPCA(x, subnet.id, labels = NULL, confidence = 0.95, npoints = NULL, ...)
 }
 \arguments{
 \item{x}{NetResponseModel object. Output from the detect.responses function.}
@@ -16,6 +16,8 @@ numeric as 2, which is then converted to character.}
 
 \item{confidence}{Confidence interval for the responses based on the
 covariances of each response. If NULL, no plotting.}
+
+\item{npoints}{Argument to the ellipse function}
 
 \item{...}{Further arguments for plot function.}
 }

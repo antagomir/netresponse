@@ -77,13 +77,14 @@ plot_associations <- function(x, subnet.id, labels, method = "hypergeometric", m
 #' @param labels Optional: sample class labels to be indicated in colors.
 #' @param confidence Confidence interval for the responses based on the
 #' covariances of each response. If NULL, no plotting.
+#' @param npoints Argument to the ellipse function
 #' @param ... Further arguments for plot function.
 #' @return Used for its side-effects.
 #' @author Leo Lahti \email{leo.lahti@@iki.fi}
 #' @references See citation('netresponse') for citation details.
 #' @keywords utilities
 #' @examples #plotPCA(x, subnet.id)
-plotPCA <- function(x, subnet.id, labels = NULL, confidence = 0.95, ...) {
+plotPCA <- function(x, subnet.id, labels = NULL, confidence = 0.95, npoints=NULL, ...) {
     
     if (!is.null(labels)) {
         if (is.null(names(labels))) {
