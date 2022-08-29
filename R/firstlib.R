@@ -1,6 +1,5 @@
 #' @import methods
 #' @importFrom BiocStyle pkg_ver
-#' @import dmt
 #' @import graph
 #' @importFrom graphics axis
 #' @importFrom graphics barplot
