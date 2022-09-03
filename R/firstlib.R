@@ -56,5 +56,5 @@
 #' @importFrom utils read.csv
 
 .onAttach <- function(lib, pkg) {
-    packageStartupMessage("\nnetresponse (C) 2008-2021 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse")
+    packageStartupMessage("\nnetresponse (C) 2008-2022 Leo Lahti et al.\n\nhttps://github.com/antagomir/netresponse")
 }
