@@ -1,3 +1,4 @@
 library(knitr)
-knit("NetResponse.Rmd")
+#knit("NetResponse.Rmd")
+rmarkdown::render("NetResponse.Rmd")
 #system("gcp")
