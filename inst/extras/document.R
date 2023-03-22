@@ -1,4 +1,8 @@
+
 # Package release instructions: http://r-pkgs.had.co.nz/release.html
+
+# Transition to devel
+# https://bioconductor.github.io/biocblog/posts/2023-03-01-transition-to-devel/
 
 # Documentation, Build and Check
 library(devtools)
