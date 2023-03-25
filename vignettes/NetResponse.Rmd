@@ -69,10 +69,11 @@ results. The algorithm combines network and functional information to
 detect coherent subnetworks that reveal distinct activation modes
 across conditions. 
 
-```{r NetResponse1, warning=FALSE, message=FALSE}
-library(netresponse)
 
-# Generate simulated data
+Generate simulated data.
+
+```{r NetResponse1a, warning=FALSE, message=FALSE}
+library(netresponse)
 res <- generate.toydata(Dim = 3, Nc = 3, Ns = 200, sd0 = 3, rgam.shape = 1, rgam.scale = 1)
 
 D <- res$data
@@ -82,8 +83,11 @@ sample2comp     <- res$sample2comp
 
 # Use fully connected network
 network <- matrix(rep(1, 9), nrow = 3) 
+```
 
-# Fit NetResponse model
+Fit NetResponse model.
+
+```{r NetResponse1b, warning=FALSE, message=FALSE}
 # Various network formats are supported, see help(detect.responses) for
 # details. With large data sets, consider the 'speedup' option.
 set.seed(4243)
