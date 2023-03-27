@@ -21,7 +21,7 @@ vignette: >
 library(knitr)
 
 # Global options
-opts_chunk$set(fig.path="fig/")
+opts_chunk$set(fig.path="fig/", eval=FALSE)
 ```
 
 # netresponse - probabilistic tools for functional network analysis
