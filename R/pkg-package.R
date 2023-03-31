@@ -56,6 +56,7 @@ NULL
 #' for details.
 #' @keywords package
 #' @examples
+#' \dontrun{
 #' # Define parameters for toy data
 #' Ns <- 200  # number of samples (conditions)
 #' Nf <- 10   # number of features (nodes)
@@ -75,6 +76,7 @@ NULL
 #' model <- detect.responses(D, netw)
 #' # Subnets (each is a list of nodes)
 #' get.subnets( model )
+#' }
 NULL
 
 #' @title Osmoshock data set (PPI and expression)

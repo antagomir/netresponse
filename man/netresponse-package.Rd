@@ -12,6 +12,7 @@ Global modeling of transcriptional responses in interaction networks.
 License: \tab GNU GPL >=2\cr LazyLoad: \tab yes\cr }
 }
 \examples{
+\dontrun{
 # Define parameters for toy data
 Ns <- 200  # number of samples (conditions)
 Nf <- 10   # number of features (nodes)
@@ -31,6 +32,7 @@ D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
 model <- detect.responses(D, netw)
 # Subnets (each is a list of nodes)
 get.subnets( model )
+}
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
