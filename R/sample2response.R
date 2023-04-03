@@ -20,10 +20,10 @@
 #' netw <- toydata$netw   # Network
 #' 
 #' # Detect network responses
-#' model <- detect.responses(D, netw, verbose = FALSE)
+#' #model <- detect.responses(D, netw, verbose = FALSE)
 #' 
 #' # Assign samples to responses (soft, probabilistic assignments sum to 1)
-#' response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
+#' #response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
 sample2response <- function(model, subnet.id, mode = "soft") {
     
     if (is.numeric(subnet.id)) {

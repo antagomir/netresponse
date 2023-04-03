@@ -85,12 +85,14 @@
 #' @keywords methods iteration
 #' @export
 #' @examples
-#' data(toydata)        # Load toy data set
-#' D    <- toydata$emat   # Response matrix (for example, gene expression)
-#' netw <- toydata$netw   # Network
+#' \dontrun{
+#'   #data(toydata)        # Load toy data set
+#'   #D    <- toydata$emat   # Response matrix (for example, gene expression)
+#'   #netw <- toydata$netw   # Network
 #' 
-#' # Run NetReponse algorithm
-#' # model <- detect.responses(D, netw, verbose = FALSE)
+#'   # Run NetReponse algorithm
+#'   # model <- detect.responses(D, netw, verbose = FALSE)
+#' }
 detect.responses <- function(datamatrix,
         network = NULL,
         initial.responses = 1,   # initial number of components. FIXME: is this used?

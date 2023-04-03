@@ -73,9 +73,9 @@ NULL
 #' D[1:100, 4:6]  <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 1:3)}))
 #' D[101:Ns, 4:6] <- t(sapply(1:(Ns/2),function(x){rnorm(3, mean = 7:9)}))
 #' # Calculate the model
-#' model <- detect.responses(D, netw)
-#' # Subnets (each is a list of nodes)
-#' get.subnets( model )
+#' #model <- detect.responses(D, netw)
+#' ## Subnets (each is a list of nodes)
+#' #get.subnets( model )
 #' }
 NULL
 

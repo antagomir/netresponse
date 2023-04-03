@@ -118,12 +118,14 @@ conditions. Returns a set of subnetworks and their estimated
 context-specific responses.
 }
 \examples{
-data(toydata)        # Load toy data set
-D    <- toydata$emat   # Response matrix (for example, gene expression)
-netw <- toydata$netw   # Network
+\dontrun{
+  #data(toydata)        # Load toy data set
+  #D    <- toydata$emat   # Response matrix (for example, gene expression)
+  #netw <- toydata$netw   # Network
 
-# Run NetReponse algorithm
-# model <- detect.responses(D, netw, verbose = FALSE)
+  # Run NetReponse algorithm
+  # model <- detect.responses(D, netw, verbose = FALSE)
+}
 }
 \references{
 See citation("netresponse").

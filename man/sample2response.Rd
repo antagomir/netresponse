@@ -28,10 +28,10 @@ D    <- toydata$emat   # Response matrix (for example, gene expression)
 netw <- toydata$netw   # Network
 
 # Detect network responses
-model <- detect.responses(D, netw, verbose = FALSE)
+#model <- detect.responses(D, netw, verbose = FALSE)
 
 # Assign samples to responses (soft, probabilistic assignments sum to 1)
-response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
+#response.probabilities <- sample2response(model, subnet.id = 'Subnet-1')
 }
 \references{
 Leo Lahti et al.: Global modeling of transcriptional responses
